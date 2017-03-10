@@ -16,4 +16,7 @@
   "dependencies": {
     "node-fetch": "^1.6.3"
   }
+  "browser": {
+    "node-fetch": false
+  }
 }
