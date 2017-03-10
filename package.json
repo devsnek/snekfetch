@@ -15,7 +15,7 @@
   "homepage": "https://github.com/GusCaplan/node-fetcher#readme",
   "dependencies": {
     "node-fetch": "^1.6.3"
-  }
+  },
   "browser": {
     "node-fetch": false
   }
