@@ -10,7 +10,17 @@ if (browser) {
   FormData = require('./FormData');
 }
 
-const convertToBuffer = require('../Util').convertToBuffer;
+function convertToBuffer(ab) {
+  function str2ab(str) {
+    const buffer = new ArrayBuffer(str.length * 2);
+    const view = new Uint16Array(buffer);
+    for (var i = 0, strLen = str.length; i < strLen; i++) view[i] = str.charCodeAt(i);
+    return buffer;
+  }
+
+  if (typeof ab === 'string') ab = str2ab(ab);
+  return Buffer.from(ab);
+}
 
 class Fetcher {
   constructor(method, url) {
