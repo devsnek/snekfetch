@@ -1,7 +1,5 @@
 const browser = typeof window !== 'undefined';
 
-const querystring = require('querystring');
-
 let fetch;
 let FormData;
 if (browser) {
@@ -10,24 +8,6 @@ if (browser) {
 } else {
   fetch = require('node-fetch');
   FormData = require('./FormData');
-}
-
-function convertToBuffer(ab) {
-  function str2ab(str) {
-    const buffer = new ArrayBuffer(str.length * 2);
-    const view = new Uint16Array(buffer);
-    for (var i = 0, strLen = str.length; i < strLen; i++) view[i] = str.charCodeAt(i);
-    return buffer;
-  }
-
-  if (typeof ab === 'string') ab = str2ab(ab);
-  return Buffer.from(ab);
-}
-
-function parseWWWFormUrlEncoded(str) {
-  const obj = {};
-  for (const [k, v] of str.split('&').map(q => q.split('='))) obj[k] = v;
-  return obj;
 }
 
 class Fetcher {
@@ -140,3 +120,21 @@ for (const method of methods) Fetcher[method.toLowerCase()] = (url) => new Fetch
 
 module.exports = Fetcher;
 if (browser) window.Fetcher = Fetcher;
+
+function convertToBuffer(ab) {
+  function str2ab(str) {
+    const buffer = new ArrayBuffer(str.length * 2);
+    const view = new Uint16Array(buffer);
+    for (var i = 0, strLen = str.length; i < strLen; i++) view[i] = str.charCodeAt(i);
+    return buffer;
+  }
+
+  if (typeof ab === 'string') ab = str2ab(ab);
+  return Buffer.from(ab);
+}
+
+function parseWWWFormUrlEncoded(str) {
+  const obj = {};
+  for (const [k, v] of str.split('&').map(q => q.split('='))) obj[k] = v;
+  return obj;
+}
