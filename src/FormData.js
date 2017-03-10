@@ -3,7 +3,7 @@ const mime = require('./mime');
 
 class FormData {
   constructor() {
-    this.boundary = '--Discord.js----';
+    this.boundary = `-----------${Math.random().toString().slice(2)}`;
     this.buffer = new Buffer(0);
   }
 
