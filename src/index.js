@@ -89,7 +89,6 @@ class Fetcher {
       Object.assign(response, res);
       response.body = body;
       response.text = text;
-      response.status = res.statusCode;
       if (res.headers.raw) {
         for (const [name, value] of Object.entries(res.headers.raw())) response.headers[name] = value[0];
       } else {
