@@ -1,0 +1,19 @@
+{
+  "name": "node-fetcher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GusCaplan/node-fetcher.git"
+  },
+  "author": "Gus Caplan <me@gus.host>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GusCaplan/node-fetcher/issues"
+  },
+  "homepage": "https://github.com/GusCaplan/node-fetcher#readme",
+  "dependencies": {
+    "node-fetch": "^1.6.3"
+  }
+}
