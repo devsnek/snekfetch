@@ -94,7 +94,7 @@ class Fetcher {
       } else {
         for (const [name, value] of res.headers.entries()) response.headers[name] = value;
       }
-      if (['4', '5'].includes(response.status.toString().substr(0, 1))) return cb(response);
+      if (['4', '5'].includes(response.status.toString().substr(0, 1))) return cb(response, response);
       return cb(null, response);
     })
     .catch((err) => {
