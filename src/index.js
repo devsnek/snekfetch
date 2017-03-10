@@ -1,5 +1,7 @@
 const browser = typeof window !== 'undefined';
 
+const querystring = require('querystring');
+
 let fetch;
 let FormData;
 if (browser) {
@@ -20,6 +22,12 @@ function convertToBuffer(ab) {
 
   if (typeof ab === 'string') ab = str2ab(ab);
   return Buffer.from(ab);
+}
+
+function parseWWWFormUrlEncoded(str) {
+  const obj = {};
+  for (const [k, v] of str.split('&').map(q => q.split('='))) obj[k] = v;
+  return obj;
 }
 
 class Fetcher {
@@ -71,6 +79,12 @@ class Fetcher {
         return res.text().then((t) => {
           response.text = t;
           response.body = JSON.parse(t);
+          return res;
+        });
+      } else if (ctype === 'application/x-www-form-urlencoded') {
+        return res.text().then((t) => {
+          response.text = t;
+          response.body = parseWWWFormUrlEncoded(t);
           return res;
         });
       } else {
