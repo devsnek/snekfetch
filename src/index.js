@@ -99,8 +99,8 @@ class Fetcher {
   then(s, f) {
     return new Promise((resolve, reject) => {
       this.end((err, res) => {
-        if (err) reject(f(err));
-        else resolve(s ? s(res) : null);
+        if (err) reject(f ? f(err) : err);
+        else resolve(s ? s(res) : res);
       });
     });
   }
