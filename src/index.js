@@ -118,6 +118,8 @@ class Fetcher {
 const methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'];
 for (const method of methods) Fetcher[method.toLowerCase()] = (url) => new Fetcher(method, url);
 
+Fetcher.version = require('../package').version;
+
 module.exports = Fetcher;
 if (browser) window.Fetcher = Fetcher;
 
