@@ -115,7 +115,7 @@ class Fetcher {
   }
 }
 
-const methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'];
+const methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'BREW'];
 for (const method of methods) Fetcher[method.toLowerCase()] = (url) => new Fetcher(method, url);
 
 Fetcher.version = require('../package').version;
