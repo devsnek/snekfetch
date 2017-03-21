@@ -4,14 +4,14 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GusCaplan/node-fetcher.git"
+    "url": "git+https://github.com/GusCaplan/snekfetch.git"
   },
   "author": "Gus Caplan <me@gus.host>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GusCaplan/node-fetcher/issues"
+    "url": "https://github.com/GusCaplan/snekfetch/issues"
   },
-  "homepage": "https://github.com/GusCaplan/node-fetcher#readme",
+  "homepage": "https://github.com/GusCaplan/snekfetch#readme",
   "dependencies": {
     "node-fetch": "^1.6.3"
   },
