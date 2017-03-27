@@ -78,8 +78,7 @@ class Fetcher {
       }
     })
     .then((res) => {
-      const body = response.body;
-      const text = response.text;
+      const { body, text } = response;
       Object.assign(response, res);
       response.body = body;
       response.text = text;
