@@ -55,13 +55,13 @@ class Fetcher {
       body: data,
     }).then((res) => {
       const ctype = res.headers.get('Content-Type');
-      if (ctype === 'application/json') {
+      if (ctype.includes('application/json')) {
         return res.text().then((t) => {
           response.text = t;
           response.body = JSON.parse(t);
           return res;
         });
-      } else if (ctype === 'application/x-www-form-urlencoded') {
+      } else if (ctype.includes('application/x-www-form-urlencoded')) {
         return res.text().then((t) => {
           response.text = t;
           response.body = parseWWWFormUrlEncoded(t);
