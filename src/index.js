@@ -83,7 +83,7 @@ class Fetcher {
       response.body = body;
       response.text = text;
       if (res.headers.raw) {
-        for (const [name, value] of Object.entries(res.headers.raw())) response.headers[name] = value[0];
+        Object.assign(response.headers, res.headers.raw());
       } else {
         for (const [name, value] of res.headers.entries()) response.headers[name] = value;
       }
