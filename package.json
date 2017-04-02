@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/GusCaplan/snekfetch#readme",
   "dependencies": {
-    "node-fetch": "^1.6.3"
+    "node-fetch": "github:bitinn/node-fetch#master"
   },
   "browser": {
     "node-fetch": false
