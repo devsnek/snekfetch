@@ -93,17 +93,16 @@ class Snekfetch {
       } else {
         for (const [name, value] of res.headers.entries()) response.headers[name] = value;
       }
-      if (response.status >= 400 && response.status < 600) {
-        const error = new Error(`${response.status} ${response.statusText}`.trim());
-        error.response = response;
-        cb(error, response);
-      } else {
-        cb(null, response);
-      }
+      if (response.status >= 400 && response.status < 600) return Promise.reject(response);
+      return cb(null, response);
     })
     .catch((err) => {
-      if (err.statusText) cb(new Error(err.statusText), err);
-      else cb(err);
+      let error = err;
+      if (err.statusText) {
+        error = new Error(`${err.status} ${err.statusText}`.trim());
+        error.response = err;
+      }
+      cb(error);
     });
   }
 
