@@ -160,6 +160,9 @@ if (process.env.__SNEKFETCH_IS_HISSING_AT_YOU) {
   const request = Snekfetch[options.method](options.url);
   if (options.headers) request.set(options.headers);
   if (options.body) request.send(options.body);
+  if (options.form) {
+    for (const key of Object.keys(options.form)) request.attach(key, options[key].name, options[key].filename);
+  }
   request.end((err, res = {}) => {
     if (err) {
       const alt = {};
