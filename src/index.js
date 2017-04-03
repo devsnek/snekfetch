@@ -9,6 +9,7 @@ if (browser) {
   fetch = require('node-fetch');
   FormData = require('./FormData');
 }
+const Package = require('../package.json');
 
 class Snekfetch {
   constructor(method, url) {
@@ -50,6 +51,9 @@ class Snekfetch {
       text: '',
       body: {},
     };
+    if (!Object.keys(this.headers).map(h => h.toLowerCase()).includes('user-agent')) {
+      this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/.?git/, '')})`);
+    }
     const data = this.data ? this.data.end ? this.data.end() : this.data : null;
     return fetch(this.url, {
       method: this.method,
@@ -117,7 +121,7 @@ class Snekfetch {
   }
 }
 
-Snekfetch.version = require('../package').version;
+Snekfetch.version = Package.version;
 
 const methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'BREW'];
 for (let method of methods) {
