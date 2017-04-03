@@ -93,7 +93,7 @@ class Snekfetch {
       } else {
         for (const [name, value] of res.headers.entries()) response.headers[name] = value;
       }
-      if (response.status > 400 && response.status < 600) cb(new Error(response.statusText), response);
+      if (response.status >= 400 && response.status < 600) cb(new Error(response.statusText), response);
       else cb(null, response);
     })
     .catch((err) => {
