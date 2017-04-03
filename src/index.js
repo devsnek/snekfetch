@@ -10,7 +10,7 @@ if (browser) {
   FormData = require('./FormData');
 }
 
-class Fetcher {
+class Snekfetch {
   constructor(method, url) {
     this.url = url;
     this.method = method.toUpperCase();
@@ -19,7 +19,11 @@ class Fetcher {
   }
 
   set(name, value) {
-    this.headers[name] = value;
+    if (name !== null && typeof name === 'object') {
+      for (const key of Object.keys(name)) this.set(key, name[key]);
+    } else {
+      this.headers[name] = value;
+    }
     return this;
   }
 
@@ -80,15 +84,17 @@ class Fetcher {
       response.body = recv.body;
       response.text = recv.text;
       if (res.headers.raw) {
-        Object.assign(response.headers, res.headers.raw());
+        const headers = res.headers.raw();
+        for (const key of Object.keys(headers)) response.headers[key] = headers[key][0];
       } else {
         for (const [name, value] of res.headers.entries()) response.headers[name] = value;
       }
-      if (response.status > 400 && response.status < 600) return cb(response, response);
-      return cb(null, response);
+      if (response.status > 400 && response.status < 600) cb(new Error(response.statusText), response);
+      else cb(null, response);
     })
     .catch((err) => {
-      cb(err);
+      if (err.statusText) cb(new Error(err.statusText), err);
+      else cb(err);
     });
   }
 
@@ -111,13 +117,57 @@ class Fetcher {
   }
 }
 
+Snekfetch.version = require('../package').version;
+
 const methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'BREW'];
-for (const method of methods) Fetcher[method.toLowerCase()] = (url) => new Fetcher(method, url);
+for (let method of methods) {
+  method = method.toLowerCase();
+  Snekfetch[method] = (url) => new Snekfetch(method, url);
+  Snekfetch[`${method}Sync`] = (url, options = {}) => {
+    options.url = url;
+    options.method = method;
+    const cp = require('child_process');
+    const result = JSON.parse(
+      cp.execSync(`node ${__dirname}/index.js`, {
+        env: { __SNEKFETCH_IS_HISSING_AT_YOU: JSON.stringify(options) },
+      }).toString(),
+      (k, v) => {
+        if (v === null) return v;
+        if (v.type === 'Buffer' && Array.isArray(v.data)) return new Buffer(v.data);
+        if (v.__CONVERT_TO_ERROR) {
+          const e = new Error();
+          for (const key of Object.keys(v)) {
+            if (key === '__CONVERT_TO_ERROR') continue;
+            e[key] = v[key];
+          }
+          return e;
+        }
+        return v;
+      }
+    );
+    if (result.error) throw result.error;
+    return result;
+  };
+}
 
-Fetcher.version = require('../package').version;
+if (process.env.__SNEKFETCH_IS_HISSING_AT_YOU) {
+  const options = JSON.parse(process.env.__SNEKFETCH_IS_HISSING_AT_YOU);
+  const request = Snekfetch[options.method](options.url);
+  if (options.headers) request.set(options.headers);
+  if (options.body) request.send(options.body);
+  request.end((err, res = {}) => {
+    if (err) {
+      const alt = {};
+      for (const name of Object.getOwnPropertyNames(err)) alt[name] = err[name];
+      res.error = alt;
+      res.error.__CONVERT_TO_ERROR = true;
+    }
+    process.stdout.write(JSON.stringify(res));
+  });
+}
 
-module.exports = Fetcher;
-if (browser) window.Fetcher = Fetcher;
+module.exports = Snekfetch;
+if (browser) window.Snekfetch = Snekfetch;
 
 function convertToBuffer(ab) {
   function str2ab(str) {
