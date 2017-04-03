@@ -19,8 +19,5 @@
     "node-fetch": false
   },
   "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "description": "It's like superagent but without all the shitcode and shitdeps."
 }

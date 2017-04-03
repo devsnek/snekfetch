@@ -5,8 +5,8 @@ Just do http requests without all that weird nastiness from other libs
 response.text is raw and always present  
 response.body will be a buffer or an object and is not always present
 
-you can `end` or `then` or `catch` a request just like superagent.
-you can probably await it as well <.<
+you can `end` or `then` or `catch` a request just like superagent.  
+You can also await it.
 
 ```js
 const snekfetch = require('snekfetch');
