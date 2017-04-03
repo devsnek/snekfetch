@@ -42,9 +42,7 @@ class Fetcher {
   }
 
   end(cb) {
-    // in a browser, the response is actually immutable, so we make a new one
-    let response = {
-      headers: {},
+    const recv = {
       text: '',
       body: {},
     };
@@ -57,37 +55,36 @@ class Fetcher {
       const ctype = res.headers.get('Content-Type');
       if (ctype.includes('application/json')) {
         return res.text().then((t) => {
-          response.text = t;
-          response.body = JSON.parse(t);
+          recv.text = t;
+          recv.body = JSON.parse(t);
           return res;
         });
       } else if (ctype.includes('application/x-www-form-urlencoded')) {
         return res.text().then((t) => {
-          response.text = t;
-          response.body = parseWWWFormUrlEncoded(t);
+          recv.text = t;
+          recv.body = parseWWWFormUrlEncoded(t);
           return res;
         });
       } else {
         return (browser ? res.arrayBuffer() : res.buffer())
         .then((b) => {
           if (b instanceof ArrayBuffer) b = convertToBuffer(b);
-          response.body = b;
-          response.text = b.toString();
+          recv.body = b;
+          recv.text = b.toString();
           return res;
         });
       }
     })
     .then((res) => {
-      const { body, text } = response;
-      Object.assign(response, res);
-      response.body = body;
-      response.text = text;
+      const response = Object.assign({}, res);
+      response.body = recv.body;
+      response.text = recv.text;
       if (res.headers.raw) {
         Object.assign(response.headers, res.headers.raw());
       } else {
         for (const [name, value] of res.headers.entries()) response.headers[name] = value;
       }
-      if (['4', '5'].includes(response.status.toString().substr(0, 1))) return cb(response, response);
+      if (response.status > 400 && response.status < 600) return cb(response, response);
       return cb(null, response);
     })
     .catch((err) => {
