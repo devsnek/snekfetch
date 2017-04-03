@@ -24,7 +24,7 @@ snekfetch.post('https://httpbin.org/post')
 
 // if you are a complete meme and hate humanity
 const r = snekfetch.postSync('https://httpbin.org/post', {
-  body: { meme: dream }
+  body: { meme: 'dream' }
 });
 
 console.log(r.body);
