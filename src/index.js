@@ -123,6 +123,7 @@ const methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', '
 for (let method of methods) {
   method = method.toLowerCase();
   Snekfetch[method] = (url) => new Snekfetch(method, url);
+  if (browser) continue;
   Snekfetch[`${method}Sync`] = (url, options = {}) => {
     options.url = url;
     options.method = method;

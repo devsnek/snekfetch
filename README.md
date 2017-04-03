@@ -21,4 +21,11 @@ const snekfetch = require('snekfetch');
 snekfetch.post('https://httpbin.org/post')
   .send({ meme: 'dream' })
   .then(r => console.log(r.body));
+
+// if you are a complete meme and hate humanity
+const r = snekfetch.postSync('https://httpbin.org/post', {
+  body: { meme: dream }
+});
+
+console.log(r.body);
 ```
