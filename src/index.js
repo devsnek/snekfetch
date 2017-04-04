@@ -157,3 +157,4 @@ Snekfetch.METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS
 for (const method of Snekfetch.METHODS) Snekfetch[method.toLowerCase()] = (url) => new Snekfetch(method, url);
 
 module.exports = Snekfetch;
+if (typeof window !== 'undefined') window.Snekfetch = Snekfetch;
