@@ -8,8 +8,6 @@
   const FormData = require('./FormData');
   const Package = require('../package.json');
 
-  console.log(Stream);
-
   class Snekfetch extends Stream.Readable {
     constructor(method, url) {
       super();
