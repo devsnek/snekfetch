@@ -1,4 +1,7 @@
 (function() {
+  // next-tick requiring stream so that by the time i actually need it webpack has processed the
+  // Readable and PassThrough exports
+  require('stream');
   const browser = require('os').platform() === 'browser';
   const http = require('http');
   const https = require('https');
