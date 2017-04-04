@@ -89,6 +89,7 @@
         const response = Object.assign({}, res);
         response.body = recv.body;
         response.text = recv.text;
+        response.raw = res.body;
         response.headers = {};
         if (res.headers.raw) {
           const headers = res.headers.raw();
