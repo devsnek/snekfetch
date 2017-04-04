@@ -1,207 +1,159 @@
-(function() {
-  const browser = typeof window !== 'undefined';
+const http = require('http');
+const https = require('https');
+const URL = require('url');
+const zlib = require('zlib');
+const Stream = require('stream');
+const FormData = require('./FormData');
+const Package = require('../package.json');
 
-  let fetch;
-  let FormData;
-  let Package;
-  if (browser) {
-    fetch = window.fetch; // eslint-disable-line no-undef
-    FormData = window.FormData; // eslint-disable-line no-undef
-  } else {
-    fetch = require('node-fetch');
-    FormData = require('./FormData');
-    Package = require('../package.json');
+class Snekfetch extends Stream.Readable {
+  constructor(method, url) {
+    super();
+    const { hostname, path, protocol } = URL.parse(url);
+    this.protocol = protocol;
+    this.url = url;
+    this.options = {
+      method: method.toUpperCase(),
+      hostname,
+      path,
+      headers: {},
+    };
+    this.data = null;
+    this.ended = false;
   }
 
-  class Snekfetch {
-    constructor(method, url) {
-      this.url = url;
-      this.method = method.toUpperCase();
-      this.headers = {};
-      this.data = null;
+  set(name, value) {
+    if (name !== null && typeof name === 'object') {
+      for (const key of Object.keys(name)) this.set(key, name[key]);
+    } else {
+      this.options.headers[name.toLowerCase()] = value;
     }
+    return this;
+  }
 
-    set(name, value) {
-      if (name !== null && typeof name === 'object') {
-        for (const key of Object.keys(name)) this.set(key, name[key]);
-      } else {
-        this.headers[name] = value;
+  attach(name, data, filename) {
+    const form = this._getFormData();
+    this.set('Content-Type', `multipart/form-data; boundary=${form.boundary}`);
+    form.append(name, data, filename);
+    this.data = form;
+    return this;
+  }
+
+  send(data) {
+    if (typeof data === 'object') {
+      this.set('Content-Type', 'application/json');
+      this.data = JSON.stringify(data);
+    } else {
+      this.data = data;
+    }
+    return this;
+  }
+
+  go() {
+    return new Promise((resolve, reject) => {
+      this.ended = true;
+      if (!this.options.headers['user-agent']) {
+        this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
       }
-      return this;
-    }
-
-    attach(name, data, filename) {
-      const form = this._getFormData();
-      this.set('Content-Type', `multipart/form-data; boundary=${form.boundary}`);
-      form.append(name, data, filename);
-      this.data = form;
-      return this;
-    }
-
-    send(data) {
-      if (typeof data === 'object') {
-        this.set('Content-Type', 'application/json');
-        this.data = JSON.stringify(data);
-      } else {
-        this.data = data;
-      }
-      return this;
-    }
-
-    end(cb) {
-      const recv = {
-        text: '',
-        body: {},
-      };
-      if (!Object.keys(this.headers).map(h => h.toLowerCase()).includes('user-agent')) {
-        this.set('User-Agent', `snekfetch/${Snekfetch.version} (https://github.com/guscaplan/snekfetch)`);
-      }
-      const data = this.data ? this.data.end ? this.data.end() : this.data : null;
-      return fetch(this.url, {
-        method: this.method,
-        headers: this.headers,
-        body: data,
-      }).then((res) => {
-        const ctype = res.headers.get('Content-Type');
-        if (ctype.includes('application/json')) {
-          return res.text().then((t) => {
-            recv.text = t;
-            recv.body = JSON.parse(t);
-            return res;
-          });
-        } else if (ctype.includes('application/x-www-form-urlencoded')) {
-          return res.text().then((t) => {
-            recv.text = t;
-            recv.body = parseWWWFormUrlEncoded(t);
-            return res;
-          });
+      const request = (this.protocol === 'https:' ? https : http)
+      .request(this.options, (response) => {
+        response.request = request;
+        const stream = new Stream.PassThrough();
+        if (this._shouldUnzip(response)) {
+          response.pipe(zlib.createUnzip({
+            flush: zlib.Z_SYNC_FLUSH,
+            finishFlush: zlib.Z_SYNC_FLUSH,
+          })).pipe(stream);
         } else {
-          return (browser ? res.arrayBuffer() : res.buffer())
-          .then((b) => {
-            if (b instanceof ArrayBuffer) b = convertToBuffer(b);
-            recv.body = b;
-            recv.text = b.toString();
-            return res;
-          });
+          response.pipe(stream);
         }
-      })
-      .then((res) => {
-        const response = Object.assign({}, res);
-        response.body = recv.body;
-        response.text = recv.text;
-        response.raw = res.body;
-        response.headers = {};
-        if (res.headers.raw) {
-          const headers = res.headers.raw();
-          for (const key of Object.keys(headers)) response.headers[key] = headers[key][0];
-        } else {
-          for (const [name, value] of res.headers.entries()) response.headers[name] = value;
-        }
-        if (!res.ok) return Promise.reject(response);
-        return cb(null, response);
-      })
-      .catch((err) => {
-        let error = err;
-        if (err.statusText) {
-          error = new Error(`${err.status} ${err.statusText}`.trim());
-          error.response = err;
-          cb(error, err);
-        } else {
-          cb(error);
-        }
-      });
-    }
 
-    then(s, f) {
-      return new Promise((resolve, reject) => {
-        this.end((err, res) => {
-          if (err) reject(f ? f(err) : err);
-          else resolve(s ? s(res) : res);
+        let body = [];
+        stream.on('data', (chunk) => {
+          if (!this.push(chunk)) this.pause();
+          body.push(Buffer.from(chunk));
+        });
+        stream.on('end', () => {
+          this.push(null);
+          const concated = Buffer.concat(body);
+          if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
+            resolve(Snekfetch[this.options.method.toLowerCase()](URL.resolve(this.url, response.headers.location)));
+            return;
+          }
+          const res = {
+            request: this.options,
+            body: concated,
+            text: concated.toString(),
+            ok: response.statusCode >= 200 && response.statusCode < 300,
+            headers: response.headers,
+            status: response.statusCode,
+            statusText: response.statusText || http.STATUS_CODES[response.statusCode],
+            url: this.url,
+          };
+
+          const type = response.headers['content-type'];
+          if (type.includes('application/json')) {
+            try {
+              res.body = JSON.parse(res.text);
+            } catch (err) {} // eslint-disable-line no-empty
+          } else if (type.includes('application/x-www-form-urlencoded')) {
+            res.body = {};
+            for (const [k, v] of res.text.split('&').map(q => q.split('='))) res.body[k] = v;
+          }
+
+          if (res.ok) {
+            resolve(res);
+          } else {
+            const error = new Error(`${res.status} ${res.statusText}`.trim());
+            error.response = res;
+            reject(error);
+          }
         });
       });
-    }
-
-    catch(f) {
-      return this.then(null, f);
-    }
-
-    _getFormData() {
-      if (!this._formData) this._formData = new FormData();
-      return this._formData;
-    }
-  }
-
-  if (!browser) Snekfetch.version = Package.version;
-
-  const methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'BREW'];
-  for (let method of methods) {
-    method = method.toLowerCase();
-    Snekfetch[method] = (url) => new Snekfetch(method, url);
-    if (browser) continue;
-    Snekfetch[`${method}Sync`] = (url, options = {}) => {
-      options.url = url;
-      options.method = method;
-      const cp = require('child_process');
-      const result = JSON.parse(
-        cp.execSync(`node ${__dirname}/index.js`, {
-          env: { __SNEKFETCH_IS_HISSING_AT_YOU: JSON.stringify(options) },
-        }).toString(),
-        (k, v) => {
-          if (v === null) return v;
-          if (v.type === 'Buffer' && Array.isArray(v.data)) return new Buffer(v.data);
-          if (v.__CONVERT_TO_ERROR) {
-            const e = new Error();
-            for (const key of Object.keys(v)) {
-              if (key === '__CONVERT_TO_ERROR') continue;
-              e[key] = v[key];
-            }
-            return e;
-          }
-          return v;
-        }
-      );
-      if (result.error) throw result.error;
-      return result;
-    };
-  }
-
-  if (!browser && process.env.__SNEKFETCH_IS_HISSING_AT_YOU) {
-    const options = JSON.parse(process.env.__SNEKFETCH_IS_HISSING_AT_YOU);
-    const request = Snekfetch[options.method](options.url);
-    if (options.headers) request.set(options.headers);
-    if (options.body) request.send(options.body);
-    if (options.form) {
-      for (const key of Object.keys(options.form)) request.attach(key, options[key].name, options[key].filename);
-    }
-    request.end((err, res = {}) => {
-      if (err) {
-        const alt = {};
-        for (const name of Object.getOwnPropertyNames(err)) alt[name] = err[name];
-        res.error = alt;
-        res.error.__CONVERT_TO_ERROR = true;
-      }
-      process.stdout.write(JSON.stringify(res));
+      const data = this.data ? this.data.end ? this.data.end() : this.data : null;
+      request.end(data);
     });
   }
 
-  if (browser) window.Snekfetch = Snekfetch;
-  if (typeof module !== 'undefined') module.exports = Snekfetch;
-
-  function convertToBuffer(ab) {
-    function str2ab(str) {
-      const buffer = new ArrayBuffer(str.length * 2);
-      const view = new Uint16Array(buffer);
-      for (var i = 0, strLen = str.length; i < strLen; i++) view[i] = str.charCodeAt(i);
-      return buffer;
-    }
-
-    if (typeof ab === 'string') ab = str2ab(ab);
-    return Buffer.from(ab);
+  then(s, f) {
+    return this.go()
+    .then((res) => s ? s(res) : res)
+    .catch((err) => f ? f(err) : err);
   }
 
-  function parseWWWFormUrlEncoded(str) {
-    const obj = {};
-    for (const [k, v] of str.split('&').map(q => q.split('='))) obj[k] = v;
-    return obj;
+  end(cb) {
+    this.then((res) => {
+      cb(null, res);
+    }).catch((err) => {
+      cb(err, err.response ? err.response : null);
+    });
   }
-}());
+
+  catch(f) {
+    return this.then(null, f);
+  }
+
+  _read() {
+    this.resume();
+    if (this.ended) return;
+    this.end(() => {}); // eslint-disable-line no-empty-function
+  }
+
+  _shouldUnzip(res) {
+    if (res.statusCode === 204 || res.statusCode === 304) return false;
+    if (res.headers['content-length'] === '0') return false;
+    return /^\s*(?:deflate|gzip)\s*$/.test(res.headers['content-encoding']);
+  }
+
+  _getFormData() {
+    if (!this._formData) this._formData = new FormData();
+    return this._formData;
+  }
+}
+
+Snekfetch.version = Package.version;
+
+Snekfetch.METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'BREW'];
+for (const method of Snekfetch.METHODS) Snekfetch[method.toLowerCase()] = (url) => new Snekfetch(method, url);
+
+module.exports = Snekfetch;

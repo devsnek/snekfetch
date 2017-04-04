@@ -1,7 +1,7 @@
 {
   "name": "snekfetch",
   "version": "2.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GusCaplan/snekfetch.git"
@@ -12,12 +12,7 @@
     "url": "https://github.com/GusCaplan/snekfetch/issues"
   },
   "homepage": "https://github.com/GusCaplan/snekfetch#readme",
-  "dependencies": {
-    "node-fetch": "^2.0.0-alpha.3"
-  },
-  "browser": {
-    "node-fetch": false
-  },
+  "dependencies": {},
   "devDependencies": {},
   "description": "It's like superagent but without all the shitcode and shitdeps."
 }

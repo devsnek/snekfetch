@@ -1,5 +1,3 @@
-global.__PLZ_GIVE_NEW_SNEKFETCH = true;
-
 const snekfetch = require('../');
 const fs = require('fs');
 
