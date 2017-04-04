@@ -48,72 +48,83 @@ class Snekfetch extends Stream.Readable {
     return this;
   }
 
-  end(cb) {
-    this.ended = true;
-    if (!this.options.headers['user-agent']) {
-      this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
-    }
-    const request = (this.protocol === 'https' ? https : http)
-    .request(this.options, (response) => {
-      response.request = request;
-      const stream = new Stream.PassThrough();
-      if (this._shouldUnzip(response)) {
-        response.pipe(zlib.createUnzip({
-          flush: zlib.Z_SYNC_FLUSH,
-          finishFlush: zlib.Z_SYNC_FLUSH,
-        })).pipe(stream);
-      } else {
-        response.pipe(stream);
+  go() {
+    return new Promise((resolve, reject) => {
+      this.ended = true;
+      if (!this.options.headers['user-agent']) {
+        this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
       }
-
-      let body = [];
-      stream.on('data', (chunk) => {
-        if (!this.push(chunk)) this.pause();
-        body.push(Buffer.from(chunk));
-      });
-      stream.on('end', () => {
-        this.push(null);
-        const concated = Buffer.concat(body);
-        const res = {
-          body: concated,
-          text: concated.toString(),
-          ok: response.statusCode >= 200 && response.statusCode < 300,
-          headers: response.headers,
-          status: response.statusCode,
-          statusText: response.statusText || http.STATUS_CODES[response.statusCode],
-          url: this.url,
-        };
-
-        const type = response.headers['content-type'];
-        if (type.includes('application/json')) {
-          try {
-            res.body = JSON.parse(res.text);
-          } catch (err) {} // eslint-disable-line no-empty
-        } else if (type.includes('application/x-www-form-urlencoded')) {
-          res.body = {};
-          for (const [k, v] of res.text.split('&').map(q => q.split('='))) res.body[k] = v;
-        }
-
-        if (res.ok) {
-          cb(null, res);
+      const request = (this.protocol === 'https' ? https : http)
+      .request(this.options, (response) => {
+        response.request = request;
+        const stream = new Stream.PassThrough();
+        if (this._shouldUnzip(response)) {
+          response.pipe(zlib.createUnzip({
+            flush: zlib.Z_SYNC_FLUSH,
+            finishFlush: zlib.Z_SYNC_FLUSH,
+          })).pipe(stream);
         } else {
-          const error = new Error(`${response.statusCode} ${response.statusText}`.trim());
-          error.response = res;
-          cb(error, res);
+          response.pipe(stream);
         }
+
+        let body = [];
+        stream.on('data', (chunk) => {
+          if (!this.push(chunk)) this.pause();
+          body.push(Buffer.from(chunk));
+        });
+        stream.on('end', () => {
+          this.push(null);
+          const concated = Buffer.concat(body);
+          if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
+            resolve(Snekfetch[this.options.method.toLowerCase()](URL.resolve(this.url, response.headers.location)));
+            return;
+          }
+          const res = {
+            body: concated,
+            text: concated.toString(),
+            ok: response.statusCode >= 200 && response.statusCode < 300,
+            headers: response.headers,
+            status: response.statusCode,
+            statusText: response.statusText || http.STATUS_CODES[response.statusCode],
+            url: this.url,
+          };
+
+          const type = response.headers['content-type'];
+          if (type.includes('application/json')) {
+            try {
+              res.body = JSON.parse(res.text);
+            } catch (err) {} // eslint-disable-line no-empty
+          } else if (type.includes('application/x-www-form-urlencoded')) {
+            res.body = {};
+            for (const [k, v] of res.text.split('&').map(q => q.split('='))) res.body[k] = v;
+          }
+
+          if (res.ok) {
+            resolve(res);
+          } else {
+            const error = new Error(`${res.status} ${res.statusText}`.trim());
+            error.response = res;
+            reject(error);
+          }
+        });
       });
+      const data = this.data ? this.data.end ? this.data.end() : this.data : null;
+      request.end(data);
     });
-    const data = this.data ? this.data.end ? this.data.end() : this.data : null;
-    request.end(data);
+  }
+
+  end(cb) {
+    this.then((res) => {
+      cb(null, res);
+    }).catch((err) => {
+      cb(err, err.response ? err.response : null);
+    });
   }
 
   then(s, f) {
-    return new Promise((resolve, reject) => {
-      this.end((err, res) => {
-        if (err) reject(f ? f(err) : err);
-        else resolve(s ? s(res) : res);
-      });
-    });
+    return this.go()
+    .then((res) => s ? s(res) : res)
+    .catch((err) => f ? f(err) : err);
   }
 
   catch(f) {
