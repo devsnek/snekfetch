@@ -80,6 +80,7 @@ class Snekfetch extends Stream.Readable {
             return;
           }
           const res = {
+            request: this.options,
             body: concated,
             text: concated.toString(),
             ok: response.statusCode >= 200 && response.statusCode < 300,
