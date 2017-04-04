@@ -75,6 +75,7 @@ class Snekfetch extends Stream.Readable {
         stream.on('end', () => {
           this.push(null);
           const concated = Buffer.concat(body);
+          console.log(response.statusCode, response.headers.location);
           if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
             resolve(Snekfetch[this.options.method.toLowerCase()](URL.resolve(this.url, response.headers.location)));
             return;
@@ -114,18 +115,18 @@ class Snekfetch extends Stream.Readable {
     });
   }
 
+  then(s, f) {
+    return this.go()
+    .then((res) => s ? s(res) : res)
+    .catch((err) => f ? f(err) : err);
+  }
+
   end(cb) {
     this.then((res) => {
       cb(null, res);
     }).catch((err) => {
       cb(err, err.response ? err.response : null);
     });
-  }
-
-  then(s, f) {
-    return this.go()
-    .then((res) => s ? s(res) : res)
-    .catch((err) => f ? f(err) : err);
   }
 
   catch(f) {
