@@ -54,7 +54,7 @@ class Snekfetch extends Stream.Readable {
       if (!this.options.headers['user-agent']) {
         this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
       }
-      const request = (this.protocol === 'https' ? https : http)
+      const request = (this.protocol === 'https:' ? https : http)
       .request(this.options, (response) => {
         response.request = request;
         const stream = new Stream.PassThrough();
@@ -75,7 +75,6 @@ class Snekfetch extends Stream.Readable {
         stream.on('end', () => {
           this.push(null);
           const concated = Buffer.concat(body);
-          console.log(response.statusCode, this.options);
           if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
             resolve(Snekfetch[this.options.method.toLowerCase()](URL.resolve(this.url, response.headers.location)));
             return;
