@@ -3,6 +3,7 @@ const https = require('https');
 const URL = require('url');
 const zlib = require('zlib');
 const Stream = require('stream');
+const FormData = require('./FormData');
 const Package = require('../package.json');
 
 class Snekfetch extends Stream.Readable {
