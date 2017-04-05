@@ -14,5 +14,5 @@
   "homepage": "https://github.com/GusCaplan/snekfetch#readme",
   "dependencies": {},
   "devDependencies": {},
-  "description": "It's like superagent but without all the shitcode and shitdeps."
+  "description": "Just do http requests without all that weird nastiness from other libs"
 }
