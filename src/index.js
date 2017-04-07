@@ -124,7 +124,7 @@
     end(cb) {
       return this.go().then((res) => {
         if (res.ok) return cb(null, res);
-        else return cb(new Error(res), res);
+        else return cb(res, res);
       }).catch((err) => cb(err));
     }
 
