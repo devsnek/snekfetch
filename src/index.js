@@ -55,7 +55,7 @@
     }
 
     go() {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         this.ended = true;
         if (!this.options.headers['user-agent']) {
           this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
@@ -85,6 +85,7 @@
               resolve(Snekfetch[this.options.method.toLowerCase()](URL.resolve(this.url, response.headers.location)));
               return;
             }
+
             const res = {
               request: this.options,
               body: concated,
@@ -106,13 +107,7 @@
               for (const [k, v] of res.text.split('&').map(q => q.split('='))) res.body[k] = v;
             }
 
-            if (res.ok) {
-              resolve(res);
-            } else {
-              const error = new Error(`${res.status} ${res.statusText}`.trim());
-              error.response = res;
-              reject(error);
-            }
+            resolve(res);
           });
         });
         const data = this.data ? this.data.end ? this.data.end() : this.data : null;
@@ -127,11 +122,10 @@
     }
 
     end(cb) {
-      this.then((res) => {
-        cb(null, res);
-      }).catch((err) => {
-        cb(err, err.response ? err.response : null);
-      });
+      return this.go().then((res) => {
+        if (res.ok) return cb(null, res);
+        else return cb(new Error(res), res);
+      }).catch((err) => cb(err));
     }
 
     catch(f) {
