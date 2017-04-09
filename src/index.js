@@ -14,24 +14,18 @@
   class Snekfetch extends Stream.Readable {
     constructor(method, url) {
       super();
-      const { hostname, path, protocol } = URL.parse(url);
-      this.protocol = protocol;
+      this.method = method.toUpperCase();
       this.url = url;
-      this.options = {
-        method: method.toUpperCase(),
-        hostname,
-        path,
-        headers: {},
-      };
+      this.headers = {};
       this.data = null;
-      this.ended = false;
+      this.spent = false;
     }
 
     set(name, value) {
       if (name !== null && typeof name === 'object') {
         for (const key of Object.keys(name)) this.set(key, name[key]);
       } else {
-        this.options.headers[name.toLowerCase()] = value;
+        this.headers[name.toLowerCase()] = value;
       }
       return this;
     }
@@ -55,13 +49,19 @@
     }
 
     go() {
+      if (this.spent) return Promise.reject(new Error('Request has been spent!'));
       return new Promise((resolve) => {
-        this.ended = true;
-        if (!this.options.headers['user-agent']) {
+        this.spent = true;
+        if (!this.headers['user-agent']) {
           this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
         }
-        const request = (this.protocol === 'https:' ? https : http)
-        .request(this.options, (response) => {
+
+        const options = URL.parse(this.url);
+        options.method = this.method;
+        options.headers = this.headers;
+
+        const request = (options.protocol === 'https:' ? https : http)
+        .request(options, (response) => {
           response.request = request;
           const stream = new Stream.PassThrough();
           if (this._shouldUnzip(response)) {
@@ -82,7 +82,7 @@
             this.push(null);
             const concated = Buffer.concat(body);
             if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
-              resolve(Snekfetch[this.options.method.toLowerCase()](URL.resolve(this.url, response.headers.location)));
+              resolve(new Snekfetch(this.method, URL.resolve(this.url, response.headers.location)));
               return;
             }
 
@@ -133,8 +133,8 @@
     }
 
     _read() {
+      if (this.spent) return;
       this.resume();
-      if (this.ended) return;
       this.end(() => {}); // eslint-disable-line no-empty-function
     }
 
