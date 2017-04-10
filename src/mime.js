@@ -6,9 +6,7 @@ function lookupMime(ext) {
 }
 
 function lookupBuffer(buffer) {
-  const type = mimeOfBuffer(buffer);
-  if (type) return type.mime;
-  else return mimes.bin;
+  return mimeOfBuffer(buffer) || mimes.bin;
 }
 
 module.exports = {
