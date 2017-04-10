@@ -123,8 +123,13 @@
 
     end(cb) {
       return this.go().then((res) => {
-        if (res.ok) return cb(null, res);
-        else return cb(res, res);
+        if (res.ok) {
+          return cb(null, res);
+        } else {
+          const err = new Error(`${res.status} ${res.statusText}`.trim());
+          Object.assign(err, res);
+          return cb(err, res);
+        }
       }).catch((err) => cb(err));
     }
 
