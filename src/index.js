@@ -138,9 +138,9 @@
     }
 
     _read() {
-      if (this.spent) return;
       this.resume();
-      this.end(() => {}); // eslint-disable-line no-empty-function
+      if (this.spent) return;
+      this.go().catch(() => {}); // eslint-disable-line no-empty-function
     }
 
     _shouldUnzip(res) {
