@@ -3,7 +3,7 @@ const mime = require('./mime');
 
 class FormData {
   constructor() {
-    this.boundary = `-----------${Math.random().toString().slice(2)}`;
+    this.boundary = `--snekfetch--${Math.random().toString().slice(2, 7)}`;
     this.buffer = new Buffer(0);
   }
 
