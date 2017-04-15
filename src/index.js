@@ -11,12 +11,12 @@ const FormData = require('./FormData');
 const Package = require('../package.json');
 
 class Snekfetch extends Stream.Readable {
-  constructor(method, url) {
+  constructor(method, url, { data, headers } = { data: null, headers: {} }) {
     super();
     this.method = method.toUpperCase();
     this.url = url;
-    this.headers = {};
-    this.data = null;
+    this.headers = headers;
+    this.data = data;
     this.spent = false;
   }
 
@@ -73,15 +73,27 @@ class Snekfetch extends Stream.Readable {
         }
 
         let body = [];
+
         stream.on('data', (chunk) => {
-          if (!this.push(chunk)) stream.pause();
+          if (!this.push(chunk)) this.pause();
           body.push(chunk);
         });
+
         stream.on('end', () => {
           this.push(null);
           const concated = Buffer.concat(body);
-          if ([301, 302, 303, 307, 308].includes(response.statusCode)) {
-            resolve(new Snekfetch(this.method, URL.resolve(this.url, response.headers.location)));
+          if (this._shouldRedirect(response)) {
+            if ([301, 302].includes(response.statusCode)) {
+              this.method = this.method === 'HEAD' ? 'HEAD' : 'GET';
+              this.data = null;
+            }
+
+            if (response.statusCode === 303) this.method = 'GET';
+            resolve(new Snekfetch(
+              this.method,
+              URL.resolve(this.url, response.headers.location)),
+              { data: this.data, headers: this.headers }
+            );
             return;
           }
 
@@ -109,8 +121,10 @@ class Snekfetch extends Stream.Readable {
           resolve(res);
         });
       });
-      const data = this.data ? this.data.end ? this.data.end() : this.data : null;
-      request.end(data);
+      request.end(
+        ['GET'].includes(this.method) ? null :
+        this.data ? this.data.end ? this.data.end() : this.data : null
+      );
     })
     .then((res) => resolver ? resolver(res) : res)
     .catch((err) => rejector ? rejector(err) : err);
@@ -142,6 +156,10 @@ class Snekfetch extends Stream.Readable {
     if (res.statusCode === 204 || res.statusCode === 304) return false;
     if (res.headers['content-length'] === '0') return false;
     return /^\s*(?:deflate|gzip)\s*$/.test(res.headers['content-encoding']);
+  }
+
+  _shouldRedirect(res) {
+    return [301, 302, 303, 307, 308].includes(res.statusCode);
   }
 
   _getFormData() {
