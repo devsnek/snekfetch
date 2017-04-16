@@ -49,7 +49,7 @@ class Snekfetch extends Stream.Readable {
 
   then(resolver, rejector) {
     if (this.spent) return Promise.reject(new Error('Request has been spent!'));
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.spent = true;
       if (!this.headers['user-agent']) {
         this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
@@ -82,6 +82,7 @@ class Snekfetch extends Stream.Readable {
         stream.on('end', () => {
           this.push(null);
           const concated = Buffer.concat(body);
+
           if (this._shouldRedirect(response)) {
             if ([301, 302].includes(response.statusCode)) {
               this.method = this.method === 'HEAD' ? 'HEAD' : 'GET';
@@ -120,28 +121,27 @@ class Snekfetch extends Stream.Readable {
             }
           }
 
-          resolve(res);
+          if (res.ok) {
+            resolve(res);
+          } else {
+            const err = new Error(`${res.status} ${res.statusText}`.trim());
+            Object.assign(err, res);
+            reject(err);
+          }
         });
       });
-      request.end(
-        ['GET'].includes(this.method) ? null :
-        this.data ? this.data.end ? this.data.end() : this.data : null
-      );
+
+      request.end(this.data ? this.data.end ? this.data.end() : this.data : null);
     })
     .then((res) => resolver ? resolver(res) : res)
     .catch((err) => Promise.reject(rejector ? rejector(err) : err));
   }
 
   end(cb) {
-    return this.then((res) => {
-      if (res.ok) {
-        return cb(null, res);
-      } else {
-        const err = new Error(`${res.status} ${res.statusText}`.trim());
-        Object.assign(err, res);
-        return cb(err, res);
-      }
-    }).catch((err) => cb(err));
+    return this
+      .then((res) => cb(null, res))
+      // We put err as the response because superagent forced my hand
+      .catch((err) => cb(err, err));
   }
 
   catch(f) {
