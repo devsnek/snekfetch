@@ -129,7 +129,7 @@ class Snekfetch extends Stream.Readable {
       );
     })
     .then((res) => resolver ? resolver(res) : res)
-    .catch((err) => rejector ? rejector(err) : err);
+    .catch((err) => Promise.reject(rejector ? rejector(err) : err));
   }
 
   end(cb) {
