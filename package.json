@@ -1,6 +1,6 @@
 {
   "name": "snekfetch",
-  "version": "2.2.5",
+  "version": "2.3.0",
   "main": "src/index.js",
   "repository": {
     "type": "git",
