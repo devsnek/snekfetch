@@ -109,13 +109,15 @@ class Snekfetch extends Stream.Readable {
           };
 
           const type = response.headers['content-type'];
-          if (type.includes('application/json')) {
-            try {
-              res.body = JSON.parse(res.text);
-            } catch (err) {} // eslint-disable-line no-empty
-          } else if (type.includes('application/x-www-form-urlencoded')) {
-            res.body = {};
-            for (const [k, v] of res.text.split('&').map(q => q.split('='))) res.body[k] = v;
+          if (type) {
+            if (type.includes('application/json')) {
+              try {
+                res.body = JSON.parse(res.text);
+              } catch (err) {} // eslint-disable-line no-empty
+            } else if (type.includes('application/x-www-form-urlencoded')) {
+              res.body = {};
+              for (const [k, v] of res.text.split('&').map(q => q.split('='))) res.body[k] = v;
+            }
           }
 
           resolve(res);
