@@ -47,13 +47,14 @@ class Snekfetch extends Stream.Readable {
     return this;
   }
 
-  then(resolver, rejector) {
+  then(resolver = pass, rejector = pass) {
     if (this.spent) return Promise.reject(new Error('Request has been spent!'));
     return new Promise((resolve, reject) => {
       this.spent = true;
       if (!this.headers['user-agent']) {
         this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
       }
+      if (this.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
 
       const options = URL.parse(this.url);
       options.method = this.method;
@@ -131,17 +132,26 @@ class Snekfetch extends Stream.Readable {
         });
       });
 
+      function handleError(err) {
+        if (!err) err = new Error('Unknown error occured');
+        err.request = request;
+        reject(err);
+      }
+
+      request.on('abort', handleError);
+      request.on('aborted', handleError);
+      request.on('error', handleError);
+
       request.end(this.data ? this.data.end ? this.data.end() : this.data : null);
     })
-    .then((res) => resolver ? resolver(res) : res)
-    .catch((err) => Promise.reject(rejector ? rejector(err) : err));
+    .then(resolver, rejector);
   }
 
   end(cb) {
-    return this
-      .then((res) => cb(null, res))
-      // We put err as the response because superagent forced my hand
-      .catch((err) => cb(err, err));
+    this.then(
+      (res) => cb ? cb(null, res) : res,
+      (err) => cb ? cb(err, err.status ? err : null) : err
+    );
   }
 
   catch(f) {
@@ -177,3 +187,5 @@ for (const method of Snekfetch.METHODS) Snekfetch[method.toLowerCase()] = (url) 
 
 module.exports = Snekfetch;
 if (browser) window.Snekfetch = Snekfetch;
+
+function pass(x) { return x; }
