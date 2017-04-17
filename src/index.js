@@ -51,7 +51,7 @@ class Snekfetch extends Stream.Readable {
     if (this.spent) return Promise.reject(new Error('Request has been spent!'));
     return new Promise((resolve, reject) => {
       this.spent = true;
-      if (!this.headers['user-agent']) {
+      if (!this.headers['user-agent'] && !this.headers['User-Agent'] && !this.headers['User-agent']) {
         this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
       }
       if (this.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
