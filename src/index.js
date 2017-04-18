@@ -1,30 +1,30 @@
-// next-tick requiring stream so that by the time i actually need it webpack has processed the
-// Readable and PassThrough exports
 require('stream');
-const browser = require('os').platform() === 'browser';
+const zlib = require('zlib');
 const http = require('http');
 const https = require('https');
 const URL = require('url');
-const zlib = require('zlib');
-const Stream = require('stream');
-const FormData = require('./FormData');
 const Package = require('../package.json');
+const Stream = require('stream');
 
 class Snekfetch extends Stream.Readable {
-  constructor(method, url, { data, headers } = { data: null, headers: {} }) {
+  constructor(method, url, opts = { headers: {}, data: null }) {
     super();
-    this.method = method.toUpperCase();
-    this.url = url;
-    this.headers = headers;
-    this.data = data;
-    this.spent = false;
+
+    const options = this.options = URL.parse(url);
+    options.method = method.toUpperCase();
+    options.headers = opts.headers;
+    this.data = opts.data;
+
+    this.request = (options.protocol === 'https:' ? https : http).request(options);
   }
 
   set(name, value) {
     if (name !== null && typeof name === 'object') {
       for (const key of Object.keys(name)) this.set(key, name[key]);
     } else {
-      this.headers[name] = value;
+      // If your server can't handle header names being lowercase then like, fuck you.
+      this.request._headers[name.toLowerCase()] = value;
+      this.request._headerNames[name.toLowerCase()] = name;
     }
     return this;
   }
@@ -47,22 +47,21 @@ class Snekfetch extends Stream.Readable {
     return this;
   }
 
-  then(resolver = pass, rejector = pass) {
-    if (this.spent) return Promise.reject(new Error('Request has been spent!'));
+  then(resolver, rejector) {
     return new Promise((resolve, reject) => {
-      this.spent = true;
-      if (!this.headers['user-agent'] && !this.headers['User-Agent'] && !this.headers['User-agent']) {
-        this.set('user-agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
+      const request = this.request;
+
+      function handleError(err) {
+        if (!err) err = new Error('Unknown error occured');
+        err.request = request;
+        reject(err);
       }
-      if (this.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
 
-      const options = URL.parse(this.url);
-      options.method = this.method;
-      options.headers = this.headers;
+      request.on('abort', handleError);
+      request.on('aborted', handleError);
+      request.on('error', handleError);
 
-      const request = (options.protocol === 'https:' ? https : http)
-      .request(options, (response) => {
-        response.request = request;
+      request.on('response', (response) => {
         const stream = new Stream.PassThrough();
         if (this._shouldUnzip(response)) {
           response.pipe(zlib.createUnzip({
@@ -93,21 +92,21 @@ class Snekfetch extends Stream.Readable {
             if (response.statusCode === 303) this.method = 'GET';
             resolve(new Snekfetch(
               this.method,
-              URL.resolve(this.url, response.headers.location)),
-              { data: this.data, headers: this.headers }
+              URL.resolve(this.options.href, response.headers.location)),
+              { data: this.data, headers: this.request.headers }
             );
             return;
           }
 
           const res = {
-            request: this.options,
+            request: this.request,
             body: concated,
             text: concated.toString(),
             ok: response.statusCode >= 200 && response.statusCode < 300,
             headers: response.headers,
             status: response.statusCode,
             statusText: response.statusText || http.STATUS_CODES[response.statusCode],
-            url: this.url,
+            url: this.options.href,
           };
 
           const type = response.headers['content-type'];
@@ -132,19 +131,14 @@ class Snekfetch extends Stream.Readable {
         });
       });
 
-      function handleError(err) {
-        if (!err) err = new Error('Unknown error occured');
-        err.request = request;
-        reject(err);
-      }
-
-      request.on('abort', handleError);
-      request.on('aborted', handleError);
-      request.on('error', handleError);
-
+      this._addFinalHeaders();
       request.end(this.data ? this.data.end ? this.data.end() : this.data : null);
     })
     .then(resolver, rejector);
+  }
+
+  catch(rejector) {
+    return this.then(null, rejector);
   }
 
   end(cb) {
@@ -154,13 +148,9 @@ class Snekfetch extends Stream.Readable {
     );
   }
 
-  catch(f) {
-    return this.then(null, f);
-  }
-
   _read() {
     this.resume();
-    if (this.spent) return;
+    if (this.request.res) return;
     this.then().catch(() => {}); // eslint-disable-line no-empty-function
   }
 
@@ -178,14 +168,22 @@ class Snekfetch extends Stream.Readable {
     if (!this._formData) this._formData = new FormData();
     return this._formData;
   }
+
+  _addFinalHeaders() {
+    if (!this.request || !this.request._headers) return;
+    if (!this.request._headers['user-agent']) {
+      this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
+    }
+    if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
+  }
 }
 
 Snekfetch.version = Package.version;
 
 Snekfetch.METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'BREW'];
-for (const method of Snekfetch.METHODS) Snekfetch[method.toLowerCase()] = (url) => new Snekfetch(method, url);
+for (const method of Snekfetch.METHODS) {
+  Snekfetch[method.toLowerCase()] = (url) => new Snekfetch(method, url);
+}
 
-module.exports = Snekfetch;
-if (browser) window.Snekfetch = Snekfetch;
-
-function pass(x) { return x; }
+if (typeof module !== 'undefined') module.exports = Snekfetch;
+if (typeof window !== 'undefined') window.Snekfetch = Snekfetch;

@@ -1,4 +1,4 @@
-const snekfetch = require('../');
+const snekfetch = require('../src/rewrite');
 const fs = require('fs');
 
 // snekfetch.get('https://s.gus.host/o-SNAKES.jpg').pipe(fs.createWriteStream('out.jpg'));
