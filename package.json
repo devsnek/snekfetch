@@ -1,7 +1,7 @@
 {
   "name": "snekfetch",
   "version": "3.0.0",
-  "main": "src/index.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GusCaplan/snekfetch.git"
