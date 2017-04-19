@@ -47,17 +47,12 @@ class Snekfetch extends Stream.Readable {
     return this;
   }
 
-  timeout(ms) {
-    this._timeout = setTimeout(() => this.request.abort(), ms);
-    return this;
-  }
-
   then(resolver, rejector) {
     return new Promise((resolve, reject) => {
       const request = this.request;
 
       const handleError = (err) => {
-        if (!err) err = new Error(this._timeout ? 'Request timed out' : 'Unknown error occured');
+        if (!err) err = new Error('Unknown error occured');
         err.request = request;
         reject(err);
       };
@@ -67,8 +62,6 @@ class Snekfetch extends Stream.Readable {
       request.on('error', handleError);
 
       request.on('response', (response) => {
-        if (this._timeout) clearTimeout(this._timeout);
-
         const stream = new Stream.PassThrough();
         if (this._shouldUnzip(response)) {
           response.pipe(zlib.createUnzip({
