@@ -90,11 +90,15 @@ class Snekfetch extends Stream.Readable {
             }
 
             if (response.statusCode === 303) this.method = 'GET';
+            const headers = {};
+            for (const name of Object.keys(this.request._headerNames)) {
+              headers[this.request._headerNames[name]] = this.request._headers[name];
+            }
             resolve(new Snekfetch(
               this.method,
-              URL.resolve(this.options.href, response.headers.location)),
-              { data: this.data, headers: this.request.headers }
-            );
+              URL.resolve(this.options.href, response.headers.location),
+              { data: this.data, headers }
+            ));
             return;
           }
 
