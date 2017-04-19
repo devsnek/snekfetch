@@ -151,7 +151,7 @@ class Snekfetch extends Stream.Readable {
   _read() {
     this.resume();
     if (this.request.res) return;
-    this.then().catch(() => {}); // eslint-disable-line no-empty-function
+    this.catch((err) => this.emit('error', err));
   }
 
   _shouldUnzip(res) {
@@ -180,10 +180,10 @@ class Snekfetch extends Stream.Readable {
 
 Snekfetch.version = Package.version;
 
-Snekfetch.METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH', 'BREW'];
+Snekfetch.METHODS = http.METHODS.concat('BREW');
 for (const method of Snekfetch.METHODS) {
-  Snekfetch[method.toLowerCase()] = (url) => new Snekfetch(method, url);
+  Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url) => new Snekfetch(method, url);
 }
 
 if (typeof module !== 'undefined') module.exports = Snekfetch;
-if (typeof window !== 'undefined') window.Snekfetch = Snekfetch;
+else if (typeof window !== 'undefined') window.Snekfetch = Snekfetch;

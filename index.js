@@ -4,7 +4,7 @@ const ENV_VAR = '__SNEKFETCH_SYNC_REQUEST';
 let first = true;
 
 for (let method of Snekfetch.METHODS) {
-  method = method.toLowerCase();
+  method = method === 'M-SEARCH' ? 'msearch' : method.toLowerCase();
   Snekfetch[`${method}Sync`] = (url, options = {}) => {
     if (first) {
       first = false;
