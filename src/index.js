@@ -5,6 +5,7 @@ const https = require('https');
 const URL = require('url');
 const Package = require('../package.json');
 const Stream = require('stream');
+const FormData = require('./FormData');
 
 class Snekfetch extends Stream.Readable {
   constructor(method, url, opts = { headers: {}, data: null }) {
