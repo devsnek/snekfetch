@@ -53,9 +53,17 @@ class Snekfetch extends Stream.Readable {
 
   send(data) {
     if (this.request.res) throw new Error('Cannot modify data after being sent!');
-    if (typeof data === 'object') {
-      this.set('Content-Type', 'application/json');
-      this.data = JSON.stringify(data);
+    if (data !== null && typeof data === 'object') {
+      const header = this.request._headers['content-type'];
+      let serialize;
+      if (header) {
+        if (header.includes('json')) serialize = JSON.stringify;
+        else if (header.includes('urlencoded')) serialize = qs.stringify;
+      } else {
+        this.set('Content-Type', 'application/json');
+        serialize = JSON.stringify;
+      }
+      this.data = serialize(data);
     } else {
       this.data = data;
     }
