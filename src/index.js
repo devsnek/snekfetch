@@ -24,7 +24,7 @@ class Snekfetch extends Stream.Readable {
     if (this.request.res) throw new Error('Cannot modify query after being sent!');
     if (!this.request.query) this.request.query = {};
     if (name !== null && typeof name === 'object') {
-      for (const key of Object.keys(name)) this.query(key, name[key]);
+      this.request.query = Object.assign(this.request.query, name);
     } else {
       this.request.query[name] = value;
     }
