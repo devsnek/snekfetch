@@ -20,11 +20,14 @@ class Snekfetch extends Stream.Readable {
     this.request = (options.protocol === 'https:' ? https : http).request(options);
   }
 
-  query(obj) {
-    let current = this.request.path;
-    current = current.includes('?') ? qs.parse(current.split('?')[1]) : {};
-    const now = qs.stringify(Object.assign(current, obj));
-    this.request.path = `${this.request.path.split('?')[0]}?${now}`;
+  query(name, value) {
+    if (this.request.res) throw new Error('Cannot modify query after being sent!');
+    if (!this.request.query) this.request.query = {};
+    if (name !== null && typeof name === 'object') {
+      for (const key of Object.keys(name)) this.query(key, name[key]);
+    } else {
+      this.request.query[name] = value;
+    }
     return this;
   }
 
@@ -106,11 +109,11 @@ class Snekfetch extends Stream.Readable {
             for (const name of Object.keys(this.request._headerNames)) {
               headers[this.request._headerNames[name]] = this.request._headers[name];
             }
-            const query = this.request.path.split('?')[1];
-            const current = `${URL.format({
+            const current = URL.format({
               protocol: this.request.connection.encrypted ? 'https:' : 'http:',
               hostname: this.request._headers.host,
-            })}?${query}`;
+              pathname: this.request.path,
+            });
             resolve(new Snekfetch(
               this.method,
               URL.resolve(current, response.headers.location),
@@ -152,6 +155,7 @@ class Snekfetch extends Stream.Readable {
       });
 
       this._addFinalHeaders();
+      if (this.request.query) this.request.path = `${this.request.path}?${qs.stringify(this.request.query)}`;
       request.end(this.data ? this.data.end ? this.data.end() : this.data : null);
     })
     .then(resolver, rejector);
