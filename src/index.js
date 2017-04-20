@@ -12,7 +12,7 @@ class Snekfetch extends Stream.Readable {
   constructor(method, url, opts = { headers: {}, data: null }) {
     super();
 
-    const options = this.options = URL.parse(url);
+    const options = URL.parse(url);
     options.method = method.toUpperCase();
     options.headers = opts.headers;
     this.data = opts.data;
@@ -102,35 +102,31 @@ class Snekfetch extends Stream.Readable {
             if ([301, 302].includes(response.statusCode)) {
               this.method = this.method === 'HEAD' ? 'HEAD' : 'GET';
               this.data = null;
+            } else if (response.statusCode === 303) {
+              this.method = 'GET';
             }
 
-            if (response.statusCode === 303) this.method = 'GET';
             const headers = {};
             for (const name of Object.keys(this.request._headerNames)) {
               headers[this.request._headerNames[name]] = this.request._headers[name];
             }
-            const current = URL.format({
-              protocol: this.request.connection.encrypted ? 'https:' : 'http:',
-              hostname: this.request._headers.host,
-              pathname: this.request.path,
-            });
+
             resolve(new Snekfetch(
               this.method,
-              URL.resolve(current, response.headers.location),
+              URL.resolve(makeURLFromRequest(request), response.headers.location),
               { data: this.data, headers }
             ));
             return;
           }
 
           const res = {
-            request: this.options,
+            request: this.request,
             body: concated,
             text: concated.toString(),
             ok: response.statusCode >= 200 && response.statusCode < 300,
             headers: response.headers,
             status: response.statusCode,
             statusText: response.statusText || http.STATUS_CODES[response.statusCode],
-            url: this.options.href,
           };
 
           const type = response.headers['content-type'];
@@ -211,3 +207,12 @@ for (const method of Snekfetch.METHODS) {
 
 if (typeof module !== 'undefined') module.exports = Snekfetch;
 else if (typeof window !== 'undefined') window.Snekfetch = Snekfetch;
+
+function makeURLFromRequest(request) {
+  return URL.format({
+    protocol: request.connection.encrypted ? 'https:' : 'http:',
+    hostname: request._headers.host,
+    pathname: request.path.split('?')[0],
+    query: request.query,
+  });
+}

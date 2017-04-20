@@ -51,6 +51,8 @@ if (process.env[ENV_VAR]) {
       res.error = alt;
       res.error.__CONVERT_TO_ERROR = true;
     }
+    // circulars
+    res.request = null;
     process.stdout.write(JSON.stringify(res));
   });
 }

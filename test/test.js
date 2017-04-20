@@ -9,5 +9,4 @@ snekfetch.get('https://httpbin.org/get')
   .set('X-Boop-Me', 'Dream plz')
   .query({ a: 1, b: 2 })
   .query('c', 3)
-  .then((r) => r.body)
   .then(console.log);
