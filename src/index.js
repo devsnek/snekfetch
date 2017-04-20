@@ -1,5 +1,6 @@
 require('stream');
 const zlib = require('zlib');
+const qs = require('querystring');
 const http = require('http');
 const https = require('https');
 const URL = require('url');
@@ -19,11 +20,19 @@ class Snekfetch extends Stream.Readable {
     this.request = (options.protocol === 'https:' ? https : http).request(options);
   }
 
+  query(obj) {
+    let current = this.request.path;
+    current = current.includes('?') ? qs.parse(current.split('?')[1]) : {};
+    const now = qs.stringify(Object.assign(current, obj));
+    this.request.path = `${this.request.path.split('?')[0]}?${now}`;
+    return this;
+  }
+
   set(name, value) {
+    if (this.request.res) throw new Error('Cannot modify headers after being sent!');
     if (name !== null && typeof name === 'object') {
       for (const key of Object.keys(name)) this.set(key, name[key]);
     } else {
-      // If your server can't handle header names being lowercase then like, fuck you.
       this.request._headers[name.toLowerCase()] = value;
       this.request._headerNames[name.toLowerCase()] = name;
     }
@@ -31,6 +40,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   attach(name, data, filename) {
+    if (this.request.res) throw new Error('Cannot modify data after being sent!');
     const form = this._getFormData();
     this.set('Content-Type', `multipart/form-data; boundary=${form.boundary}`);
     form.append(name, data, filename);
@@ -39,6 +49,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   send(data) {
+    if (this.request.res) throw new Error('Cannot modify data after being sent!');
     if (typeof data === 'object') {
       this.set('Content-Type', 'application/json');
       this.data = JSON.stringify(data);
@@ -95,9 +106,14 @@ class Snekfetch extends Stream.Readable {
             for (const name of Object.keys(this.request._headerNames)) {
               headers[this.request._headerNames[name]] = this.request._headers[name];
             }
+            const query = this.request.path.split('?')[1];
+            const current = `${URL.format({
+              protocol: this.request.connection.encrypted ? 'https:' : 'http:',
+              hostname: this.request._headers.host,
+            })}?${query}`;
             resolve(new Snekfetch(
               this.method,
-              URL.resolve(this.options.href, response.headers.location),
+              URL.resolve(current, response.headers.location),
               { data: this.data, headers }
             ));
             return;
@@ -121,8 +137,7 @@ class Snekfetch extends Stream.Readable {
                 res.body = JSON.parse(res.text);
               } catch (err) {} // eslint-disable-line no-empty
             } else if (type.includes('application/x-www-form-urlencoded')) {
-              res.body = {};
-              for (const [k, v] of res.text.split('&').map(q => q.split('='))) res.body[k] = v;
+              res.body = qs.parse(res.text);
             }
           }
 
