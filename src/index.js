@@ -36,8 +36,7 @@ class Snekfetch extends Stream.Readable {
     if (name !== null && typeof name === 'object') {
       for (const key of Object.keys(name)) this.set(key, name[key]);
     } else {
-      this.request._headers[name.toLowerCase()] = value;
-      this.request._headerNames[name.toLowerCase()] = name;
+      this.request.setHeader(name, value);
     }
     return this;
   }
