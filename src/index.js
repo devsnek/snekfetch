@@ -53,7 +53,7 @@ class Snekfetch extends Stream.Readable {
   send(data) {
     if (this.request.res) throw new Error('Cannot modify data after being sent!');
     if (data !== null && typeof data === 'object') {
-      const header = this.request._headers['content-type'];
+      const header = this.request.getHeader['content-type'];
       let serialize;
       if (header) {
         if (header.includes('json')) serialize = JSON.stringify;
@@ -114,8 +114,15 @@ class Snekfetch extends Stream.Readable {
             }
 
             const headers = {};
-            for (const name of Object.keys(this.request._headerNames)) {
-              headers[this.request._headerNames[name]] = this.request._headers[name];
+            if (this.request._headerNames) {
+              for (const name of Object.keys(this.request._headerNames)) {
+                headers[this.request._headerNames[name]] = this.request._headers[name];
+              }
+            } else {
+              for (const name of Object.keys(this.request._headers)) {
+                const header = this.request._headers[name];
+                headers[header.name] = header.value;
+              }
             }
 
             resolve(new Snekfetch(
@@ -175,7 +182,7 @@ class Snekfetch extends Stream.Readable {
     );
   }
 
-  _read() {
+  read() {
     this.resume();
     if (this.request.res) return;
     this.catch((err) => this.emit('error', err));
@@ -197,8 +204,8 @@ class Snekfetch extends Stream.Readable {
   }
 
   _addFinalHeaders() {
-    if (!this.request || !this.request._headers) return;
-    if (!this.request._headers['user-agent']) {
+    if (!this.request) return;
+    if (!this.request.getHeader['user-agent']) {
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
@@ -218,7 +225,7 @@ else if (typeof window !== 'undefined') window.Snekfetch = Snekfetch;
 function makeURLFromRequest(request) {
   return URL.format({
     protocol: request.connection.encrypted ? 'https:' : 'http:',
-    hostname: request._headers.host,
+    hostname: request.getHeader('host'),
     pathname: request.path.split('?')[0],
     query: request.query,
   });
