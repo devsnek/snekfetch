@@ -184,7 +184,7 @@ class Snekfetch extends Stream.Readable {
 
   _read() {
     this.resume();
-    if (this.request.res) return;
+    if (this.response) return;
     this.catch((err) => this.emit('error', err));
   }
 
@@ -209,6 +209,10 @@ class Snekfetch extends Stream.Readable {
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
+  }
+  
+  get response() {
+    return this.request.res || this.request._response || null;
   }
 }
 
