@@ -182,7 +182,7 @@ class Snekfetch extends Stream.Readable {
     );
   }
 
-  read() {
+  _read() {
     this.resume();
     if (this.request.res) return;
     this.catch((err) => this.emit('error', err));
