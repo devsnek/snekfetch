@@ -53,7 +53,7 @@ class Snekfetch extends Stream.Readable {
   send(data) {
     if (this.request.res) throw new Error('Cannot modify data after being sent!');
     if (data !== null && typeof data === 'object') {
-      const header = this.request.getHeader('content-type');
+      const header = this._getHeader('content-type');
       let serialize;
       if (header) {
         if (header.includes('json')) serialize = JSON.stringify;
@@ -205,14 +205,23 @@ class Snekfetch extends Stream.Readable {
 
   _addFinalHeaders() {
     if (!this.request) return;
-    if (!this.request.getHeader('user-agent')) {
+    if (!this._getHeader('user-agent')) {
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
   }
-  
+
   get response() {
     return this.request.res || this.request._response || null;
+  }
+
+  _getHeader(header) {
+    // https://github.com/jhiesey/stream-http/pull/77
+    try {
+      return this.request.getHeader(header);
+    } catch (err) {
+      return null;
+    }
   }
 }
 
