@@ -32,3 +32,28 @@ snekfetch.post('https://httpbin.org/post')
   .send({ meme: 'dream' })
   .then(r => console.log(r.body));
 ```
+
+```js
+const snekfetch = require('snekfetch');
+const id = 'channel id';
+
+snekfetch.post(`https://discordapp.com/api/channels/${id}/messages`)
+  .set('Authorization', 'Super Secret Token')
+  .set('Content-Type', 'application/json')
+  .send({ 'memes' })
+  .then(res => console.log(res));
+```
+
+```js
+const snekfetch = require('snekfetch');
+const key = 'your secret key';
+const cx = 'your secret cx';
+const query = 'you google search query';
+const url = `https://www.googleapis.com/customsearch/v1?key=${key}&cx=${cx}&safe=high&q=${encodeURI(query)}`;
+
+snekfetch.get(url)
+  .then(res => {
+	  if (res.body.queries.request[0].totalResults === '0') console.log('No results!');
+	  else console.log(res.body.items[0].link);
+});
+```
