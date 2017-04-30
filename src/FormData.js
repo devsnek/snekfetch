@@ -14,7 +14,7 @@ class FormData {
     if (filename) {
       str += `; filename="${filename}"`;
       mimetype = 'application/octet-stream';
-      const extname = path.extname(filename);
+      const extname = path.extname(filename).slice(1);
       if (extname) mimetype = mime.lookup(extname);
     }
 
