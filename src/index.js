@@ -106,11 +106,12 @@ class Snekfetch extends Stream.Readable {
           const concated = Buffer.concat(body);
 
           if (this._shouldRedirect(response)) {
+            let method = this.request.method;
             if ([301, 302].includes(response.statusCode)) {
-              this.method = this.method === 'HEAD' ? 'HEAD' : 'GET';
+              if (method !== 'HEAD') method = 'GET';
               this.data = null;
             } else if (response.statusCode === 303) {
-              this.method = 'GET';
+              method = 'GET';
             }
 
             const headers = {};
@@ -126,7 +127,7 @@ class Snekfetch extends Stream.Readable {
             }
 
             resolve(new Snekfetch(
-              this.method,
+              method,
               URL.resolve(makeURLFromRequest(request), response.headers.location),
               { data: this.data, headers }
             ));
