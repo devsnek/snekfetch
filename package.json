@@ -4,14 +4,14 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GusCaplan/snekfetch.git"
+    "url": "git+https://github.com/devsnek/snekfetch.git"
   },
   "author": "Gus Caplan <me@gus.host>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GusCaplan/snekfetch/issues"
+    "url": "https://github.com/devsnek/snekfetch/issues"
   },
-  "homepage": "https://github.com/GusCaplan/snekfetch#readme",
+  "homepage": "https://github.com/devsnek/snekfetch#readme",
   "dependencies": {},
   "devDependencies": {},
   "description": "Just do http requests without all that weird nastiness from other libs"
