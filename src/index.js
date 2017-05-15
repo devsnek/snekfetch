@@ -117,20 +117,21 @@ class Snekfetch extends Stream.Readable {
             const headers = {};
             if (this.request._headerNames) {
               for (const name of Object.keys(this.request._headerNames)) {
+                if (name.toLowerCase() === 'host') continue;
                 headers[this.request._headerNames[name]] = this.request._headers[name];
               }
             } else {
               for (const name of Object.keys(this.request._headers)) {
+                if (name.toLowerCase() === 'host') continue;
                 const header = this.request._headers[name];
                 headers[header.name] = header.value;
               }
             }
 
-            resolve(new Snekfetch(
-              method,
-              URL.resolve(makeURLFromRequest(request), response.headers.location),
-              { data: this.data, headers }
-            ));
+            const newURL = /^https?:\/\//i.test(response.headers.location) ?
+              response.headers.location :
+              URL.resolve(makeURLFromRequest(request), response.headers.location);
+            resolve(new Snekfetch(method, newURL, { data: this.data, headers }));
             return;
           }
 
