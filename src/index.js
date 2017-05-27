@@ -21,7 +21,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   query(name, value) {
-    if (this.request.res) throw new Error('Cannot modify query after being sent!');
+    if (this._response) throw new Error('Cannot modify query after being sent!');
     if (!this.request.query) this.request.query = {};
     if (name !== null && typeof name === 'object') {
       this.request.query = Object.assign(this.request.query, name);
@@ -32,7 +32,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   set(name, value) {
-    if (this.request.res) throw new Error('Cannot modify headers after being sent!');
+    if (this._response) throw new Error('Cannot modify headers after being sent!');
     if (name !== null && typeof name === 'object') {
       for (const key of Object.keys(name)) this.set(key, name[key]);
     } else {
@@ -42,7 +42,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   attach(name, data, filename) {
-    if (this.request.res) throw new Error('Cannot modify data after being sent!');
+    if (this._response) throw new Error('Cannot modify data after being sent!');
     const form = this._getFormData();
     this.set('Content-Type', `multipart/form-data; boundary=${form.boundary}`);
     form.append(name, data, filename);
@@ -51,7 +51,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   send(data) {
-    if (this.request.res) throw new Error('Cannot modify data after being sent!');
+    if (this._response) throw new Error('Cannot modify data after being sent!');
     if (data !== null && typeof data === 'object') {
       const header = this._getHeader('content-type');
       let serialize;
@@ -186,7 +186,7 @@ class Snekfetch extends Stream.Readable {
 
   _read() {
     this.resume();
-    if (this.response) return;
+    if (this._response) return;
     this.catch((err) => this.emit('error', err));
   }
 
@@ -213,7 +213,7 @@ class Snekfetch extends Stream.Readable {
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
   }
 
-  get response() {
+  get _response() {
     return this.request.res || this.request._response || null;
   }
 
