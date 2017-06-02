@@ -23,7 +23,7 @@ class Snekfetch extends Stream.Readable {
    * @param {object|string|Buffer} [opts.data] Data to initialize the request with
    * @param {string|object} [opts.query] Query to intialize the request with
    */
-  constructor(method, url, opts = { headers, data, query }) {
+  constructor(method, url, opts = { headers: null, data: null, query: null }) {
     super();
 
     const options = URL.parse(url);
