@@ -8,18 +8,39 @@ const Package = require('../package.json');
 const Stream = require('stream');
 const FormData = require('./FormData');
 
+/**
+ * Snekfetch
+ * @extends Stream.Readable
+ * @extends Promise
+ */
 class Snekfetch extends Stream.Readable {
-  constructor(method, url, opts = { headers: {}, data: null }) {
+  /**
+   * Create a request, but you probably wanna use `snekfetch#method`
+   * @param {string} method HTTP method
+   * @param {string} url URL
+   * @param {object} opts Options
+   * @param {object} [opts.headers] Headers to initialize the request with
+   * @param {object|string|Buffer} [opts.data] Data to initialize the request with
+   * @param {string|object} [opts.query] Query to intialize the request with
+   */
+  constructor(method, url, opts = { headers, data, query }) {
     super();
 
     const options = URL.parse(url);
     options.method = method.toUpperCase();
-    options.headers = opts.headers;
-    this.data = opts.data;
+    if (opts.headers) options.headers = opts.headers;
 
     this.request = (options.protocol === 'https:' ? https : http).request(options);
+    if (opts.query) this.query(opts.query);
+    if (opts.data) this.send(opts.data);
   }
 
+  /**
+   * Add a query param to the request
+   * @param {string|object} name Name of query param or object to add to query
+   * @param {string} [value] If name is a string value, this will be the value of the query param
+   * @returns {Snekfetch} This request
+   */
   query(name, value) {
     if (this._response) throw new Error('Cannot modify query after being sent!');
     if (!this.request.query) this.request.query = {};
@@ -31,6 +52,12 @@ class Snekfetch extends Stream.Readable {
     return this;
   }
 
+  /**
+   * Add a header to the request
+   * @param {string|object} name Name of query param or object to add to headers
+   * @param {string} [value] If name is a string value, this will be the value of the header
+   * @returns {Snekfetch} This request
+   */
   set(name, value) {
     if (this._response) throw new Error('Cannot modify headers after being sent!');
     if (name !== null && typeof name === 'object') {
@@ -41,6 +68,13 @@ class Snekfetch extends Stream.Readable {
     return this;
   }
 
+  /**
+   * Attach a form data object
+   * @param {string} name Name of the form attachment
+   * @param {string|object|Buffer} data Data for the attachment
+   * @param {string} [filename] Optional filename if form attachment name needs to be overridden
+   * @returns {Snekfetch} This request
+   */
   attach(name, data, filename) {
     if (this._response) throw new Error('Cannot modify data after being sent!');
     const form = this._getFormData();
@@ -50,6 +84,11 @@ class Snekfetch extends Stream.Readable {
     return this;
   }
 
+  /**
+   * Send data with the request
+   * @param {string|Buffer|Object} data Data to send
+   * @returns {Snekfetch} This request
+   */
   send(data) {
     if (this._response) throw new Error('Cannot modify data after being sent!');
     if (data !== null && typeof data === 'object') {
@@ -177,6 +216,11 @@ class Snekfetch extends Stream.Readable {
     return this.then(null, rejector);
   }
 
+  /**
+   * End the request
+   * @param {function} [cb] Optional callback to handle the response
+   * @returns {Snekfetch} This request
+   */
   end(cb) {
     return this.then(
       (res) => cb ? cb(null, res) : res,
