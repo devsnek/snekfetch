@@ -21,7 +21,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   query(name, value) {
-    if (this.request.res) throw new Error('Cannot modify query after being sent!');
+    if (this.response) throw new Error('Cannot modify query after being sent!');
     if (!this.request.query) this.request.query = {};
     if (name !== null && typeof name === 'object') {
       this.request.query = Object.assign(this.request.query, name);
@@ -32,7 +32,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   set(name, value) {
-    if (this.request.res) throw new Error('Cannot modify headers after being sent!');
+    if (this.response) throw new Error('Cannot modify headers after being sent!');
     if (name !== null && typeof name === 'object') {
       for (const key of Object.keys(name)) this.set(key, name[key]);
     } else {
@@ -42,7 +42,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   attach(name, data, filename) {
-    if (this.request.res) throw new Error('Cannot modify data after being sent!');
+    if (this.response) throw new Error('Cannot modify data after being sent!');
     const form = this._getFormData();
     this.set('Content-Type', `multipart/form-data; boundary=${form.boundary}`);
     form.append(name, data, filename);
@@ -51,9 +51,9 @@ class Snekfetch extends Stream.Readable {
   }
 
   send(data) {
-    if (this.request.res) throw new Error('Cannot modify data after being sent!');
+    if (this.response) throw new Error('Cannot modify data after being sent!');
     if (data !== null && typeof data === 'object') {
-      const header = this._getHeader('content-type');
+      const header = this._getRequestHeader('content-type');
       let serialize;
       if (header) {
         if (header.includes('json')) serialize = JSON.stringify;
@@ -207,17 +207,17 @@ class Snekfetch extends Stream.Readable {
 
   _addFinalHeaders() {
     if (!this.request) return;
-    if (!this._getHeader('user-agent')) {
+    if (!this._getRequestHeader('user-agent')) {
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
   }
 
   get response() {
-    return this.request.res || this.request._response || null;
+    return this.request ? this.request.res || this.request._response || null : null;
   }
 
-  _getHeader(header) {
+  _getRequestHeader(header) {
     // https://github.com/jhiesey/stream-http/pull/77
     try {
       return this.request.getHeader(header);
