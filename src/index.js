@@ -273,7 +273,9 @@ class Snekfetch extends Stream.Readable {
 
 Snekfetch.version = Package.version;
 
-Snekfetch.METHODS = http.METHODS.concat('BREW');
+Snekfetch.METHODS = http.METHODS ?
+  http.METHODS.concat('BREW') :
+  ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'];
 for (const method of Snekfetch.METHODS) {
   Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url) => new Snekfetch(method, url);
 }
