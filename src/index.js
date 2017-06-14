@@ -174,26 +174,40 @@ class Snekfetch extends Stream.Readable {
             return;
           }
 
+          /**
+           * @typedef {Object} SnekfetchResponse
+           * @prop {HTTP.Request} request
+           * @prop {?string|object|Buffer} body Processed response body
+           * @prop {string} text Raw response body
+           * @prop {boolean} ok If the response code is >= 200 and < 300
+           * @prop {number} status HTTP status code
+           * @prop {string} statusText Human readable HTTP status
+           */
           const res = {
             request: this.request,
-            body: concated,
+            get body() {
+              delete res.body;
+              const type = response.headers['content-type'];
+              if (type && type.includes('application/json')) {
+                try {
+                  res.body = JSON.parse(res.text);
+                } catch (err) {
+                  res.body = res.text;
+                } // eslint-disable-line no-empty
+              } else if (type && type.includes('application/x-www-form-urlencoded')) {
+                res.body = qs.parse(res.text);
+              } else {
+                res.body = res.text;
+              }
+
+              return res.body;
+            },
             text: concated.toString(),
             ok: response.statusCode >= 200 && response.statusCode < 300,
             headers: response.headers,
             status: response.statusCode,
             statusText: response.statusText || http.STATUS_CODES[response.statusCode],
           };
-
-          const type = response.headers['content-type'];
-          if (type) {
-            if (type.includes('application/json')) {
-              try {
-                res.body = JSON.parse(res.text);
-              } catch (err) {} // eslint-disable-line no-empty
-            } else if (type.includes('application/x-www-form-urlencoded')) {
-              res.body = qs.parse(res.text);
-            }
-          }
 
           if (res.ok) {
             resolve(res);

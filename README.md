@@ -6,20 +6,21 @@
 
 # snekfetch
 
-Just do http requests without all that weird nastiness from other libs
+Snekfetch is a fast, efficient, and user-friendly library for making
+HTTP requests.
 
-response.text is raw and always present  
-response.body will be a buffer or an object and is not always present
+The API was inspired by superagent, and any methods that snekfetch has should
+be dropin with superagent.
 
-you can `end` or `then` or `catch` a request just like superagent.  
-You can also await it.  
-It extends Stream.Readable.
+Documentation is available as JSDOC in `src/index.js`
+
+## Some examples
 
 ```js
 const snekfetch = require('snekfetch');
 
 snekfetch.get('https://s.gus.host/o-SNAKES-80.jpg')
-  .then(r => fs.writeFile('download.jpg', r.body));
+  .then(r => fs.writeFile('download.jpg', r.body);
 
 snekfetch.get('https://s.gus.host/o-SNAKES-80.jpg')
   .pipe(fs.createWriteStream('download.jpg'));
