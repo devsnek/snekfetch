@@ -197,7 +197,7 @@ class Snekfetch extends Stream.Readable {
               } else if (type && type.includes('application/x-www-form-urlencoded')) {
                 res.body = qs.parse(res.text);
               } else {
-                res.body = res.text;
+                res.body = concated;
               }
 
               return res.body;
