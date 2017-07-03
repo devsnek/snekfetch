@@ -23,15 +23,21 @@ class Snekfetch extends Stream.Readable {
    * @param {Object} [opts.headers] Headers to initialize the request with
    * @param {Object|string|Buffer} [opts.data] Data to initialize the request with
    * @param {string|Object} [opts.query] Query to intialize the request with
+   * @param {boolean} [opts.allowFileAccess] Allows local file access of the form file://
    */
-  constructor(method, url, opts = { headers: null, data: null, query: null }) {
+  constructor(method, url, opts = { headers: null, data: null, query: null, allowFileAccess: null }) {
     super();
 
     const options = URL.parse(url);
     options.method = method.toUpperCase();
     if (opts.headers) options.headers = opts.headers;
+    
+    const loaders = { https, http };
+    if (opts.allowFileAccess) {
+      loaders.file = fileLoader;
+    }
 
-    this.request = { https, http, file: fileLoader }[options.protocol.replace(':', '')].request(options);
+    this.request = [options.protocol.replace(':', '')].request(options);
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
   }
