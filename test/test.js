@@ -15,3 +15,9 @@ snekfetch.get('https://httpbin.org/redirect/1')
 snekfetch.post('http://strawpoll.me/api/v2/polls')
   .send({ title: 'snekfetch', options: ['1', '2'] })
   .then(() => console.log('test 2 success'));
+
+snekfetch.get('file://../package.json')
+  .then(() => console.log('test 3 success'));
+
+snekfetch.get('file://../nonexistant')
+  .then(() => console.log('test 4 success'));

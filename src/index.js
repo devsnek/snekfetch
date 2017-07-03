@@ -7,6 +7,7 @@ const URL = require('url');
 const Package = require('../package.json');
 const Stream = require('stream');
 const FormData = require('./FormData');
+const fileLoader = require('./fileLoader');
 
 /**
  * Snekfetch
@@ -30,7 +31,7 @@ class Snekfetch extends Stream.Readable {
     options.method = method.toUpperCase();
     if (opts.headers) options.headers = opts.headers;
 
-    this.request = (options.protocol === 'https:' ? https : http).request(options);
+    this.request = { https, http, file: fileLoader }[options.protocol.replace(':', '')].request(options);
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
   }
@@ -118,11 +119,11 @@ class Snekfetch extends Stream.Readable {
         reject(err);
       };
 
-      request.on('abort', handleError);
-      request.on('aborted', handleError);
-      request.on('error', handleError);
+      request.once('abort', handleError);
+      request.once('aborted', handleError);
+      request.once('error', handleError);
 
-      request.on('response', (response) => {
+      request.once('response', (response) => {
         const stream = new Stream.PassThrough();
         if (this._shouldUnzip(response)) {
           response.pipe(zlib.createUnzip({
@@ -133,14 +134,14 @@ class Snekfetch extends Stream.Readable {
           response.pipe(stream);
         }
 
-        let body = [];
+        const body = [];
 
         stream.on('data', (chunk) => {
           if (!this.push(chunk)) this.pause();
           body.push(chunk);
         });
 
-        stream.on('end', () => {
+        stream.once('end', () => {
           this.push(null);
           const concated = Buffer.concat(body);
 
