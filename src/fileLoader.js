@@ -2,16 +2,20 @@ const fs = require('fs');
 const path = require('path');
 const mime = require('./mime');
 const EventEmitter = require('events');
+const Stream = require('stream');
 
-// class Emitter404 extends EventEmitter {
-//   on(event) {
-//     if (event === 'data') {
-//       this.emit('open');
-//       this.emit('end');
-//     }
-//   }
-// }
-// Emitter404.prototype.meme = true;
+class Stream404 extends Stream.Readable {
+  constructor() {
+    super();
+    this.stautsCode = 404;
+  }
+
+  on(event, handler) {
+    if (['end', 'open'].includes(event)) handler();
+  }
+
+  _read() {}
+}
 
 function request(options) {
   const createStream = options.method === 'GET' ? fs.createReadStream : fs.createWriteStream;
@@ -20,29 +24,33 @@ function request(options) {
 
   const req = new EventEmitter();
   req._headers = {};
-  req.setHeader = noop;
+  req.setHeader = () => {}; // eslint-disable-line no-empty-function
   req.end = () => {
-    let stream = createStream(filename);
-    stream.on('error', () => {
-      req.emit('response', stream);
-    });
-    stream.statusCode = 200;
+    const stream = should404(filename) ? new Stream404() : createStream(filename);
     req.res = stream;
     stream.headers = {
       'content-length': 0,
       'content-type': mime.lookup(path.extname(filename)),
     };
-    stream.on('end', () => {
-      stream.headers['content-length'] = stream.bytesRead;
-    });
     stream.on('open', () => {
       req.emit('response', stream);
+    });
+    if (stream instanceof Stream404) return;
+    stream.statusCode = 200;
+    stream.on('end', () => {
+      stream.headers['content-length'] = stream.bytesRead;
     });
   };
   return req;
 }
 
-function noop() {} // eslint-disable-line no-empty-function
+function should404(p) {
+  try {
+    return fs.lstatSync(p).isDirectory();
+  } catch (err) {
+    return true;
+  }
+}
 
 module.exports = {
   request,

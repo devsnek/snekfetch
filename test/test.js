@@ -20,4 +20,4 @@ snekfetch.get('file://../package.json')
   .then(() => console.log('test 3 success'));
 
 snekfetch.get('file://../nonexistant')
-  .then(() => console.log('test 4 success'));
+  .catch(() => console.log('test 4 success'));
