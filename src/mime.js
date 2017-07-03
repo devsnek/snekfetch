@@ -2,7 +2,7 @@ const mimes = require('./mimes');
 const mimeOfBuffer = require('./mimeOfBuffer');
 
 function lookupMime(ext) {
-  return mimes[ext] || mimes.bin;
+  return mimes[ext.replace(/^\./, '')] || mimes.bin;
 }
 
 function lookupBuffer(buffer) {
