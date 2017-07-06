@@ -1,5 +1,5 @@
-const mimes = require('./mimes');
-const mimeOfBuffer = require('./mimeOfBuffer');
+const mimes = require('./mimes.json');
+const mimeOfBuffer = require('./mimeOfBuffer.js');
 
 function lookupMime(ext) {
   return mimes[ext.replace(/^\./, '')] || mimes.bin;
