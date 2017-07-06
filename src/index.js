@@ -31,7 +31,7 @@ class Snekfetch extends Stream.Readable {
     options.method = method.toUpperCase();
     if (opts.headers) options.headers = opts.headers;
     
-    if (opts.disableRedirect) this.disableRedirect = true
+    if (opts.disableRedirect) this.disableRedirect = true;
 
     this.request = { https, http, file: fileLoader }[options.protocol.replace(':', '')].request(options);
     if (opts.query) this.query(opts.query);
