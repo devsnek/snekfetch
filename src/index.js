@@ -32,6 +32,7 @@ class Snekfetch extends Stream.Readable {
     if (opts.headers) options.headers = opts.headers;
 
     this.request = { https, http, file: fileLoader }[options.protocol.replace(':', '')].request(options);
+    this.request.followRedirects = opts.followRedirects || true;
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
   }
@@ -145,7 +146,7 @@ class Snekfetch extends Stream.Readable {
           this.push(null);
           const concated = Buffer.concat(body);
 
-          if (this._shouldRedirect(response)) {
+          if (this.request.followRedirects !== false && this._shouldRedirect(response)) {
             let method = this.request.method;
             if ([301, 302].includes(response.statusCode)) {
               if (method !== 'HEAD') method = 'GET';
