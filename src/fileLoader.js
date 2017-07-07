@@ -7,7 +7,7 @@ const Stream = require('stream');
 class Stream404 extends Stream.Readable {
   constructor() {
     super();
-    this.stautsCode = 404;
+    this.statusCode = 404;
   }
 
   on(event, handler) {
