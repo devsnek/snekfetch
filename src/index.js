@@ -32,7 +32,7 @@ class Snekfetch extends Stream.Readable {
     if (opts.headers) options.headers = opts.headers;
 
     this.request = { https, http, file: fileLoader }[options.protocol.replace(':', '')].request(options);
-    this.request.followRedirects = opts.followRedirects || true;
+    this.request.followRedirects = opts.followRedirects;
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
   }
