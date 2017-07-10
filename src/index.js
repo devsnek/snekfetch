@@ -30,6 +30,7 @@ class Snekfetch extends Stream.Readable {
     const options = URL.parse(url);
     options.method = method.toUpperCase();
     if (opts.headers) options.headers = opts.headers;
+    if ('agent' in opts) options.agent = opts.agent;
 
     this.request = { https, http, file: fileLoader }[options.protocol.replace(':', '')].request(options);
     this.request.followRedirects = opts.followRedirects;
@@ -293,7 +294,7 @@ Snekfetch.METHODS = http.METHODS ?
   http.METHODS.concat('BREW') :
   ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'];
 for (const method of Snekfetch.METHODS) {
-  Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url) => new Snekfetch(method, url);
+  Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url, opts) => new Snekfetch(method, url, opts);
 }
 
 if (typeof module !== 'undefined') module.exports = Snekfetch;
