@@ -224,7 +224,13 @@ class Snekfetch extends Stream.Readable {
 
       this._addFinalHeaders();
       if (this.request.query) this.request.path = `${this.request.path}?${qs.stringify(this.request.query)}`;
-      request.end(this.data ? this.data.end ? this.data.end() : this.data : null);
+      const data = this.data ? this.data.end ? this.data.end() : this.data : null;
+      if (Array.isArray(data)) {
+        for (const chunk of data) request.write(chunk);
+        request.end();
+      } else {
+        request.end(data);
+      }
     })
     .then(resolver, rejector);
   }
@@ -272,6 +278,7 @@ class Snekfetch extends Stream.Readable {
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
+    if (this.data && this.data.end) this.set('Content-Length', this.data.length);
   }
 
   get response() {

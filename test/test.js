@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const snekfetch = require('../index');
 // const fs = require('fs');
 
@@ -21,3 +22,15 @@ snekfetch.get('file://../package.json')
 
 snekfetch.get('file://../nonexistant')
   .catch(() => console.log('test 4 success'));
+
+snekfetch.post('https://httpbin.org/post')
+  .attach('test', 'test content')
+  .then(() => console.log('test 5 success'));
+
+snekfetch.post('file://./post_test.json')
+  .send({ meme: 'dream' })
+  .then(() => {
+    console.log('test 6 success');
+    snekfetch.delete('file://./post_test.json')
+      .then(() => console.log('test 7 success'));
+  });

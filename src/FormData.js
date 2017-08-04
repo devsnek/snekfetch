@@ -4,7 +4,7 @@ const mime = require('./mime');
 class FormData {
   constructor() {
     this.boundary = `--snekfetch--${Math.random().toString().slice(2, 7)}`;
-    this.buffer = new Buffer(0);
+    this.buffers = [];
   }
 
   append(name, data, filename) {
@@ -28,19 +28,17 @@ class FormData {
     }
 
     if (mimetype) str += `\r\nContent-Type: ${mimetype}`;
-    this.buffer = Buffer.concat([
-      this.buffer,
-      Buffer.from(`${str}\r\n\r\n`),
-      data,
-    ]);
+    this.buffers.push(`${str}\r\n\r\n`);
+    this.buffers.push(data);
   }
 
   end() {
-    this.buffer = Buffer.concat([
-      this.buffer,
-      Buffer.from(`\r\n--${this.boundary}--`),
-    ]);
-    return this.buffer;
+    this.buffers.push(`\r\n--${this.boundary}--`);
+    return this.buffers;
+  }
+
+  get length() {
+    return this.buffers.reduce((sum, b) => Buffer.byteLength(b), 0);
   }
 }
 

@@ -4,43 +4,113 @@ const mime = require('./mime');
 const EventEmitter = require('events');
 const Stream = require('stream');
 
-class Stream404 extends Stream.Readable {
+class ResponseStream extends Stream.Readable {
   constructor() {
     super();
-    this.statusCode = 404;
+    this.statusCode = 200;
+    this.status = 'OK';
+  }
+
+  error(code, message) {
+    this.statusCode = code;
+    this.status = message;
+    return this;
   }
 
   on(event, handler) {
     if (['end', 'open'].includes(event)) handler();
   }
 
-  _read() {}
+  _read() {} // eslint-disable-line no-empty-function
+}
+
+const methods = {
+  GET: (filename, req) => {
+    req.end = () => {
+      const stream = should404(filename) ?
+        new ResponseStream().error(404, `ENOENT: no such file or directory, open '${filename}'`) :
+        fs.createReadStream(filename);
+      req.res = stream;
+      stream.headers = {
+        'content-length': 0,
+        'content-type': mime.lookup(path.extname(filename)),
+      };
+      stream.on('open', () => {
+        req.emit('response', stream);
+      });
+      if (stream instanceof ResponseStream) return;
+      stream.statusCode = 200;
+      stream.on('end', () => {
+        stream.headers['content-length'] = stream.bytesRead;
+      });
+      stream.on('error', (err) => {
+        stream.statusCode = 400;
+        stream.status = err.message;
+      });
+    };
+  },
+  POST: (filename, req) => {
+    const chunks = [];
+    req.write = (data) => {
+      chunks.push(data);
+    };
+    req.end = (data) => {
+      chunks.push(data);
+      const stream = fs.createWriteStream(filename);
+      const standin = new ResponseStream();
+      req.res = standin;
+      standin.headers = {
+        'content-length': 0,
+        'content-type': mime.lookup(path.extname(filename)),
+      };
+      stream.on('finish', () => {
+        req.emit('response', standin);
+      });
+      stream.on('open', () => {
+        (function write() {
+          const chunk = chunks.shift();
+          if (!chunk) return;
+          if (!stream.write(chunk)) {
+            stream.once('drain', write);
+          } else {
+            write();
+          }
+        }());
+        stream.end();
+      });
+    };
+  },
+  DELETE: (filename, req) => {
+    req.end = () => {
+      const stream = new ResponseStream();
+      req.res = stream;
+      stream.headers = {
+        'content-length': 0,
+        'content-type': mime.lookup(path.extname(filename)),
+      };
+      fs.unlink(filename, (err) => {
+        req.emit('response', err ? stream.error(400, err.message) : stream);
+      });
+    };
+  },
+};
+
+class Req extends EventEmitter {
+  constructor() {
+    super();
+    this._headers = {};
+  }
+
+  setHeader() {} // eslint-disable-line no-empty-function
 }
 
 function request(options) {
-  const createStream = options.method === 'GET' ? fs.createReadStream : fs.createWriteStream;
-
+  const method = methods[options.method];
+  if (!method) throw new Error(`Invalid request method "${method}"`);
   const filename = options.href.replace('file://', '');
 
-  const req = new EventEmitter();
-  req._headers = {};
-  req.setHeader = () => {}; // eslint-disable-line no-empty-function
-  req.end = () => {
-    const stream = should404(filename) ? new Stream404() : createStream(filename);
-    req.res = stream;
-    stream.headers = {
-      'content-length': 0,
-      'content-type': mime.lookup(path.extname(filename)),
-    };
-    stream.on('open', () => {
-      req.emit('response', stream);
-    });
-    if (stream instanceof Stream404) return;
-    stream.statusCode = 200;
-    stream.on('end', () => {
-      stream.headers['content-length'] = stream.bytesRead;
-    });
-  };
+  const req = new Req();
+  method(filename, req, options);
   return req;
 }
 
