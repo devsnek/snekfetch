@@ -94,7 +94,9 @@ class Snekfetch extends Stream.Readable {
    */
   send(data) {
     if (this.response) throw new Error('Cannot modify data after being sent!');
-    if (data !== null && typeof data === 'object') {
+    if (data instanceof Buffer || data instanceof Stream) {
+      this.data = data;
+    } else if (data !== null && typeof data === 'object') {
       const header = this._getRequestHeader('content-type');
       let serialize;
       if (header) {
@@ -228,6 +230,11 @@ class Snekfetch extends Stream.Readable {
       if (Array.isArray(data)) {
         for (const chunk of data) request.write(chunk);
         request.end();
+      } else if (data instanceof Stream) {
+        data.pipe(request);
+      } else if (data instanceof Buffer) {
+        this.set('Content-Length', Buffer.byteLength(data));
+        request.end(data);
       } else {
         request.end(data);
       }
