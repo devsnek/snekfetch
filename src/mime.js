@@ -6,7 +6,7 @@ function lookupMime(ext) {
 }
 
 function lookupBuffer(buffer) {
-  const ret = return mimeOfBuffer(buffer)
+  const ret = mimeOfBuffer(buffer)
   return ret ? ret.mime : mimes.bin;
 }
 
