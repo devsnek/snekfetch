@@ -38,7 +38,7 @@ class FormData {
   }
 
   get length() {
-    return this.buffers.reduce((sum, b) => Buffer.byteLength(b), 0);
+    return this.buffers.reduce((sum, b) => sum + Buffer.byteLength(b), 0);
   }
 }
 

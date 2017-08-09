@@ -224,9 +224,9 @@ class Snekfetch extends Stream.Readable {
         });
       });
 
+      const data = this.data ? this.data.end ? this.data.end() : this.data : null;
       this._addFinalHeaders();
       if (this.request.query) this.request.path = `${this.request.path}?${qs.stringify(this.request.query)}`;
-      const data = this.data ? this.data.end ? this.data.end() : this.data : null;
       if (Array.isArray(data)) {
         for (const chunk of data) request.write(chunk);
         request.end();
