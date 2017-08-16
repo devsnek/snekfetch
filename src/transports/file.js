@@ -1,28 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const mime = require('./mime');
+const mime = require('../mime');
 const EventEmitter = require('events');
-const Stream = require('stream');
-
-class ResponseStream extends Stream.Readable {
-  constructor() {
-    super();
-    this.statusCode = 200;
-    this.status = 'OK';
-  }
-
-  error(code, message) {
-    this.statusCode = code;
-    this.status = message;
-    return this;
-  }
-
-  on(event, handler) {
-    if (['end', 'open'].includes(event)) handler();
-  }
-
-  _read() {} // eslint-disable-line no-empty-function
-}
+const ResponseStream = require('./ResponseStream');
 
 const methods = {
   GET: (filename, req) => {

@@ -34,3 +34,6 @@ snekfetch.post('file://./post_test.json')
     snekfetch.delete('file://./post_test.json')
       .then(() => console.log('test 7 success'));
   });
+
+snekfetch.get('https://http2.akamai.com/demo', { version: 2 })
+  .then((r) => console.log('test 8 success'));

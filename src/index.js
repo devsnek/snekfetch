@@ -7,7 +7,13 @@ const URL = require('url');
 const Package = require('../package.json');
 const Stream = require('stream');
 const FormData = require('./FormData');
-const fileLoader = require('./fileLoader');
+
+const transports = {
+  http,
+  https,
+  file: require('./transports/file'),
+  http2: require('./transports/http2'),
+};
 
 /**
  * Snekfetch
@@ -24,7 +30,7 @@ class Snekfetch extends Stream.Readable {
    * @param {Object|string|Buffer} [opts.data] Data to initialize the request with
    * @param {string|Object} [opts.query] Query to intialize the request with
    */
-  constructor(method, url, opts = { headers: null, data: null, query: null }) {
+  constructor(method, url, opts = { headers: null, data: null, query: null, version: 1 }) {
     super();
 
     const options = URL.parse(url);
@@ -32,7 +38,8 @@ class Snekfetch extends Stream.Readable {
     if (opts.headers) options.headers = opts.headers;
     if ('agent' in opts) options.agent = opts.agent;
 
-    this.request = { https, http, file: fileLoader }[options.protocol.replace(':', '')].request(options);
+    const transport = opts.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
+    this.request = transport.request(options);
     this.request.followRedirects = opts.followRedirects;
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
@@ -46,9 +53,8 @@ class Snekfetch extends Stream.Readable {
    */
   query(name, value) {
     if (this.response) throw new Error('Cannot modify query after being sent!');
-    if (!this.request.query) this.request.query = {};
     if (name !== null && typeof name === 'object') {
-      this.request.query = Object.assign(this.request.query, name);
+      this.request.query = Object.assign(this.request.query || {}, name);
     } else {
       this.request.query[name] = value;
     }
@@ -239,7 +245,7 @@ class Snekfetch extends Stream.Readable {
         request.end(data);
       }
     })
-    .then(resolver, rejector);
+      .then(resolver, rejector);
   }
 
   catch(rejector) {
@@ -249,7 +255,7 @@ class Snekfetch extends Stream.Readable {
   /**
    * End the request
    * @param {Function} [cb] Optional callback to handle the response
-   * @returns {Snekfetch} This request
+   * @returns {Promise} This request
    */
   end(cb) {
     return this.then(
@@ -304,9 +310,7 @@ class Snekfetch extends Stream.Readable {
 
 Snekfetch.version = Package.version;
 
-Snekfetch.METHODS = http.METHODS ?
-  http.METHODS.concat('BREW') :
-  ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'];
+Snekfetch.METHODS = (http.METHODS || ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD']).concat('BREW');
 for (const method of Snekfetch.METHODS) {
   Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url, opts) => new Snekfetch(method, url, opts);
 }
