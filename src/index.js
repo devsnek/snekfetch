@@ -155,7 +155,7 @@ class Snekfetch extends Stream.Readable {
           this.push(null);
           const concated = Buffer.concat(body);
 
-          if (this.request.followRedirects !== false && this._shouldRedirect(response)) {
+          if (this.request.followRedirects && this._shouldRedirect(response)) {
             let method = this.request.method;
             if ([301, 302].includes(response.statusCode)) {
               if (method !== 'HEAD') method = 'GET';
@@ -214,7 +214,7 @@ class Snekfetch extends Stream.Readable {
               return res.body;
             },
             text: concated.toString(),
-            ok: response.statusCode >= 200 && response.statusCode < 300,
+            ok: response.statusCode >= 200 && response.statusCode < 400,
             headers: response.headers,
             status: response.statusCode,
             statusText: response.statusText || http.STATUS_CODES[response.statusCode],
