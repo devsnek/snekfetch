@@ -21,7 +21,7 @@ Documentation is available as JSDOC in `src/index.js`
 const snekfetch = require('snekfetch');
 
 snekfetch.get('https://s.gus.host/o-SNAKES-80.jpg')
-  .then(r => fs.writeFile('download.jpg', r.body);
+  .then(r => fs.writeFile('download.jpg', r.body));
 
 snekfetch.get('https://s.gus.host/o-SNAKES-80.jpg')
   .pipe(fs.createWriteStream('download.jpg'));
