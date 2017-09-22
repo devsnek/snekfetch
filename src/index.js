@@ -35,6 +35,7 @@ class Snekfetch extends Stream.Readable {
     super();
 
     const options = URL.parse(url);
+    if (!options.protocol) throw new Error('URL must have a valid protocol');
     options.method = method.toUpperCase();
     if (opts.headers) options.headers = opts.headers;
     if ('agent' in opts) options.agent = opts.agent;
