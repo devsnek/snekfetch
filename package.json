@@ -19,6 +19,7 @@
     "http2": false,
     "fs": false,
     "src/transports/file.js": false,
-    "src/transports/http2.js": false
+    "src/transports/http2.js": false,
+    "src/FormData.js": false
   }
 }

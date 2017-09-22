@@ -1,3 +1,4 @@
+const browser = typeof window !== 'undefined';
 require('stream');
 const zlib = require('zlib');
 const qs = require('querystring');
@@ -6,7 +7,7 @@ const https = require('https');
 const URL = require('url');
 const Package = require('../package.json');
 const Stream = require('stream');
-const FormData = require('./FormData');
+const FormData = browser ? window.FormData : require('./FormData');
 
 const transports = {
   http,
