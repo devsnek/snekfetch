@@ -316,8 +316,7 @@ for (const method of Snekfetch.METHODS) {
   Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url, opts) => new Snekfetch(method, url, opts);
 }
 
-if (typeof module !== 'undefined') module.exports = Snekfetch;
-else if (typeof window !== 'undefined') window.Snekfetch = Snekfetch;
+module.exports = Snekfetch;
 
 function makeURLFromRequest(request) {
   return URL.format({
