@@ -16,10 +16,6 @@
   "devDependencies": {},
   "description": "Just do http requests without all that weird nastiness from other libs",
   "browser": {
-    "http2": false,
-    "fs": false,
-    "src/transports/file.js": false,
-    "src/transports/http2.js": false,
-    "src/FormData.js": false
+    "src/node.js": false
   }
 }

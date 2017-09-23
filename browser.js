@@ -1,6 +1,4 @@
-const browser = typeof window !== 'undefined';
-const webpack = !!process.env.__SNEKFETCH_WEBPACK__;
-
+const { browser, webpack } = require('./src/checks');
 const Snekfetch = require('./src/index.js');
 
 module.exports = Snekfetch;

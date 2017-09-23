@@ -1,27 +1,14 @@
-const browser = typeof window !== 'undefined';
-require('stream');
-const zlib = require('zlib');
+const { browser } = require('./checks');
 const qs = require('querystring');
-const http = require('http');
-const https = require('https');
-const URL = require('url');
 const Package = require('../package.json');
-const Stream = require('stream');
-const FormData = browser ? window.FormData : require('./FormData');
-
-const transports = {
-  http,
-  https,
-  file: require('./transports/file'),
-  http2: require('./transports/http2'),
-};
+const transport = browser ? require('./browser') : require('./node');
 
 /**
  * Snekfetch
  * @extends Stream.Readable
  * @extends Promise
  */
-class Snekfetch extends Stream.Readable {
+class Snekfetch extends (transport.extension || Object) {
   /**
    * Create a request, but you probably wanna use `snekfetch#method`
    * @param {string} method HTTP method
@@ -33,15 +20,7 @@ class Snekfetch extends Stream.Readable {
    */
   constructor(method, url, opts = { headers: null, data: null, query: null, version: 1 }) {
     super();
-
-    const options = URL.parse(url);
-    options.method = method.toUpperCase();
-    if (opts.headers) options.headers = opts.headers;
-    if ('agent' in opts) options.agent = opts.agent;
-
-    const transport = opts.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
-    this.request = transport.request(options);
-    this.request.followRedirects = opts.followRedirects;
+    this.request = transport.buildRequest.call(this, method, url, opts);
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
   }
@@ -101,7 +80,7 @@ class Snekfetch extends Stream.Readable {
    */
   send(data) {
     if (this.response) throw new Error('Cannot modify data after being sent!');
-    if (data instanceof Buffer || data instanceof Stream) {
+    if (transport.shouldSendRaw(data)) {
       this.data = data;
     } else if (data !== null && typeof data === 'object') {
       const header = this._getRequestHeader('content-type');
@@ -121,131 +100,76 @@ class Snekfetch extends Stream.Readable {
   }
 
   then(resolver, rejector) {
-    return new Promise((resolve, reject) => {
-      const request = this.request;
-
-      const handleError = (err) => {
-        if (!err) err = new Error('Unknown error occured');
-        err.request = request;
-        reject(err);
-      };
-
-      request.once('abort', handleError);
-      request.once('aborted', handleError);
-      request.once('error', handleError);
-
-      request.once('response', (response) => {
-        const stream = new Stream.PassThrough();
-        if (this._shouldUnzip(response)) {
-          response.pipe(zlib.createUnzip({
-            flush: zlib.Z_SYNC_FLUSH,
-            finishFlush: zlib.Z_SYNC_FLUSH,
-          })).pipe(stream);
-        } else {
-          response.pipe(stream);
-        }
-
-        const body = [];
-
-        stream.on('data', (chunk) => {
-          if (!this.push(chunk)) this.pause();
-          body.push(chunk);
-        });
-
-        stream.once('end', () => {
-          this.push(null);
-          const concated = Buffer.concat(body);
-
-          if (this.request.followRedirects && this._shouldRedirect(response)) {
-            let method = this.request.method;
-            if ([301, 302].includes(response.statusCode)) {
-              if (method !== 'HEAD') method = 'GET';
-              this.data = null;
-            } else if (response.statusCode === 303) {
-              method = 'GET';
-            }
-
-            const headers = {};
-            if (this.request._headerNames) {
-              for (const name of Object.keys(this.request._headerNames)) {
-                if (name.toLowerCase() === 'host') continue;
-                headers[this.request._headerNames[name]] = this.request._headers[name];
-              }
-            } else {
-              for (const name of Object.keys(this.request._headers)) {
-                if (name.toLowerCase() === 'host') continue;
-                const header = this.request._headers[name];
-                headers[header.name] = header.value;
-              }
-            }
-
-            const newURL = /^https?:\/\//i.test(response.headers.location) ?
-              response.headers.location :
-              URL.resolve(makeURLFromRequest(request), response.headers.location);
-            resolve(new Snekfetch(method, newURL, { data: this.data, headers }));
-            return;
+    transport.finalizeRequest.call(this, resolver, rejector)
+      .then(({ response, raw, redirect }) => {
+        if (this.request.followRedirects && redirect) {
+          let method = this.request.method;
+          if ([301, 302].includes(response.statusCode)) {
+            if (method !== 'HEAD') method = 'GET';
+            this.data = null;
+          } else if (response.statusCode === 303) {
+            method = 'GET';
           }
 
-          /**
-           * @typedef {Object} SnekfetchResponse
-           * @prop {HTTP.Request} request
-           * @prop {?string|object|Buffer} body Processed response body
-           * @prop {string} text Raw response body
-           * @prop {boolean} ok If the response code is >= 200 and < 300
-           * @prop {number} status HTTP status code
-           * @prop {string} statusText Human readable HTTP status
-           */
-          const res = {
-            request: this.request,
-            get body() {
-              delete res.body;
-              const type = response.headers['content-type'];
-              if (type && type.includes('application/json')) {
-                try {
-                  res.body = JSON.parse(res.text);
-                } catch (err) {
-                  res.body = res.text;
-                } // eslint-disable-line no-empty
-              } else if (type && type.includes('application/x-www-form-urlencoded')) {
-                res.body = qs.parse(res.text);
-              } else {
-                res.body = concated;
-              }
-
-              return res.body;
-            },
-            text: concated.toString(),
-            ok: response.statusCode >= 200 && response.statusCode < 400,
-            headers: response.headers,
-            status: response.statusCode,
-            statusText: response.statusText || http.STATUS_CODES[response.statusCode],
-          };
-
-          if (res.ok) {
-            resolve(res);
+          const headers = {};
+          if (this.request._headerNames) {
+            for (const name of Object.keys(this.request._headerNames)) {
+              if (name.toLowerCase() === 'host') continue;
+              headers[this.request._headerNames[name]] = this.request._headers[name];
+            }
           } else {
-            const err = new Error(`${res.status} ${res.statusText}`.trim());
-            Object.assign(err, res);
-            reject(err);
+            for (const name of Object.keys(this.request._headers)) {
+              if (name.toLowerCase() === 'host') continue;
+              const header = this.request._headers[name];
+              headers[header.name] = header.value;
+            }
           }
-        });
-      });
 
-      const data = this.data ? this.data.end ? this.data.end() : this.data : null;
-      this._addFinalHeaders();
-      if (this.request.query) this.request.path = `${this.request.path}?${qs.stringify(this.request.query)}`;
-      if (Array.isArray(data)) {
-        for (const chunk of data) request.write(chunk);
-        request.end();
-      } else if (data instanceof Stream) {
-        data.pipe(request);
-      } else if (data instanceof Buffer) {
-        this.set('Content-Length', Buffer.byteLength(data));
-        request.end(data);
-      } else {
-        request.end(data);
-      }
-    })
+          return new Snekfetch(method, redirect, { data: this.data, headers });
+        }
+        /**
+         * @typedef {Object} SnekfetchResponse
+         * @prop {HTTP.Request} request
+         * @prop {?string|object|Buffer} body Processed response body
+         * @prop {string} text Raw response body
+         * @prop {boolean} ok If the response code is >= 200 and < 300
+         * @prop {number} status HTTP status code
+         * @prop {string} statusText Human readable HTTP status
+         */
+        const res = {
+          request: this.request,
+          get body() {
+            delete res.body;
+            const type = response.headers['content-type'];
+            if (type && type.includes('application/json')) {
+              try {
+                res.body = JSON.parse(res.text);
+              } catch (err) {
+                res.body = res.text;
+              } // eslint-disable-line no-empty
+            } else if (type && type.includes('application/x-www-form-urlencoded')) {
+              res.body = qs.parse(res.text);
+            } else {
+              res.body = raw;
+            }
+
+            return res.body;
+          },
+          text: raw.toString(),
+          ok: response.statusCode >= 200 && response.statusCode < 400,
+          headers: response.headers,
+          status: response.statusCode,
+          statusText: response.statusText || transport.STATUS_CODES[response.statusCode],
+        };
+
+        if (res.ok) {
+          return res;
+        } else {
+          const err = new Error(`${res.status} ${res.statusText}`.trim());
+          Object.assign(err, res);
+          return Promise.reject(err);
+        }
+      })
       .then(resolver, rejector);
   }
 
@@ -282,7 +206,7 @@ class Snekfetch extends Stream.Readable {
   }
 
   _getFormData() {
-    if (!this._formData) this._formData = new FormData();
+    if (!this._formData) this._formData = new transport.FormData();
     return this._formData;
   }
 
@@ -311,18 +235,9 @@ class Snekfetch extends Stream.Readable {
 
 Snekfetch.version = Package.version;
 
-Snekfetch.METHODS = (http.METHODS || ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD']).concat('BREW');
+Snekfetch.METHODS = transport.METHODS.concat('BREW');
 for (const method of Snekfetch.METHODS) {
   Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url, opts) => new Snekfetch(method, url, opts);
 }
 
 module.exports = Snekfetch;
-
-function makeURLFromRequest(request) {
-  return URL.format({
-    protocol: request.connection.encrypted ? 'https:' : 'http:',
-    hostname: request.getHeader('host'),
-    pathname: request.path.split('?')[0],
-    query: request.query,
-  });
-}
