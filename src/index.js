@@ -1,4 +1,4 @@
-const browser = require('./isBrowser');
+const browser = typeof window !== 'undefined';
 const qs = require('querystring');
 const Package = require('../package.json');
 const transport = browser ? require('./browser') : require('./node');
