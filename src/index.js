@@ -100,7 +100,9 @@ class Snekfetch extends (transport.extension || Object) {
   }
 
   then(resolver, rejector) {
-    transport.finalizeRequest.call(this, resolver, rejector)
+    transport.finalizeRequest.call(this, {
+        data: this.data ? this.data.end ? this.data.end() : this.data : null,
+      })
       .then(({ response, raw, redirect, headers }) => {
         if (this.request.followRedirects && redirect) {
           let method = this.request.method;

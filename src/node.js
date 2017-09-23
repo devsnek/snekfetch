@@ -25,7 +25,7 @@ function buildRequest(method, url, opts) {
   return request;
 }
 
-function finalizeRequest() {
+function finalizeRequest({ data }) {
   return new Promise((resolve, reject) => {
     const request = this.request;
 
@@ -71,7 +71,6 @@ function finalizeRequest() {
       });
     });
 
-    const data = this.data ? this.data.end ? this.data.end() : this.data : null;
     this._addFinalHeaders();
     if (this.request.query) this.request.path = `${this.request.path}?${qs.stringify(this.request.query)}`;
     if (Array.isArray(data)) {
