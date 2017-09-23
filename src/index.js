@@ -101,7 +101,7 @@ class Snekfetch extends (transport.extension || Object) {
 
   then(resolver, rejector) {
     transport.finalizeRequest.call(this, resolver, rejector)
-      .then(({ response, raw, redirect }) => {
+      .then(({ response, raw, redirect, headers }) => {
         if (this.request.followRedirects && redirect) {
           let method = this.request.method;
           if ([301, 302].includes(response.statusCode)) {
@@ -111,22 +111,24 @@ class Snekfetch extends (transport.extension || Object) {
             method = 'GET';
           }
 
-          const headers = {};
+          const redirectHeaders = {};
           if (this.request._headerNames) {
             for (const name of Object.keys(this.request._headerNames)) {
               if (name.toLowerCase() === 'host') continue;
-              headers[this.request._headerNames[name]] = this.request._headers[name];
+              redirectHeaders[this.request._headerNames[name]] = this.request._headers[name];
             }
           } else {
             for (const name of Object.keys(this.request._headers)) {
               if (name.toLowerCase() === 'host') continue;
               const header = this.request._headers[name];
-              headers[header.name] = header.value;
+              redirectHeaders[header.name] = header.value;
             }
           }
 
-          return new Snekfetch(method, redirect, { data: this.data, headers });
+          return new Snekfetch(method, redirect, { data: this.data, headers: redirectHeaders });
         }
+
+        const statusCode = response.statusCode || response.status;
         /**
          * @typedef {Object} SnekfetchResponse
          * @prop {HTTP.Request} request
@@ -140,7 +142,7 @@ class Snekfetch extends (transport.extension || Object) {
           request: this.request,
           get body() {
             delete res.body;
-            const type = response.headers['content-type'];
+            const type = (headers || response.headers)['content-type'];
             if (type && type.includes('application/json')) {
               try {
                 res.body = JSON.parse(res.text);
@@ -156,9 +158,9 @@ class Snekfetch extends (transport.extension || Object) {
             return res.body;
           },
           text: raw.toString(),
-          ok: response.statusCode >= 200 && response.statusCode < 400,
-          headers: response.headers,
-          status: response.statusCode,
+          ok: statusCode >= 200 && statusCode < 400,
+          headers: headers || response.headers,
+          status: statusCode,
           statusText: response.statusText || transport.STATUS_CODES[response.statusCode],
         };
 

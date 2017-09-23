@@ -1,11 +1,23 @@
 function buildRequest(method, url, options) {
-  this.request = fetch(url, {
-    method, headers: options.headers,
-  });
+  return {
+    url, method, options,
+    headers: {},
+    setHeader(name, value) {
+      this.headers[name.toLowerCase()] = value;
+    },
+    getHeader(name) {
+      return this.headers[name.toLowerCase()];
+    },
+  };
 }
 
 function finalizeRequest() {
-  return true;
+  return fetch(this.request.url, this.request)
+    .then((r) => r.text().then((t) => {
+      const headers = {};
+      for (const [k, v] of r.headers) headers[k.toLowerCase()] = v;
+      return { response: r, raw: t, headers };
+    }));
 }
 
 function shouldSendRaw() {
