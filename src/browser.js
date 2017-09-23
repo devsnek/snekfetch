@@ -27,5 +27,6 @@ function shouldSendRaw() {
 module.exports = {
   buildRequest, finalizeRequest, shouldSendRaw,
   METHODS: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+  STATUS_CODES: {},
   FormData: window.FormData,
 };
