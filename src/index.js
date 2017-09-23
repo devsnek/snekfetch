@@ -1,4 +1,4 @@
-const { browser } = require('./checks');
+const browser = require('./isBrowser');
 const qs = require('querystring');
 const Package = require('../package.json');
 const transport = browser ? require('./browser') : require('./node');
@@ -101,8 +101,8 @@ class Snekfetch extends (transport.extension || Object) {
 
   then(resolver, rejector) {
     transport.finalizeRequest.call(this, {
-        data: this.data ? this.data.end ? this.data.end() : this.data : null,
-      })
+      data: this.data ? this.data.end ? this.data.end() : this.data : null,
+    })
       .then(({ response, raw, redirect, headers }) => {
         if (this.request.followRedirects && redirect) {
           let method = this.request.method;
@@ -144,13 +144,13 @@ class Snekfetch extends (transport.extension || Object) {
           request: this.request,
           get body() {
             delete res.body;
-            const type = (headers || response.headers)['content-type'];
+            const type = this.headers['content-type'];
             if (type && type.includes('application/json')) {
               try {
                 res.body = JSON.parse(res.text);
               } catch (err) {
                 res.body = res.text;
-              } // eslint-disable-line no-empty
+              }
             } else if (type && type.includes('application/x-www-form-urlencoded')) {
               res.body = qs.parse(res.text);
             } else {

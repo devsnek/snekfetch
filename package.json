@@ -14,10 +14,10 @@
   "homepage": "https://github.com/devsnek/snekfetch#readme",
   "dependencies": {},
   "devDependencies": {
-    "webpack": "^3.6.0"
+    "browserify": "^14.4.0"
   },
   "description": "Just do http requests without all that weird nastiness from other libs",
   "browser": {
-    "src/node": false
+    "./src/node/index.js": false
   }
 }
