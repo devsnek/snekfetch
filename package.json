@@ -18,6 +18,6 @@
   },
   "description": "Just do http requests without all that weird nastiness from other libs",
   "browser": {
-    "src/node.js": false
+    "src/node": false
   }
 }
