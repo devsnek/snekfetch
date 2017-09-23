@@ -13,11 +13,7 @@ function buildRequest(method, url, options) {
 
 function finalizeRequest({ data }) {
   this._addFinalHeaders();
-  if (this.request.query) {
-    const query = new URLSearchParams();
-    for (const [k, v] of Object.entries(this.request.query)) query.set(k, v);
-    this.request.url = `${this.request.url}?${query}`;
-  }
+  if (this.request.query) this.request.url = `${this.request.url}?${this.request.query}`;
   if (data) this.request.body = data;
   return fetch(this.request.url, this.request)
     .then((r) => r.text().then((t) => {

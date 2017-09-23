@@ -33,8 +33,11 @@ class Snekfetch extends (transport.extension || Object) {
    */
   query(name, value) {
     if (this.response) throw new Error('Cannot modify query after being sent!');
+    if (!this.request.query) this.request.query = browser ? new URLSearchParams() : {};
     if (name !== null && typeof name === 'object') {
-      this.request.query = Object.assign(this.request.query || {}, name);
+      for (const [k, v] of Object.entries(name)) this.query(k, v);
+    } else if (browser) {
+      this.request.query.set(name, value);
     } else {
       this.request.query[name] = value;
     }
