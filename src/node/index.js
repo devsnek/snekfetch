@@ -19,8 +19,11 @@ function buildRequest(method, url) {
   const transport = this.options.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
   options.method = method.toUpperCase();
   if (this.options.headers) options.headers = this.options.headers;
-  if (this.options.agent) options.agent = this.options.agent;
-  else if (transport.Agent) options.agent = new transport.Agent({ keepAlive: true });
+  if (this.options.agent) {
+    options.agent = this.options.agent;
+  } else if (transport.Agent && this.options.followRedirects !== false) {
+    options.agent = new transport.Agent({ keepAlive: true });
+  }
   this.options._req = options;
   const request = transport.request(options);
   return request;
