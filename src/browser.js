@@ -1,12 +1,12 @@
 function buildRequest(method, url, options) {
   return {
     url, method, options,
-    headers: {},
+    _headers: {},
     setHeader(name, value) {
-      this.headers[name.toLowerCase()] = value;
+      this._headers[name.toLowerCase()] = value;
     },
     getHeader(name) {
-      return this.headers[name.toLowerCase()];
+      return this._headers[name.toLowerCase()];
     },
   };
 }
