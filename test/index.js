@@ -17,10 +17,10 @@ snekfetch.post('http://strawpoll.me/api/v2/polls')
   .send({ title: 'snekfetch', options: ['1', '2'] })
   .then(() => console.log('test 2 success'));
 
-snekfetch.get('file://../package.json')
+snekfetch.get('file://./package.json')
   .then(() => console.log('test 3 success'));
 
-snekfetch.get('file://../nonexistant')
+snekfetch.get('file://./nonexistant')
   .catch(() => console.log('test 4 success'));
 
 snekfetch.post('https://httpbin.org/post')

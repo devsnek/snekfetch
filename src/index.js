@@ -20,6 +20,7 @@ class Snekfetch extends (transport.extension || Object) {
    */
   constructor(method, url, opts = { headers: null, data: null, query: null, version: 1 }) {
     super();
+    this.options = opts;
     this.request = transport.buildRequest.call(this, method, url, opts);
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
@@ -107,7 +108,7 @@ class Snekfetch extends (transport.extension || Object) {
       data: this.data ? this.data.end ? this.data.end() : this.data : null,
     })
       .then(({ response, raw, redirect, headers }) => {
-        if (this.request.followRedirects && redirect) {
+        if (redirect) {
           let method = this.request.method;
           if ([301, 302].includes(response.statusCode)) {
             if (method !== 'HEAD') method = 'GET';
@@ -130,7 +131,11 @@ class Snekfetch extends (transport.extension || Object) {
             }
           }
 
-          return new Snekfetch(method, redirect, { data: this.data, headers: redirectHeaders });
+          return new Snekfetch(method, redirect, {
+            data: this.data,
+            headers: redirectHeaders,
+            agent: this.options._req.agent,
+          });
         }
 
         const statusCode = response.statusCode || response.status;
@@ -209,7 +214,7 @@ class Snekfetch extends (transport.extension || Object) {
   }
 
   _shouldRedirect(res) {
-    return [301, 302, 303, 307, 308].includes(res.statusCode);
+    return this.options.followRedirects !== false && [301, 302, 303, 307, 308].includes(res.statusCode);
   }
 
   _getFormData() {

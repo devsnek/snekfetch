@@ -1,7 +1,7 @@
-function buildRequest(method, url, options) {
+function buildRequest(method, url) {
   return {
-    url, method, options,
-    redirect: options.followRedirects ? 'follow' : 'manual',
+    url, method,
+    redirect: this.options.followRedirects ? 'follow' : 'manual',
     _headers: {},
     setHeader(name, value) {
       this._headers[name.toLowerCase()] = value;

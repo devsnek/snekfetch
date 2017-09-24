@@ -13,15 +13,16 @@ const transports = {
   http2: require('./transports/http2'),
 };
 
-function buildRequest(method, url, opts) {
+function buildRequest(method, url) {
   const options = URL.parse(url);
   if (!options.protocol) throw new Error('URL must have a valid protocol');
+  const transport = this.options.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
   options.method = method.toUpperCase();
-  if (opts.headers) options.headers = opts.headers;
-  if ('agent' in opts) options.agent = opts.agent;
-  const transport = opts.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
+  if (this.options.headers) options.headers = this.options.headers;
+  if (this.options.agent) options.agent = this.options.agent;
+  else if (transport.Agent) options.agent = new transport.Agent({ keepAlive: true });
+  this.options._req = options;
   const request = transport.request(options);
-  request.followRedirects = opts.followRedirects;
   return request;
 }
 
@@ -62,7 +63,7 @@ function finalizeRequest({ data }) {
         const raw = Buffer.concat(body);
 
         let redirect = false;
-        if (this.request.followRedirects && this._shouldRedirect(response)) {
+        if (this._shouldRedirect(response)) {
           redirect = /^https?:\/\//i.test(response.headers.location) ?
             response.headers.location :
             URL.resolve(makeURLFromRequest(request), response.headers.location);
