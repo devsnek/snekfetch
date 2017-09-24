@@ -1,6 +1,7 @@
 function buildRequest(method, url, options) {
   return {
     url, method, options,
+    redirect: options.followRedirects ? 'follow' : 'manual',
     _headers: {},
     setHeader(name, value) {
       this._headers[name.toLowerCase()] = value;
