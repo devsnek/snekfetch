@@ -104,7 +104,7 @@ class Snekfetch extends (transport.extension || Object) {
   }
 
   then(resolver, rejector) {
-    transport.finalizeRequest.call(this, {
+    return transport.finalizeRequest.call(this, {
       data: this.data ? this.data.end ? this.data.end() : this.data : null,
     })
       .then(({ response, raw, redirect, headers }) => {
