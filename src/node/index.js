@@ -55,11 +55,12 @@ function finalizeRequest({ data }) {
       const body = [];
 
       stream.on('data', (chunk) => {
-        if (!this.push(chunk)) this.pause();
+        if (this.options.version !== 2) if (!this.push(chunk)) this.pause();
         body.push(chunk);
       });
 
       stream.once('end', () => {
+        if (this.options.version === 2) for (const item of body) this.push(item);
         this.push(null);
         const raw = Buffer.concat(body);
 
