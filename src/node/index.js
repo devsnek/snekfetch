@@ -44,14 +44,12 @@ function finalizeRequest({ data }) {
     request.once('error', handleError);
 
     request.once('response', (response) => {
-      const stream = new Stream.PassThrough();
+      let stream = response;
       if (this._shouldUnzip(response)) {
-        response.pipe(zlib.createUnzip({
+        stream = response.pipe(zlib.createUnzip({
           flush: zlib.Z_SYNC_FLUSH,
           finishFlush: zlib.Z_SYNC_FLUSH,
-        })).pipe(stream);
-      } else {
-        response.pipe(stream);
+        }));
       }
 
       const body = [];

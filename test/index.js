@@ -36,4 +36,7 @@ snekfetch.post('file://./post_test.json')
   });
 
 snekfetch.get('https://http2.akamai.com/demo', { version: 2 })
-  .then((r) => console.log('test 8 success'));
+  .then(() => console.log('test 8 success'));
+
+snekfetch.get('https://httpbin.org/gzip')
+  .then(() => console.log('test 9 success'));
