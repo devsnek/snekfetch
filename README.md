@@ -15,7 +15,7 @@ Documentation is available as JSDOC in `src/index.js`
 
 ## Some examples
 
-```js
+```javascript
 const snekfetch = require('snekfetch');
 
 snekfetch.get('https://s.gus.host/o-SNAKES-80.jpg')
@@ -25,7 +25,7 @@ snekfetch.get('https://s.gus.host/o-SNAKES-80.jpg')
   .pipe(fs.createWriteStream('download.jpg'));
 ```
 
-```js
+```javascript
 const snekfetch = require('snekfetch');
 
 snekfetch.post('https://httpbin.org/post')

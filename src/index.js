@@ -10,13 +10,19 @@ const transport = browser ? require('./browser') : require('./node');
  */
 class Snekfetch extends (transport.extension || Object) {
   /**
-   * Create a request, but you probably wanna use `snekfetch#method`
+   * @typedef {object} snekfetchOptions
+   * @memberof Snekfetch
+   * @property {object} [headers] Headers to initialize the request with
+   * @property {object|string|Buffer} [data] Data to initialize the request with
+   * @property {string|Object} [query] Query to intialize the request with
+   * @property {string} [formData] Form data to initialize the request with
+   */
+
+  /**
+   * Create a request, but you probably wanna use `Snekfetch#method`
    * @param {string} method HTTP method
    * @param {string} url URL
-   * @param {Object} opts Options
-   * @param {Object} [opts.headers] Headers to initialize the request with
-   * @param {Object|string|Buffer} [opts.data] Data to initialize the request with
-   * @param {string|Object} [opts.query] Query to intialize the request with
+   * @param {Snekfetch.snekfetchOptions} opts Options
    */
   constructor(method, url, opts = { headers: null, data: null, formData: null, query: null, version: 1 }) {
     super();
@@ -145,6 +151,7 @@ class Snekfetch extends (transport.extension || Object) {
         const statusCode = response.statusCode || response.status;
         /**
          * @typedef {Object} SnekfetchResponse
+         * @memberof Snekfetch
          * @prop {HTTP.Request} request
          * @prop {?string|object|Buffer} body Processed response body
          * @prop {string} text Raw response body
@@ -250,6 +257,270 @@ class Snekfetch extends (transport.extension || Object) {
 }
 
 Snekfetch.version = Package.version;
+
+/**
+ * [Node Only]
+ * @method Snekfetch.acl
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.bind
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.checkout
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.connect
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.copy
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Browser & Node]
+ * @method Snekfetch.delete
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Browser & Node]
+ * @method Snekfetch.get
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Browser & Node]
+ * @method Snekfetch.head
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.link
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.lock
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.msearch
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.merge
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.mkactivity
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.mkcalendar
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.mkcol
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.move
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.notify
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Browser & Node]
+ * @method Snekfetch.options
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.patch
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Browser & Node]
+ * @method Snekfetch.post
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.propfind
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.proppatch
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.purge
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Browser & Node]
+ * @method Snekfetch.put
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.rebind
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.report
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.search
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.subscribe
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.trace
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.unbind
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.unlink
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.unlock
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
+
+/**
+ * [Node Only]
+ * @method Snekfetch.unsubscribe
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
 
 Snekfetch.METHODS = transport.METHODS.concat('BREW');
 for (const method of Snekfetch.METHODS) {
