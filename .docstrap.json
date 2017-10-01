@@ -13,7 +13,7 @@
         "inverseNav"            : true,
         "outputSourceFiles"     : false,
         "outputSourcePath"      : true,
-        "dateFormat"            : "dddd, MMMM Do YYYY, h:mm:ss a",
+        "dateFormat"            : "",
         "syntaxTheme"           : "dark",
         "sort"                  : true,
         "search"                : true 
