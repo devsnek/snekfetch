@@ -1,0 +1,30 @@
+{
+    "templates": {
+        "cleverLinks"           : true,
+        "monospaceLinks"        : true,
+        "systemName"            : "snekfetch",
+        "footer"                : "<a href=\"https://github.com/devsnek/snekfetch\">boop🐍</a>",
+        "copyright"             : "",
+        "includeDate"           : false,
+        "navType"               : "vertical",
+        "theme"                 : "flatly",
+        "linenums"              : true,
+        "collapseSymbols"       : false,
+        "inverseNav"            : true,
+        "outputSourceFiles"     : false,
+        "outputSourcePath"      : true,
+        "dateFormat"            : "",
+        "syntaxTheme"           : "dark",
+        "sort"                  : true,
+        "search"                : true 
+    },
+    "source": {
+        "include"               : [ "./src"]
+    },
+    "opts": {
+        "template"              : "./node_modules/ink-docstrap/template",
+        "encoding"              : "utf8",
+        "destination"           : "./docs/",
+        "recurse"               : true
+    }
+}

@@ -45,7 +45,7 @@ function mimeOfBuffer(input) {
     };
   }
 
-	// needs to be before `tif` check
+  // needs to be before `tif` check
   if (
     ((buf[0] === 0x49 && buf[1] === 0x49 && buf[2] === 0x2A && buf[3] === 0x0) ||
     (buf[0] === 0x4D && buf[1] === 0x4D && buf[2] === 0x0 && buf[3] === 0x2A)) && buf[8] === 0x43 && buf[9] === 0x52
@@ -87,7 +87,7 @@ function mimeOfBuffer(input) {
     };
   }
 
-	// needs to be before `zip` check
+  // needs to be before `zip` check
   if (
     buf[0] === 0x50 && buf[1] === 0x4B && buf[2] === 0x3 && buf[3] === 0x4 && buf[30] === 0x6D && buf[31] === 0x69 &&
     buf[32] === 0x6D && buf[33] === 0x65 && buf[34] === 0x74 && buf[35] === 0x79 && buf[36] === 0x70 &&
@@ -103,8 +103,8 @@ function mimeOfBuffer(input) {
     };
   }
 
-	// needs to be before `zip` check
-	// assumes signed .xpi from addons.mozilla.org
+  // needs to be before `zip` check
+  // assumes signed .xpi from addons.mozilla.org
   if (
     buf[0] === 0x50 && buf[1] === 0x4B && buf[2] === 0x3 && buf[3] === 0x4 && buf[30] === 0x4D && buf[31] === 0x45 &&
     buf[32] === 0x54 && buf[33] === 0x41 && buf[34] === 0x2D && buf[35] === 0x49 && buf[36] === 0x4E &&
@@ -174,21 +174,21 @@ function mimeOfBuffer(input) {
   }
 
   if (
-		(buf[0] === 0x0 && buf[1] === 0x0 && buf[2] === 0x0 && (buf[3] === 0x18 || buf[3] === 0x20) && buf[4] === 0x66 &&
+    (buf[0] === 0x0 && buf[1] === 0x0 && buf[2] === 0x0 && (buf[3] === 0x18 || buf[3] === 0x20) && buf[4] === 0x66 &&
     buf[5] === 0x74 && buf[6] === 0x79 && buf[7] === 0x70) ||
     (buf[0] === 0x33 && buf[1] === 0x67 && buf[2] === 0x70 && buf[3] === 0x35) ||
-		(buf[0] === 0x0 && buf[1] === 0x0 && buf[2] === 0x0 && buf[3] === 0x1C && buf[4] === 0x66 && buf[5] === 0x74 &&
+  (buf[0] === 0x0 && buf[1] === 0x0 && buf[2] === 0x0 && buf[3] === 0x1C && buf[4] === 0x66 && buf[5] === 0x74 &&
       buf[6] === 0x79 && buf[7] === 0x70 && buf[8] === 0x6D && buf[9] === 0x70 && buf[10] === 0x34 &&
       buf[11] === 0x32 && buf[16] === 0x6D && buf[17] === 0x70 && buf[18] === 0x34 && buf[19] === 0x31 &&
       buf[20] === 0x6D && buf[21] === 0x70 && buf[22] === 0x34 && buf[23] === 0x32 && buf[24] === 0x69 &&
       buf[25] === 0x73 && buf[26] === 0x6F && buf[27] === 0x6D) ||
-		(buf[0] === 0x0 && buf[1] === 0x0 && buf[2] === 0x0 && buf[3] === 0x1C && buf[4] === 0x66 && buf[5] === 0x74 &&
+  (buf[0] === 0x0 && buf[1] === 0x0 && buf[2] === 0x0 && buf[3] === 0x1C && buf[4] === 0x66 && buf[5] === 0x74 &&
       buf[6] === 0x79 && buf[7] === 0x70 && buf[8] === 0x69 && buf[9] === 0x73 && buf[10] === 0x6F &&
       buf[11] === 0x6D) ||
-		(buf[0] === 0x0 && buf[1] === 0x0 && buf[2] === 0x0 && buf[3] === 0x1c && buf[4] === 0x66 && buf[5] === 0x74 &&
+  (buf[0] === 0x0 && buf[1] === 0x0 && buf[2] === 0x0 && buf[3] === 0x1c && buf[4] === 0x66 && buf[5] === 0x74 &&
       buf[6] === 0x79 && buf[7] === 0x70 && buf[8] === 0x6D && buf[9] === 0x70 && buf[10] === 0x34 &&
       buf[11] === 0x32 && buf[12] === 0x0 && buf[13] === 0x0 && buf[14] === 0x0 && buf[15] === 0x0)
-	) {
+  ) {
     return {
       ext: 'mp4',
       mime: 'video/mp4',
@@ -212,7 +212,7 @@ function mimeOfBuffer(input) {
     };
   }
 
-	// https://github.com/threatstack/libmagic/blob/master/magic/Magdir/matroska
+  // https://github.com/threatstack/libmagic/blob/master/magic/Magdir/matroska
   if (buf[0] === 0x1A && buf[1] === 0x45 && buf[2] === 0xDF && buf[3] === 0xA3) {
     const sliced = buf.subarray(4, 4 + 4096);
     const idPos = sliced.findIndex((el, i, arr) => arr[i] === 0x42 && arr[i + 1] === 0x82);
@@ -289,7 +289,7 @@ function mimeOfBuffer(input) {
     };
   }
 
-	// needs to be before `ogg` check
+  // needs to be before `ogg` check
   if (
     buf[28] === 0x4F && buf[29] === 0x70 && buf[30] === 0x75 && buf[31] === 0x73 && buf[32] === 0x48 &&
     buf[33] === 0x65 && buf[34] === 0x61 && buf[35] === 0x64
@@ -360,12 +360,12 @@ function mimeOfBuffer(input) {
   }
 
   if (
-		(buf[0] === 0x77 && buf[1] === 0x4F && buf[2] === 0x46 && buf[3] === 0x46) &&
-		(
-			(buf[4] === 0x00 && buf[5] === 0x01 && buf[6] === 0x00 && buf[7] === 0x00) ||
-			(buf[4] === 0x4F && buf[5] === 0x54 && buf[6] === 0x54 && buf[7] === 0x4F)
-		)
-	) {
+    (buf[0] === 0x77 && buf[1] === 0x4F && buf[2] === 0x46 && buf[3] === 0x46) &&
+  (
+    (buf[4] === 0x00 && buf[5] === 0x01 && buf[6] === 0x00 && buf[7] === 0x00) ||
+   (buf[4] === 0x4F && buf[5] === 0x54 && buf[6] === 0x54 && buf[7] === 0x4F)
+  )
+  ) {
     return {
       ext: 'woff',
       mime: 'application/font-woff',
@@ -373,12 +373,12 @@ function mimeOfBuffer(input) {
   }
 
   if (
-		(buf[0] === 0x77 && buf[1] === 0x4F && buf[2] === 0x46 && buf[3] === 0x32) &&
-		(
-			(buf[4] === 0x00 && buf[5] === 0x01 && buf[6] === 0x00 && buf[7] === 0x00) ||
-			(buf[4] === 0x4F && buf[5] === 0x54 && buf[6] === 0x54 && buf[7] === 0x4F)
-		)
-	) {
+    (buf[0] === 0x77 && buf[1] === 0x4F && buf[2] === 0x46 && buf[3] === 0x32) &&
+  (
+    (buf[4] === 0x00 && buf[5] === 0x01 && buf[6] === 0x00 && buf[7] === 0x00) ||
+   (buf[4] === 0x4F && buf[5] === 0x54 && buf[6] === 0x54 && buf[7] === 0x4F)
+  )
+  ) {
     return {
       ext: 'woff2',
       mime: 'application/font-woff',
@@ -386,13 +386,13 @@ function mimeOfBuffer(input) {
   }
 
   if (
-		(buf[34] === 0x4C && buf[35] === 0x50) &&
-		(
-			(buf[8] === 0x00 && buf[9] === 0x00 && buf[10] === 0x01) ||
-			(buf[8] === 0x01 && buf[9] === 0x00 && buf[10] === 0x02) ||
-			(buf[8] === 0x02 && buf[9] === 0x00 && buf[10] === 0x02)
-		)
-	) {
+    (buf[34] === 0x4C && buf[35] === 0x50) &&
+  (
+    (buf[8] === 0x00 && buf[9] === 0x00 && buf[10] === 0x01) ||
+   (buf[8] === 0x01 && buf[9] === 0x00 && buf[10] === 0x02) ||
+   (buf[8] === 0x02 && buf[9] === 0x00 && buf[10] === 0x02)
+  )
+  ) {
     return {
       ext: 'eot',
       mime: 'application/octet-stream',
@@ -463,16 +463,16 @@ function mimeOfBuffer(input) {
   }
 
   if (
-		(buf[0] === 0x4D && buf[1] === 0x53 && buf[2] === 0x43 && buf[3] === 0x46) ||
-		(buf[0] === 0x49 && buf[1] === 0x53 && buf[2] === 0x63 && buf[3] === 0x28)
-	) {
+    (buf[0] === 0x4D && buf[1] === 0x53 && buf[2] === 0x43 && buf[3] === 0x46) ||
+  (buf[0] === 0x49 && buf[1] === 0x53 && buf[2] === 0x63 && buf[3] === 0x28)
+  ) {
     return {
       ext: 'cab',
       mime: 'application/vnd.ms-cab-compressed',
     };
   }
 
-	// needs to be before `ar` check
+  // needs to be before `ar` check
   if (
     buf[0] === 0x21 && buf[1] === 0x3C && buf[2] === 0x61 && buf[3] === 0x72 && buf[4] === 0x63 && buf[5] === 0x68 &&
     buf[6] === 0x3E && buf[7] === 0x0A && buf[8] === 0x64 && buf[9] === 0x65 && buf[10] === 0x62 && buf[11] === 0x69 &&
@@ -503,9 +503,9 @@ function mimeOfBuffer(input) {
   }
 
   if (
-		(buf[0] === 0x1F && buf[1] === 0xA0) ||
-		(buf[0] === 0x1F && buf[1] === 0x9D)
-	) {
+    (buf[0] === 0x1F && buf[1] === 0xA0) ||
+  (buf[0] === 0x1F && buf[1] === 0x9D)
+  ) {
     return {
       ext: 'Z',
       mime: 'application/x-compress',
