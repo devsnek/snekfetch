@@ -18,12 +18,13 @@ class Snekfetch extends (transport.extension || Object) {
    * @param {Object|string|Buffer} [opts.data] Data to initialize the request with
    * @param {string|Object} [opts.query] Query to intialize the request with
    */
-  constructor(method, url, opts = { headers: null, data: null, query: null, version: 1 }) {
+  constructor(method, url, opts = { headers: null, data: null, formData: null, query: null, version: 1 }) {
     super();
     this.options = opts;
     this.request = transport.buildRequest.call(this, method, url, opts);
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
+    if (opts.formData) this._formData = opts.formData;
   }
 
   /**
@@ -105,7 +106,9 @@ class Snekfetch extends (transport.extension || Object) {
 
   then(resolver, rejector) {
     return transport.finalizeRequest.call(this, {
-      data: this.data ? this.data.end ? this.data.end() : this.data : null,
+      data: this._formData ?
+        this._formData.end ? this._formData.end() : this._formData :
+        this.data || null,
     })
       .then(({ response, raw, redirect, headers }) => {
         if (redirect) {
@@ -133,6 +136,7 @@ class Snekfetch extends (transport.extension || Object) {
 
           return new Snekfetch(method, redirect, {
             data: this.data,
+            formData: this._formData,
             headers: redirectHeaders,
             agent: this.options._req.agent,
           });
