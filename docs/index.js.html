@@ -1,4 +1,43 @@
-const browser = typeof window !== 'undefined';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>index.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Snekfetch.html">Snekfetch</a><ul class='methods'><li data-type='method'><a href="Snekfetch.html#attach">attach</a></li><li data-type='method'><a href="Snekfetch.html#end">end</a></li><li data-type='method'><a href="Snekfetch.html#query">query</a></li><li data-type='method'><a href="Snekfetch.html#send">send</a></li><li data-type='method'><a href="Snekfetch.html#set">set</a></li></ul></li></ul><h3>Externals</h3><ul><li><a href="external-Agent.html">Agent</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">index.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const browser = typeof window !== 'undefined';
 const qs = require('querystring');
 const Package = require('../package.json');
 const transport = browser ? require('./browser') : require('./node');
@@ -47,7 +86,7 @@ class Snekfetch extends (transport.extension || Object) {
   query(name, value) {
     if (this.response) throw new Error('Cannot modify query after being sent!');
     if (!this.request.query) this.request.query = browser ? new URLSearchParams() : {};
-    if (name !== null && typeof name === 'object') {
+    if (name !== null &amp;&amp; typeof name === 'object') {
       for (const [k, v] of Object.entries(name)) this.query(k, v);
     } else if (browser) {
       this.request.query.set(name, value);
@@ -65,7 +104,7 @@ class Snekfetch extends (transport.extension || Object) {
    */
   set(name, value) {
     if (this.response) throw new Error('Cannot modify headers after being sent!');
-    if (name !== null && typeof name === 'object') {
+    if (name !== null &amp;&amp; typeof name === 'object') {
       for (const key of Object.keys(name)) this.set(key, name[key]);
     } else {
       this.request.setHeader(name, value);
@@ -98,7 +137,7 @@ class Snekfetch extends (transport.extension || Object) {
     if (this.response) throw new Error('Cannot modify data after being sent!');
     if (transport.shouldSendRaw(data)) {
       this.data = data;
-    } else if (data !== null && typeof data === 'object') {
+    } else if (data !== null &amp;&amp; typeof data === 'object') {
       const header = this._getRequestHeader('content-type');
       let serialize;
       if (header) {
@@ -160,7 +199,7 @@ class Snekfetch extends (transport.extension || Object) {
          * @prop {HTTP.Request} request
          * @prop {?string|object|Buffer} body Processed response body
          * @prop {string} text Raw response body
-         * @prop {boolean} ok If the response code is >= 200 and < 300
+         * @prop {boolean} ok If the response code is >= 200 and &lt; 300
          * @prop {number} status HTTP status code
          * @prop {string} statusText Human readable HTTP status
          */
@@ -169,13 +208,13 @@ class Snekfetch extends (transport.extension || Object) {
           get body() {
             delete res.body;
             const type = this.headers['content-type'];
-            if (type && type.includes('application/json')) {
+            if (type &amp;&amp; type.includes('application/json')) {
               try {
                 res.body = JSON.parse(res.text);
               } catch (err) {
                 res.body = res.text;
               }
-            } else if (type && type.includes('application/x-www-form-urlencoded')) {
+            } else if (type &amp;&amp; type.includes('application/x-www-form-urlencoded')) {
               res.body = qs.parse(res.text);
             } else {
               res.body = raw;
@@ -184,7 +223,7 @@ class Snekfetch extends (transport.extension || Object) {
             return res.body;
           },
           text: raw.toString(),
-          ok: statusCode >= 200 && statusCode < 400,
+          ok: statusCode >= 200 &amp;&amp; statusCode &lt; 400,
           headers: headers || response.headers,
           status: statusCode,
           statusText: response.statusText || transport.STATUS_CODES[response.statusCode],
@@ -230,7 +269,7 @@ class Snekfetch extends (transport.extension || Object) {
   }
 
   _shouldRedirect(res) {
-    return this.options.followRedirects !== false && [301, 302, 303, 307, 308].includes(res.statusCode);
+    return this.options.followRedirects !== false &amp;&amp; [301, 302, 303, 307, 308].includes(res.statusCode);
   }
 
   _getFormData() {
@@ -244,7 +283,7 @@ class Snekfetch extends (transport.extension || Object) {
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
-    if (this.data && this.data.end) this.set('Content-Length', this.data.length);
+    if (this.data &amp;&amp; this.data.end) this.set('Content-Length', this.data.length);
   }
 
   get response() {
@@ -274,3 +313,22 @@ module.exports = Snekfetch;
  * @external Agent
  * @see {@link https://nodejs.org/api/http.html#http_class_http_agent}
  */
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 01 2017 01:49:47 GMT-0500 (CDT) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

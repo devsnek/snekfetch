@@ -22,7 +22,7 @@
         "include"               : [ "./src"]
     },
     "opts": {
-        "template"              : "./node_modules/ink-docstrap/template",
+        "template"              : "./node_modules/docdash",
         "encoding"              : "utf8",
         "destination"           : "./docs/",
         "recurse"               : true

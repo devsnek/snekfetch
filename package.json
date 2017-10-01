@@ -19,8 +19,8 @@
   "homepage": "https://github.com/devsnek/snekfetch#readme",
   "dependencies": {},
   "devDependencies": {
+    "docdash": "^0.4.0",
     "eslint": "^4.8.0",
-    "ink-docstrap": "^1.3.0",
     "jsdoc": "github:jsdoc3/jsdoc",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.6.0"
