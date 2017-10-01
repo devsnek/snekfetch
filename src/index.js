@@ -17,6 +17,8 @@ class Snekfetch extends (transport.extension || Object) {
    * @property {string|Object} [query] Query to intialize the request with
    * @property {string} [formData] Form data to initialize the request with
    * @property {boolean} [followRedirects = false] If the request should follow redirects
+   * @property {number} [version = 1] The http version to use [1 or 2]
+   * @property {external:Agent} [agent] Whether to use an http agent
    */
 
   /**
@@ -529,3 +531,8 @@ for (const method of Snekfetch.METHODS) {
 }
 
 module.exports = Snekfetch;
+
+/**
+ * @external Agent
+ * @see {@link https://nodejs.org/api/http.html#http_class_http_agent}
+ */
