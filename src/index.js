@@ -16,6 +16,7 @@ class Snekfetch extends (transport.extension || Object) {
    * @property {object|string|Buffer} [data] Data to initialize the request with
    * @property {string|Object} [query] Query to intialize the request with
    * @property {string} [formData] Form data to initialize the request with
+   * @property {boolean} [followRedirects = false] If the request should follow redirects
    */
 
   /**
