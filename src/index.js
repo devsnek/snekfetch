@@ -22,7 +22,7 @@ class Snekfetch extends (transport.extension || Object) {
    */
 
   /**
-   * Create a request
+   * Create a request.
    * Usually you'll want to do `Snekfetch#method(url [, options])` instead of
    * `new Snekfetch(method, url [, options])`
    * @param {string} method HTTP method
@@ -263,6 +263,13 @@ class Snekfetch extends (transport.extension || Object) {
 
 Snekfetch.version = Package.version;
 
+/**
+ * @dynamic this.METHODS
+ * @method Snekfetch#((THIS)lowerCase)
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
 Snekfetch.METHODS = transport.METHODS.concat('BREW');
 for (const method of Snekfetch.METHODS) {
   Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url, opts) => new Snekfetch(method, url, opts);

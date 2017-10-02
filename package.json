@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "npx eslint --fix src",
     "test": "npx eslint src",
-    "docs": "npx jsdoc -c ./.docstrap.json -R README.md"
+    "docs": "npx jsdoc -c jsdoc.json -R README.md"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "docdash": "^0.4.0",
     "eslint": "^4.8.0",
     "jsdoc": "github:jsdoc3/jsdoc",
+    "jsdoc-dynamic": "^1.0.0",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.6.0"
   },
