@@ -265,7 +265,7 @@ Snekfetch.version = Package.version;
 
 /**
  * @dynamic this.METHODS
- * @method Snekfetch#((THIS)lowerCase)
+ * @method Snekfetch.((THIS)lowerCase)
  * @param {string} url The url to request
  * @param {Snekfetch.snekfetchOptions} [opts] Options
  * @returns {Snekfetch}
