@@ -40,8 +40,10 @@ function finalizeRequest({ data }) {
     };
 
     request.once('abort', handleError);
-    request.once('aborted', handleError);
     request.once('error', handleError);
+    request.once('socket', (socket) => {
+      socket.once('error', handleError);
+    });
 
     request.once('response', (response) => {
       let stream = response;
