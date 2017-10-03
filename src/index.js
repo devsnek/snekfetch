@@ -138,9 +138,10 @@ class Snekfetch extends (transport.extension || Object) {
               redirectHeaders[this.request._headerNames[name]] = this.request._headers[name];
             }
           } else {
-            for (const name of Object.keys(this.request._headers)) {
+            const hds = this.request._headers || this.request.headers;
+            for (const name of Object.keys(hds)) {
               if (name.toLowerCase() === 'host') continue;
-              const header = this.request._headers[name];
+              const header = hds[name];
               redirectHeaders[header.name] = header.value;
             }
           }
