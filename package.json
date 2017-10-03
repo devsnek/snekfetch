@@ -5,7 +5,8 @@
   "scripts": {
     "lint": "npx eslint --fix src",
     "test": "npx eslint src",
-    "docs": "npx jsdoc -c jsdoc.json -R README.md"
+	"docs": "npx jsdoc -c jsdoc.json -R README.md",
+	"ava": "npx ava test/index.js"
   },
   "repository": {
     "type": "git",
@@ -19,8 +20,11 @@
   "homepage": "https://github.com/devsnek/snekfetch#readme",
   "dependencies": {},
   "devDependencies": {
+    "ava": "^0.22.0",
+    "body-parser": "^1.18.2",
     "docdash": "^0.4.0",
     "eslint": "^4.8.0",
+    "express": "^4.16.1",
     "jsdoc": "github:jsdoc3/jsdoc",
     "jsdoc-dynamic": "^1.0.2",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",

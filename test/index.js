@@ -1,11 +1,36 @@
-/* eslint-disable no-console */
+const ava = require('ava');
 const snekfetch = require('../index');
+const TestServer = require('./server');
+const testServer = new TestServer();
+
+const baseURL = 'http://localhost:8081/';
 // const fs = require('fs');
 
 // snekfetch.get('https://s.gus.host/o-SNAKES.jpg').pipe(fs.createWriteStream('out.jpg'));
 // snekfetch.get('https://discordapp.com/assets/b9411af07f154a6fef543e7e442e4da9.mp3')
 //   .pipe(fs.createWriteStream('ring.mp3'));
 
+ava.before((test) => {
+  testServer.start();
+  test.pass();
+});
+
+ava.after((test) => {
+  testServer.stop();
+  test.pass();
+});
+
+ava('GET 302: No Follow', async(test) => {
+  const res = await snekfetch.get(`${baseURL}redirect`);
+  test.true(res.statusCode === 302);
+});
+
+ava('GET 302: Follow', async(test) => {
+  const res = await snekfetch.get(`${baseURL}redirect`, { followRedirects: true });
+  test.true(res.statusCode === 200);
+});
+
+/*
 snekfetch.get('https://httpbin.org/redirect/1')
   .set('X-Boop-Me', 'Dream plz')
   .query({ a: 1, b: 2 })
@@ -40,3 +65,4 @@ snekfetch.get('https://http2.akamai.com/demo', { version: 2 })
 
 snekfetch.get('https://httpbin.org/gzip')
   .then(() => console.log('test 9 success'));
+  */
