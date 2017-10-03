@@ -5,10 +5,10 @@
   "scripts": {
     "lint": "npx eslint --fix src",
     "test:lint": "npx eslint src",
-    "test:coverage": "npx istanbul check-coverage --statements 70 --branches 70 --functions 70 --lines 70",
-    "test": "npx istanbul cover _mocha -- -R spec",
+    "test:coverage": "npx nyc check-coverage --statements 70 --branches 70 --functions 70 --lines 70",
+    "test": "npx nyc mocha",
     "coverage": "npm test && npm run test:coverage",
-    "coveralls": "cat ./coverage/lcov.info | npx coveralls",
+    "coveralls": "npx nyc report --reporter=text-lcov | coveralls",
     "docs": "npx jsdoc -c jsdoc.json -R README.md"
   },
   "repository": {
@@ -29,7 +29,6 @@
     "docdash": "^0.4.0",
     "eslint": "^4.8.0",
     "form-data": "^2.3.1",
-    "istanbul": "^0.4.5",
     "jsdoc": "github:jsdoc3/jsdoc",
     "jsdoc-dynamic": "^1.0.2",
     "mocha": "^4.0.0",
