@@ -3,4 +3,4 @@ global.window = {
   FormData: require('form-data'),
 };
 
-require('./base')('browser');
+require('./lib/base')('browser');

@@ -4,10 +4,12 @@ node_js:
 install: npm install
 jobs:
   include:
-    - stage: test
-      script: npm test
+    - stage: lint
+      script: npm run test:lint
+    - stage: coverage
+      script: bash ./scripts/.travis-coverage.sh
     - stage: deploy
-      script: bash ./.travis-deploy.sh
+      script: bash ./scripts/.travis-deploy.sh
 cache:
   directories:
     - node_modules

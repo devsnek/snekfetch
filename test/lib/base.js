@@ -16,7 +16,7 @@ after((done) => {
 });
 
 
-const snek = require('../');
+const snek = require('../../');
 
 module.exports = (scope, additional = {}) => {
   describe(`snekfetch - ${scope}`, () => {
