@@ -214,7 +214,7 @@ class Snekfetch extends (transport.extension || Object) {
   end(cb) {
     return this.then(
       (res) => cb ? cb(null, res) : res,
-      (err) => cb ? cb(err, err.status ? err : null) : err
+      (err) => cb ? cb(err, err.status ? err : null) : Promise.reject(err)
     );
   }
 

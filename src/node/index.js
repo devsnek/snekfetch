@@ -24,8 +24,10 @@ function buildRequest(method, url) {
   } else if (transport.Agent && this.options.followRedirects !== false) {
     options.agent = new transport.Agent({ keepAlive: true });
   }
+  if (options.port) options.port = parseInt(options.port);
   this.options._req = options;
   const request = transport.request(options);
+  if (request.setNoDelay) request.setNoDelay(true);
   return request;
 }
 
