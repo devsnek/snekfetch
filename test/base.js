@@ -18,7 +18,7 @@ after((done) => {
 
 const snek = require('../');
 
-module.exports = (scope) => {
+module.exports = (scope, additional = {}) => {
   describe(`snekfetch - ${scope}`, () => {
     it('should return a promise', () => {
       expect(snek.get(base).end()).to.be.an.instanceof(Promise);
@@ -35,5 +35,9 @@ module.exports = (scope) => {
       expect(res.status).to.equal(200);
       expect(res.statusText).to.equal('OK');
     }));
+
+    for (const [desc, fn] of Object.entries(additional)) {
+      it(desc, fn);
+    }
   });
 };
