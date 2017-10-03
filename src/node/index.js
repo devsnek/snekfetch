@@ -33,17 +33,24 @@ function finalizeRequest({ data }) {
   return new Promise((resolve, reject) => {
     const request = this.request;
 
+    let socket;
+
     const handleError = (err) => {
       if (!err) err = new Error('Unknown error occured');
       err.request = request;
       reject(err);
+      if (socket) socket.removeListener('error', handleError);
     };
 
     request.once('abort', handleError);
-    request.once('aborted', handleError);
     request.once('error', handleError);
+    request.once('socket', (s) => {
+      socket = s;
+      s.once('error', handleError);
+    });
 
     request.once('response', (response) => {
+      if (socket) socket.removeListener('error', handleError);
       let stream = response;
       if (this._shouldUnzip(response)) {
         stream = response.pipe(zlib.createUnzip({

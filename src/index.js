@@ -22,7 +22,7 @@ class Snekfetch extends (transport.extension || Object) {
    */
 
   /**
-   * Create a request
+   * Create a request.
    * Usually you'll want to do `Snekfetch#method(url [, options])` instead of
    * `new Snekfetch(method, url [, options])`
    * @param {string} method HTTP method
@@ -138,9 +138,10 @@ class Snekfetch extends (transport.extension || Object) {
               redirectHeaders[this.request._headerNames[name]] = this.request._headers[name];
             }
           } else {
-            for (const name of Object.keys(this.request._headers)) {
+            const hds = this.request._headers || this.request.headers;
+            for (const name of Object.keys(hds)) {
               if (name.toLowerCase() === 'host') continue;
-              const header = this.request._headers[name];
+              const header = hds[name];
               redirectHeaders[header.name] = header.value;
             }
           }
@@ -263,6 +264,13 @@ class Snekfetch extends (transport.extension || Object) {
 
 Snekfetch.version = Package.version;
 
+/**
+ * @dynamic this.METHODS
+ * @method Snekfetch.((THIS)lowerCase)
+ * @param {string} url The url to request
+ * @param {Snekfetch.snekfetchOptions} [opts] Options
+ * @returns {Snekfetch}
+ */
 Snekfetch.METHODS = transport.METHODS.concat('BREW');
 for (const method of Snekfetch.METHODS) {
   Snekfetch[method === 'M-SEARCH' ? 'msearch' : method.toLowerCase()] = (url, opts) => new Snekfetch(method, url, opts);

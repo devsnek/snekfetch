@@ -2,12 +2,12 @@ function buildRequest(method, url) {
   return {
     url, method,
     redirect: this.options.followRedirects ? 'follow' : 'manual',
-    _headers: {},
+    headers: {},
     setHeader(name, value) {
-      this._headers[name.toLowerCase()] = value;
+      this.headers[name.toLowerCase()] = value;
     },
     getHeader(name) {
-      return this._headers[name.toLowerCase()];
+      return this.headers[name.toLowerCase()];
     },
   };
 }
