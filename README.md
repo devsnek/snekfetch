@@ -1,6 +1,7 @@
 [![npm](https://img.shields.io/npm/v/snekfetch.svg?maxAge=3600)](https://www.npmjs.com/package/snekfetch)
 [![npm](https://img.shields.io/npm/dt/snekfetch.svg?maxAge=3600)](https://www.npmjs.com/package/snekfetch)
 [![David](https://david-dm.org/guscaplan/snekfetch.svg)](https://david-dm.org/guscaplan/snekfetch)
+[![Coverage Status](https://coveralls.io/repos/github/devsnek/snekfetch/badge.svg?branch=master)](https://coveralls.io/github/devsnek/snekfetch?branch=master)
 
 [![NPM](https://nodei.co/npm/snekfetch.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/snekfetch/)
 
