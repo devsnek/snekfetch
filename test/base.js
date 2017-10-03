@@ -18,16 +18,22 @@ after((done) => {
 
 const snek = require('../');
 
-describe('snekfetch', () => {
-  it('should return a promise', () => {
-    const p = snek.get(base).end();
-    expect(p).to.be.an.instanceof(Promise);
-    expect(p).to.have.property('then');
-  });
+module.exports = (scope) => {
+  describe(`snekfetch - ${scope}`, () => {
+    it('should return a promise', () => {
+      expect(snek.get(base).end()).to.be.an.instanceof(Promise);
+    });
 
-  it('should reject with error on network failure', () => {
-    const invalid = 'http://localhost:6969';
-    return expect(snek.get(invalid).end()).to.eventually.be.rejected
-      .and.be.an.instanceOf(Error);
+    it('should reject with error on network failure', () => {
+      const invalid = 'http://localhost:6969';
+      return expect(snek.get(invalid).end()).to.eventually.be.rejected
+        .and.be.an.instanceOf(Error);
+    });
+
+    it('should resolve into response', () => snek.get(base).then((res) => {
+      expect(res.ok).to.be.true;
+      expect(res.status).to.equal(200);
+      expect(res.statusText).to.equal('OK');
+    }));
   });
-});
+};

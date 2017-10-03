@@ -16,10 +16,10 @@ function finalizeRequest({ data }) {
   this._addFinalHeaders();
   if (this.request.query) this.request.url = `${this.request.url}?${this.request.query}`;
   if (data) this.request.body = data;
-  return fetch(this.request.url, this.request)
+  return window.fetch(this.request.url, this.request)
     .then((r) => r.text().then((t) => {
       const headers = {};
-      for (const [k, v] of r.headers) headers[k.toLowerCase()] = v;
+      for (const [k, v] of Object.entries(r.headers)) headers[k.toLowerCase()] = v;
       return { response: r, raw: t, headers };
     }));
 }
