@@ -28,13 +28,16 @@ class FormData {
     }
 
     if (mimetype) str += `\r\nContent-Type: ${mimetype}`;
-    this.buffers.push(`${str}\r\n\r\n`);
+    this.buffers.push(Buffer.from(`${str}\r\n\r\n`));
     this.buffers.push(data);
   }
 
+  getBoundary() {
+    return this.boundary;
+  }
+
   end() {
-    this.buffers.push(`\r\n--${this.boundary}--`);
-    return this.buffers;
+    return Buffer.concat([...this.buffers, Buffer.from(`\r\n--${this.boundary}--`)]);
   }
 
   get length() {

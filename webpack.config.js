@@ -1,3 +1,4 @@
+// const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
@@ -8,6 +9,14 @@ module.exports = {
     libraryTarget: 'window',
   },
   plugins: [
-    new UglifyJSPlugin()
+    new UglifyJSPlugin(),
+    /*
+    new webpack.DefinePlugin({
+      'process.env': {
+        SREPO: `"${meta.repo}"`,
+        SVERSION: `"${meta.version}"`,
+      },
+    }),
+    */
   ],
 };

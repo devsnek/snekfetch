@@ -5,9 +5,9 @@ install: npm install
 jobs:
   include:
     - stage: test
-      script: npm test
+      script: bash ./scripts/travis-test.sh
     - stage: deploy
-      script: bash ./.travis-deploy.sh
+      script: bash ./scripts/travis-deploy.sh
 cache:
   directories:
     - node_modules

@@ -3,8 +3,9 @@
   "version": "3.4.4",
   "main": "index.js",
   "scripts": {
-    "lint": "npx eslint --fix src",
-    "test": "npx eslint src",
+    "lint": "npx eslint src",
+    "test": "node --expose-http2 ./node_modules/.bin/jest",
+    "test:coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "npx jsdoc -c jsdoc.json -R README.md"
   },
   "repository": {
@@ -19,15 +20,24 @@
   "homepage": "https://github.com/devsnek/snekfetch#readme",
   "dependencies": {},
   "devDependencies": {
+    "coveralls": "^3.0.0",
     "docdash": "^0.4.0",
     "eslint": "^4.8.0",
+    "jest": "^21.2.1",
     "jsdoc": "github:jsdoc3/jsdoc",
-    "jsdoc-dynamic": "^1.0.2",
+    "jsdoc-dynamic": "^1.0.3",
+    "node-fetch": "github:devsnek/node-fetch#fix/entries-iterator",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.6.0"
   },
   "description": "Just do http requests without all that weird nastiness from other libs",
   "browser": {
-    "./src/node/index.js": false
+    "./src/node/index.js": false,
+    "./src/meta.js": false
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": ["src/**/*.js", "!src/node/mimeOfBuffer.js"],
+    "verbose": true
   }
 }
