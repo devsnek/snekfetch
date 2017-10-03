@@ -33,6 +33,7 @@
     "jsdoc-dynamic": "^1.0.2",
     "mocha": "^4.0.0",
     "node-fetch": "^1.7.3",
+    "nyc": "^11.2.1",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.6.0"
   },
