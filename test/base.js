@@ -1,4 +1,4 @@
-/* global it describe */
+/* global it describe before after */
 
 const chai = require('chai');
 chai.use(require('chai-as-promised'));
@@ -6,6 +6,15 @@ const expect = chai.expect;
 
 const local = require('./server');
 const base = `http://${local.hostname}:${local.port}/`;
+
+before((done) => {
+  local.start(done);
+});
+
+after((done) => {
+  local.stop(done);
+});
+
 
 const snek = require('../');
 
