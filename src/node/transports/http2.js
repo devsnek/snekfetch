@@ -3,7 +3,9 @@ const Stream = require('stream');
 const EventEmitter = require('events');
 const http2 = (() => {
   try {
-    return require('http2');
+    const h2 = require('http2');
+    if (!h2.constants) throw new Error('DAMN_YOU_NPM_HTTP2');
+    return h2;
   } catch (err) {
     return {
       constants: {},
