@@ -88,7 +88,7 @@ class Snekfetch extends Extension {
   attach(...args) {
     if (this.response) throw new Error('Cannot modify data after being sent!');
     const form = this._getFormData();
-    form.append.apply(form, args); // eslint-disable-line prefer-spread
+    form.append(...args);
     return this;
   }
 
