@@ -11,7 +11,7 @@ Snekfetch is a fast, efficient, and user-friendly library for making HTTP reques
 The API was inspired by superagent, however it is much smaller and faster.
 In fact, in browser, it is a mere 8kb.
 
-Documentation is available at https://snekfetch.js.org/
+Documentation is available at - https://snekfetch.js.org/
 
 ## Some examples
 
