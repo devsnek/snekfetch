@@ -6,12 +6,13 @@ Docma.create()
     app: {
       title: Package.name,
       base: '/',
-      enterence: 'content:readme',
+      entrance: 'content:readme',
+      routing: 'query',
       server: Docma.ServerType.GITHUB,
     },
     src: [
-      './README.md',
-      './src/index.js',
+      { readme: './README.md' },
+      { snekfetch: './src/index.js' },
     ],
     dest: './docs',
     jsdoc: {
@@ -23,11 +24,11 @@ Docma.create()
         navItems: [
           {
             label: 'Readme',
-            href: '#',
+            href: '?content=readme',
           },
           {
             label: 'Documentation',
-            href: '#Snekfetch',
+            href: '?api=snekfetch',
             iconClass: 'ico-book',
           },
           {
