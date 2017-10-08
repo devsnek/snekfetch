@@ -10,6 +10,7 @@ const transport = browser ? require('./browser') : require('./node');
  */
 class Snekfetch extends (transport.extension || Object) {
   /**
+   * Options to pass to the Snekfetch constructor
    * @typedef {object} snekfetchOptions
    * @memberof Snekfetch
    * @property {object} [headers] Headers to initialize the request with
@@ -156,6 +157,7 @@ class Snekfetch extends (transport.extension || Object) {
 
         const statusCode = response.statusCode || response.status;
         /**
+         * Response from Snekfetch
          * @typedef {Object} SnekfetchResponse
          * @memberof Snekfetch
          * @prop {HTTP.Request} request
@@ -265,6 +267,7 @@ class Snekfetch extends (transport.extension || Object) {
 Snekfetch.version = Package.version;
 
 /**
+ * Create a ((THIS)) request
  * @dynamic this.METHODS
  * @method Snekfetch.((THIS)lowerCase)
  * @param {string} url The url to request
