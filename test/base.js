@@ -18,11 +18,19 @@ test('should reject with error on network failure', () => {
 });
 
 test('should resolve on success', () =>
-  Snekfetch.get('https://httpbin.org/get').then((res) => {
+  Snekfetch.get('https://httpbin.org/anything').then((res) => {
+    expect(res.body.method).toBe('GET');
     expect(res.status).toBe(200);
     expect(res.ok).toBe(true);
     expect(res).toHaveProperty('text');
     expect(res).toHaveProperty('body');
+  })
+);
+
+test('should reject if response is not between 200 and 300', () =>
+  Snekfetch.get('https://httpbin.org/404').catch((err) => {
+    expect(err.status).toBe(404);
+    expect(err.ok).toBe(false);
   })
 );
 
@@ -61,7 +69,7 @@ test('attach should work', () =>
     })
 );
 
-test('send should work', () =>
+test('send should work with json', () =>
   Snekfetch.post('https://httpbin.org/post')
     .send({ test: 1, hello: 'world' })
     .then((res) => {
@@ -72,3 +80,14 @@ test('send should work', () =>
     })
 );
 
+test('send should work with urlencoded', () =>
+  Snekfetch.post('https://httpbin.org/post')
+    .set('content-type', 'application/x-www-form-urlencoded')
+    .send({ test: 1, hello: 'world' })
+    .then((res) => {
+      const { form } = res.body;
+      expect(form).not.toBeUndefined();
+      expect(form.test).toBe('1');
+      expect(form.hello).toBe('world');
+    })
+);

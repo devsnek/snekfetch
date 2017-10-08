@@ -148,7 +148,6 @@ class Snekfetch extends Extension {
           return new Snekfetch(method, redirect, {
             data: this.data,
             headers: redirectHeaders,
-            agent: this.options._req.agent,
           });
         }
 

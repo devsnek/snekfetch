@@ -12,6 +12,8 @@ const transports = {
   http2: require('./transports/http2'),
 };
 
+const agents = {};
+
 function buildRequest(method, url) {
   const options = URL.parse(url);
   if (!options.protocol) throw new Error('URL must have a valid protocol');
@@ -21,7 +23,7 @@ function buildRequest(method, url) {
   if (this.options.agent) {
     options.agent = this.options.agent;
   } else if (transport.Agent && this.options.followRedirects !== false) {
-    options.agent = new transport.Agent({ keepAlive: true });
+    options.agent = agents[options.hostname] = (agents[options.hostname] || new transport.Agent({ keepAlive: true }));
   }
   if (options.port) options.port = parseInt(options.port);
   this.options._req = options;
@@ -63,12 +65,11 @@ function finalizeRequest() {
       const body = [];
 
       stream.on('data', (chunk) => {
-        if (this.options.version !== 2) if (!this.push(chunk)) this.pause();
+        if (!this.push(chunk)) this.pause();
         body.push(chunk);
       });
 
       stream.once('end', () => {
-        if (this.options.version === 2) for (const item of body) this.push(item);
         this.push(null);
         const raw = Buffer.concat(body);
 
@@ -78,6 +79,7 @@ function finalizeRequest() {
             response.headers.location :
             URL.resolve(makeURLFromRequest(request), response.headers.location);
         }
+        if (!redirect && agents[this.options._req.hostname]) delete agents[this.options._req.hostname];
         resolve({ response, raw, redirect });
       });
     });
