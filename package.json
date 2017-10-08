@@ -6,7 +6,7 @@
     "lint": "npx eslint src",
     "test": "node --expose-http2 ./node_modules/.bin/jest",
     "test:coveralls": "cat ./coverage/lcov.info | coveralls",
-    "docs": "npx jsdoc -c jsdoc.json -R README.md"
+    "docs": "node docs.js"
   },
   "repository": {
     "type": "git",
@@ -21,12 +21,11 @@
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^3.0.0",
-    "docdash": "^0.4.0",
     "eslint": "^4.8.0",
     "jest": "^21.2.1",
-    "jsdoc": "github:jsdoc3/jsdoc",
-    "jsdoc-dynamic": "^1.0.3",
     "node-fetch": "github:devsnek/node-fetch#fix/entries-iterator",
+    "docma": "^1.5.1",
+    "jsdoc-dynamic": "^1.0.4",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.6.0"
   },
@@ -37,7 +36,10 @@
   },
   "jest": {
     "collectCoverage": true,
-    "collectCoverageFrom": ["src/**/*.js", "!src/node/mimeOfBuffer.js"],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/node/mimeOfBuffer.js"
+    ],
     "verbose": true
   }
 }
