@@ -6,21 +6,23 @@ Docma.create()
     app: {
       title: Package.name,
       base: '/',
-      enterence: 'content:home',
+      enterence: 'content:readme',
       server: Docma.ServerType.GITHUB,
     },
     src: [
-      { home: './README.md' },
+      './README.md',
       './src/index.js',
     ],
     dest: './docs',
-    jsdoc: require('./jsdoc.json'),
+    jsdoc: {
+      plugins: ['jsdoc-dynamic'],
+    },
     template: {
       options: {
         title: Package.name,
         navItems: [
           {
-            label: 'Home',
+            label: 'Readme',
             href: '#',
           },
           {
