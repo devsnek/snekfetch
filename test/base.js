@@ -1,4 +1,4 @@
-/* global test expect beforeAll afterAll */
+/* global test expect */
 
 const Snekfetch = require('../');
 
