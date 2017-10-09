@@ -1,14 +1,15 @@
 const browser = typeof window !== 'undefined';
-const qs = require('querystring');
-const Package = require('../package.json');
+const querystring = require('querystring');
+const Package = require('../package');
 const transport = browser ? require('./browser') : require('./node');
+const Extension = transport.extension || Object;
 
 /**
  * Snekfetch
  * @extends Stream.Readable
  * @extends Promise
  */
-class Snekfetch extends (transport.extension || Object) {
+class Snekfetch extends Extension {
   /**
    * Options to pass to the Snekfetch constructor
    * @typedef {object} snekfetchOptions
@@ -16,8 +17,9 @@ class Snekfetch extends (transport.extension || Object) {
    * @property {object} [headers] Headers to initialize the request with
    * @property {object|string|Buffer} [data] Data to initialize the request with
    * @property {string|Object} [query] Query to intialize the request with
-   * @property {string} [formData] Form data to initialize the request with
    * @property {boolean} [followRedirects = false] If the request should follow redirects
+   * @property {object} [qs=querystring] Querystring module to use, any object providing
+   * `stringify` and `parse` for querystrings
    * @property {number} [version = 1] The http version to use [1 or 2]
    * @property {external:Agent} [agent] Whether to use an http agent
    */
@@ -30,13 +32,18 @@ class Snekfetch extends (transport.extension || Object) {
    * @param {string} url URL
    * @param {Snekfetch.snekfetchOptions} opts Options
    */
-  constructor(method, url, opts = { headers: null, data: null, formData: null, query: null, version: 1 }) {
+  constructor(method, url, opts = {
+    headers: null,
+    data: null,
+    query: null,
+    version: 1,
+    qs: querystring,
+  }) {
     super();
     this.options = opts;
     this.request = transport.buildRequest.call(this, method, url, opts);
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
-    if (opts.formData) this._formData = opts.formData;
   }
 
   /**
@@ -47,11 +54,9 @@ class Snekfetch extends (transport.extension || Object) {
    */
   query(name, value) {
     if (this.response) throw new Error('Cannot modify query after being sent!');
-    if (!this.request.query) this.request.query = browser ? new URLSearchParams() : {};
+    if (!this.request.query) this.request.query = {};
     if (name !== null && typeof name === 'object') {
       for (const [k, v] of Object.entries(name)) this.query(k, v);
-    } else if (browser) {
-      this.request.query.set(name, value);
     } else {
       this.request.query[name] = value;
     }
@@ -81,12 +86,10 @@ class Snekfetch extends (transport.extension || Object) {
    * @param {string} [filename] Optional filename if form attachment name needs to be overridden
    * @returns {Snekfetch} This request
    */
-  attach(name, data, filename) {
+  attach(...args) {
     if (this.response) throw new Error('Cannot modify data after being sent!');
     const form = this._getFormData();
-    this.set('Content-Type', `multipart/form-data; boundary=${form.boundary}`);
-    form.append(name, data, filename);
-    this.data = form;
+    form.append(...args);
     return this;
   }
 
@@ -97,14 +100,14 @@ class Snekfetch extends (transport.extension || Object) {
    */
   send(data) {
     if (this.response) throw new Error('Cannot modify data after being sent!');
-    if (transport.shouldSendRaw(data)) {
+    if (data instanceof transport.FormData || transport.shouldSendRaw(data)) {
       this.data = data;
     } else if (data !== null && typeof data === 'object') {
       const header = this._getRequestHeader('content-type');
       let serialize;
       if (header) {
         if (header.includes('json')) serialize = JSON.stringify;
-        else if (header.includes('urlencoded')) serialize = qs.stringify;
+        else if (header.includes('urlencoded')) serialize = this.options.qs.stringify;
       } else {
         this.set('Content-Type', 'application/json');
         serialize = JSON.stringify;
@@ -117,11 +120,7 @@ class Snekfetch extends (transport.extension || Object) {
   }
 
   then(resolver, rejector) {
-    return transport.finalizeRequest.call(this, {
-      data: this._formData ?
-        this._formData.end ? this._formData.end() : this._formData :
-        this.data || null,
-    })
+    return transport.finalizeRequest.call(this)
       .then(({ response, raw, redirect, headers }) => {
         if (redirect) {
           let method = this.request.method;
@@ -149,9 +148,7 @@ class Snekfetch extends (transport.extension || Object) {
 
           return new Snekfetch(method, redirect, {
             data: this.data,
-            formData: this._formData,
             headers: redirectHeaders,
-            agent: this.options._req.agent,
           });
         }
 
@@ -179,7 +176,7 @@ class Snekfetch extends (transport.extension || Object) {
                 res.body = res.text;
               }
             } else if (type && type.includes('application/x-www-form-urlencoded')) {
-              res.body = qs.parse(res.text);
+              res.body = this.options.qs.parse(res.text);
             } else {
               res.body = raw;
             }
@@ -216,7 +213,7 @@ class Snekfetch extends (transport.extension || Object) {
   end(cb) {
     return this.then(
       (res) => cb ? cb(null, res) : res,
-      (err) => cb ? cb(err, err.status ? err : null) : err
+      (err) => cb ? cb(err, err.status ? err : null) : Promise.reject(err)
     );
   }
 
@@ -237,17 +234,29 @@ class Snekfetch extends (transport.extension || Object) {
   }
 
   _getFormData() {
-    if (!this._formData) this._formData = new transport.FormData();
-    return this._formData;
+    if (!(this.data instanceof transport.FormData)) {
+      this.data = new transport.FormData();
+    }
+    return this.data;
   }
 
   _addFinalHeaders() {
     if (!this.request) return;
     if (!this._getRequestHeader('user-agent')) {
-      this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
+      this.set('User-Agent',
+        `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
-    if (this.data && this.data.end) this.set('Content-Length', this.data.length);
+    if (this.data && this.data.length) this.set('Content-Length', this.data.length);
+    if (this.data && this.data.getBoundary) {
+      this.set('Content-Type', `multipart/form-data; boundary=${this.data.getBoundary()}`);
+    }
+  }
+
+  _parseQuery() {
+    if (!this.request.query) return;
+    const [path, query] = this.request.path.split('?');
+    this.request.path = `${path}?${this.options.qs.stringify(this.request.query)}${query ? `&${query}` : ''}`;
   }
 
   get response() {

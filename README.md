@@ -1,10 +1,10 @@
-[![npm](https://img.shields.io/npm/v/snekfetch.svg?maxAge=3600)](https://www.npmjs.com/package/snekfetch)
-[![npm](https://img.shields.io/npm/dt/snekfetch.svg?maxAge=3600)](https://www.npmjs.com/package/snekfetch)
-[![David](https://david-dm.org/guscaplan/snekfetch.svg)](https://david-dm.org/guscaplan/snekfetch)
+[![npm][download-badge]][npm]
+[![David][dep-badge]][dep-link]
+[![Coverage Status][coverage-badge]][coverage-link]
 
-[![NPM](https://nodei.co/npm/snekfetch.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/snekfetch/)
+[![NPM][large-badge]][stats-link]
 
-# snekfetch
+# snekfetch <sup>[![Version Badge][version-badge]][npm]</sup>
 
 Snekfetch is a fast, efficient, and user-friendly library for making HTTP requests.
 
@@ -33,3 +33,12 @@ snekfetch.post('https://httpbin.org/post')
   .then(r => console.log(r.body));
 ```
 
+[npm]: https://npmjs.org/package/snekfetch
+[large-badge]: https://nodei.co/npm/snekfetch.png?downloads=true&downloadRank=true&stars=true
+[stats-link]: https://nodei.co/npm/snekfetch/
+[version-badge]: http://versionbadg.es/devsnek/snekfetch.svg
+[download-badge]: https://img.shields.io/npm/dt/snekfetch.svg?maxAge=3600
+[dep-badge]: https://david-dm.org/guscaplan/snekfetch.svg
+[dep-link]: https://david-dm.org/guscaplan/snekfetch
+[coverage-badge]: https://coveralls.io/repos/github/devsnek/snekfetch/badge.svg?branch=master
+[coverage-link]: https://coveralls.io/github/devsnek/snekfetch?branch=master

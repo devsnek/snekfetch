@@ -1,5 +1,4 @@
 const zlib = require('zlib');
-const qs = require('querystring');
 const http = require('http');
 const https = require('https');
 const URL = require('url');
@@ -13,6 +12,8 @@ const transports = {
   http2: require('./transports/http2'),
 };
 
+const agents = {};
+
 function buildRequest(method, url) {
   const options = URL.parse(url);
   if (!options.protocol) throw new Error('URL must have a valid protocol');
@@ -22,14 +23,16 @@ function buildRequest(method, url) {
   if (this.options.agent) {
     options.agent = this.options.agent;
   } else if (transport.Agent && this.options.followRedirects !== false) {
-    options.agent = new transport.Agent({ keepAlive: true });
+    options.agent = agents[options.hostname] = agents[options.hostname] || new transport.Agent({ keepAlive: true });
   }
+  if (options.port) options.port = parseInt(options.port);
   this.options._req = options;
   const request = transport.request(options);
+  if (request.setNoDelay) request.setNoDelay(true);
   return request;
 }
 
-function finalizeRequest({ data }) {
+function finalizeRequest() {
   return new Promise((resolve, reject) => {
     const request = this.request;
 
@@ -39,6 +42,7 @@ function finalizeRequest({ data }) {
       if (!err) err = new Error('Unknown error occured');
       err.request = request;
       reject(err);
+      delete agents[this.options._req.hostname];
       if (socket) socket.removeListener('error', handleError);
     };
 
@@ -62,12 +66,11 @@ function finalizeRequest({ data }) {
       const body = [];
 
       stream.on('data', (chunk) => {
-        if (this.options.version !== 2) if (!this.push(chunk)) this.pause();
+        if (!this.push(chunk)) this.pause();
         body.push(chunk);
       });
 
       stream.once('end', () => {
-        if (this.options.version === 2) for (const item of body) this.push(item);
         this.push(null);
         const raw = Buffer.concat(body);
 
@@ -77,12 +80,15 @@ function finalizeRequest({ data }) {
             response.headers.location :
             URL.resolve(makeURLFromRequest(request), response.headers.location);
         }
+        if (!redirect && agents[this.options._req.hostname]) delete agents[this.options._req.hostname];
         resolve({ response, raw, redirect });
       });
     });
 
     this._addFinalHeaders();
-    if (this.request.query) this.request.path = `${this.request.path}?${qs.stringify(this.request.query)}`;
+    this._parseQuery();
+    let data = this.data;
+    if (data && data.end) data = data.end();
     if (Array.isArray(data)) {
       for (const chunk of data) request.write(chunk);
       request.end();
@@ -91,8 +97,10 @@ function finalizeRequest({ data }) {
     } else if (data instanceof Buffer) {
       this.set('Content-Length', Buffer.byteLength(data));
       request.end(data);
-    } else {
+    } else if (data) {
       request.end(data);
+    } else {
+      request.end();
     }
   });
 }

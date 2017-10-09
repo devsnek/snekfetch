@@ -1,6 +1,7 @@
 function buildRequest(method, url) {
   return {
-    url, method,
+    method,
+    path: url,
     redirect: this.options.followRedirects ? 'follow' : 'manual',
     headers: {},
     setHeader(name, value) {
@@ -12,14 +13,14 @@ function buildRequest(method, url) {
   };
 }
 
-function finalizeRequest({ data }) {
+function finalizeRequest() {
   this._addFinalHeaders();
-  if (this.request.query) this.request.url = `${this.request.url}?${this.request.query}`;
-  if (data) this.request.body = data;
-  return fetch(this.request.url, this.request)
+  this._parseQuery();
+  if (this.data) this.request.body = this.data;
+  return window.fetch(this.request.path, this.request)
     .then((r) => r.text().then((t) => {
       const headers = {};
-      for (const [k, v] of r.headers) headers[k.toLowerCase()] = v;
+      for (const [k, v] of r.headers.entries()) headers[k.toLowerCase()] = v;
       return { response: r, raw: t, headers };
     }));
 }
