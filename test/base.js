@@ -1,6 +1,8 @@
-/* global test expect */
+/* global test expect beforeAll afterAll */
 
 const Snekfetch = require('../');
+
+const server = require('./server');
 
 test('should return a promise', () => {
   expect(Snekfetch.get('https://httpbin.org/get').end())
@@ -24,6 +26,13 @@ test('should resolve on success', () =>
     expect(res.ok).toBe(true);
     expect(res).toHaveProperty('text');
     expect(res).toHaveProperty('body');
+  })
+);
+
+test('end should work', () =>
+  Snekfetch.get('https://httpbin.org/anything').end((err, res) => {
+    expect(err).toBe(null);
+    expect(res.body).not.toBeUndefined();
   })
 );
 
@@ -89,5 +98,29 @@ test('send should work with urlencoded', () =>
       expect(form).not.toBeUndefined();
       expect(form.test).toBe('1');
       expect(form.hello).toBe('world');
+    })
+);
+
+test('invalid json is just text', () =>
+  Snekfetch.get(`http://localhost:${server.port}/invalid-json`)
+    .then((res) => {
+      expect(res.body).toBe('{ "a": 1');
+    })
+);
+
+test('x-www-form-urlencoded response body', () =>
+  Snekfetch.get(`http://localhost:${server.port}/form-urlencoded`)
+    .then((res) => {
+      const { body } = res;
+      expect(body.test).toBe('1');
+      expect(body.hello).toBe('world');
+    })
+);
+
+test('redirects', () =>
+  Snekfetch.get('https://httpbin.org/redirect/5')
+    .then((res) => {
+      expect(res.body).not.toBeUndefined();
+      expect(res.body.url).toBe('https://httpbin.org/get');
     })
 );

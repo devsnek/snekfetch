@@ -15,6 +15,12 @@ require('./base');
 
 const resolve = (x) => require.resolve(x);
 
+test('node/pipe get', (done) => {
+  Snekfetch.get('https://httpbin.org/anything')
+    .pipe(fs.createWriteStream('/dev/null'))
+    .on('finish', done);
+});
+
 test('node/file get', () => {
   const original = fs.readFileSync(resolve('../package.json')).toString();
   return Snekfetch.get(`file://${resolve('../package.json')}`)
@@ -47,21 +53,35 @@ test('node/file delete', () => {
     });
 });
 
-/*
-test('node/http2', () => {
-  expect(Snekfetch.get('https://http2.akamai.com/demo/tile-1.png', { version: 2 }).end())
-    .resolves.toBeTruthy();
-});
-*/
-
 test('node/FormData behaves predictably', () => {
   const f = new FormData();
   f.append('hello', 'world');
   expect(f.length).toBe(77);
 });
 
+test('node/FormData json works', () =>
+  Snekfetch.post('https://httpbin.org/post')
+    .attach('object', { a: 1 })
+    .then((res) => {
+      const { form } = res.body;
+      expect(form.object).toBe('{"a":1}');
+    })
+);
+
 test('node/mimes behaves predictably', () => {
   expect(mime.lookup('js')).toBe('application/javascript');
   expect(mime.lookup('nope')).toBe('application/octet-stream');
 });
+
+test('node/rawsend post', () =>
+  Snekfetch.post('https://httpbin.org/post')
+    .send(Buffer.from('memes')).end()
+);
+
+/*
+test('node/http2', () => {
+  expect(Snekfetch.get('https://http2.akamai.com/demo/tile-1.png', { version: 2 }).end())
+    .resolves.toBeTruthy();
+});
+*/
 

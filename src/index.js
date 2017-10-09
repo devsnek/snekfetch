@@ -17,7 +17,7 @@ class Snekfetch extends Extension {
    * @property {object} [headers] Headers to initialize the request with
    * @property {object|string|Buffer} [data] Data to initialize the request with
    * @property {string|Object} [query] Query to intialize the request with
-   * @property {boolean} [followRedirects = false] If the request should follow redirects
+   * @property {boolean} [followRedirects=true] If the request should follow redirects
    * @property {object} [qs=querystring] Querystring module to use, any object providing
    * `stringify` and `parse` for querystrings
    * @property {number} [version = 1] The http version to use [1 or 2]
@@ -38,6 +38,7 @@ class Snekfetch extends Extension {
     query: null,
     version: 1,
     qs: querystring,
+    followRedirects: true,
   }) {
     super();
     this.options = opts;
@@ -153,6 +154,8 @@ class Snekfetch extends Extension {
         }
 
         const statusCode = response.statusCode || response.status;
+        // forgive me :(
+        const self = this; // eslint-disable-line consistent-this
         /**
          * Response from Snekfetch
          * @typedef {Object} SnekfetchResponse
@@ -176,7 +179,7 @@ class Snekfetch extends Extension {
                 res.body = res.text;
               }
             } else if (type && type.includes('application/x-www-form-urlencoded')) {
-              res.body = this.options.qs.parse(res.text);
+              res.body = self.options.qs.parse(res.text);
             } else {
               res.body = raw;
             }
@@ -217,6 +220,7 @@ class Snekfetch extends Extension {
     );
   }
 
+  /* istanbul ignore next */
   _read() {
     this.resume();
     if (this.response) return;

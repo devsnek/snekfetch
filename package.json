@@ -38,7 +38,8 @@
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.js",
-      "!src/node/mimeOfBuffer.js"
+      "!src/node/mimeOfBuffer.js",
+      "!src/node/transports/http2.js"
     ],
     "verbose": true
   }
