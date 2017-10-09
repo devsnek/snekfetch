@@ -23,7 +23,7 @@ function buildRequest(method, url) {
   if (this.options.agent) {
     options.agent = this.options.agent;
   } else if (transport.Agent && this.options.followRedirects !== false) {
-    options.agent = agents[options.hostname] = (agents[options.hostname] || new transport.Agent({ keepAlive: true }));
+    options.agent = agents[options.hostname] = agents[options.hostname] || new transport.Agent({ keepAlive: true });
   }
   if (options.port) options.port = parseInt(options.port);
   this.options._req = options;
@@ -42,6 +42,7 @@ function finalizeRequest() {
       if (!err) err = new Error('Unknown error occured');
       err.request = request;
       reject(err);
+      delete agents[this.options._req.hostname];
       if (socket) socket.removeListener('error', handleError);
     };
 
