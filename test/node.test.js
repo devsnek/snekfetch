@@ -47,10 +47,12 @@ test('node/file delete', () => {
     });
 });
 
+/*
 test('node/http2', () => {
   expect(Snekfetch.get('https://http2.akamai.com/demo/tile-1.png', { version: 2 }).end())
     .resolves.toBeTruthy();
 });
+*/
 
 test('node/FormData behaves predictably', () => {
   const f = new FormData();

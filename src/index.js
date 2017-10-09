@@ -234,7 +234,7 @@ class Snekfetch extends Extension {
   }
 
   _getFormData() {
-    if (!this.data || !(this.data instanceof transport.FormData)) {
+    if (!(this.data instanceof transport.FormData)) {
       this.data = new transport.FormData();
     }
     return this.data;
