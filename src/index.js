@@ -1,4 +1,4 @@
-const browser = typeof window !== 'undefined' && (!window.process || window.process.type !== 'renderer');
+const browser = typeof window !== 'undefined';
 const querystring = require('querystring');
 const Package = require('../package');
 const transport = browser ? require('./browser') : require('./node');
@@ -33,9 +33,6 @@ class Snekfetch extends Extension {
    * @param {Snekfetch.snekfetchOptions} opts Options
    */
   constructor(method, url, opts = {
-    headers: null,
-    data: null,
-    query: null,
     version: 1,
     qs: querystring,
     followRedirects: true,

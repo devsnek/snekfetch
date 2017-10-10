@@ -25,6 +25,7 @@
     "eslint": "^4.8.0",
     "jest": "^21.2.1",
     "jsdoc-dynamic": "^1.0.4",
+    "json-filter-loader": "^1.0.0",
     "node-fetch": "github:bitinn/node-fetch",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.6.0"

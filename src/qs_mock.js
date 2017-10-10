@@ -1,12 +1,8 @@
-function parse(str) {
-  const q = new window.URLSearchParams(str);
-  const p = {};
-  for (const [k, v] of q.entries()) p[k] = v;
-  return p;
-}
+exports.parse = (str) => {
+  const parsed = {};
+  for (const [k, v] of new Window.URLSearchParams(str).entries()) parsed[k] = v;
+  return parsed;
+};
 
-function stringify(obj) {
-  return new window.URLSearchParams(obj).toString();
-}
+exports.stringify = (obj) => new window.URLSearchParams(obj).toString();
 
-module.exports = { parse, stringify };

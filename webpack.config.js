@@ -1,4 +1,3 @@
-// const webpack = require('webpack');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
@@ -11,6 +10,19 @@ module.exports = {
   plugins: [
     new UglifyJSPlugin(),
   ],
+  module: {
+    rules: [
+      {
+        test: require.resolve('./package.json'),
+        use: {
+          loader: 'json-filter-loader',
+          options: {
+            used: ['name', 'repository.url'],
+          },
+        },
+      },
+    ],
+  },
   resolve: {
     alias: {
       querystring: require.resolve('./src/qs_mock'),

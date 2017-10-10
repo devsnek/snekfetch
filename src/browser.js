@@ -25,12 +25,9 @@ function finalizeRequest() {
     }));
 }
 
-function shouldSendRaw() {
-  return false;
-}
-
 module.exports = {
-  buildRequest, finalizeRequest, shouldSendRaw,
+  buildRequest, finalizeRequest,
+  shouldSendRaw: () => false,
   METHODS: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'PATCH'],
   STATUS_CODES: {},
   FormData: window.FormData,
