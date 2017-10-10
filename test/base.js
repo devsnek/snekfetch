@@ -118,7 +118,7 @@ test('x-www-form-urlencoded response body', () =>
 );
 
 test('redirects', () =>
-  Snekfetch.get('https://httpbin.org/redirect/5')
+  Snekfetch.get('https://httpbin.org/redirect/1')
     .then((res) => {
       expect(res.body).not.toBeUndefined();
       expect(res.body.url).toBe('https://httpbin.org/get');
