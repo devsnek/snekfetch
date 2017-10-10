@@ -38,6 +38,7 @@
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.js",
+      "!src/qs_mock.js",
       "!src/node/mimeOfBuffer.js",
       "!src/node/transports/http2.js"
     ],

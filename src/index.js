@@ -1,4 +1,4 @@
-const browser = typeof window !== 'undefined';
+const browser = typeof window !== 'undefined' && (!window.process || window.process.type !== 'renderer');
 const querystring = require('querystring');
 const Package = require('../package');
 const transport = browser ? require('./browser') : require('./node');

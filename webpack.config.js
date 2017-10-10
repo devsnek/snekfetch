@@ -10,13 +10,10 @@ module.exports = {
   },
   plugins: [
     new UglifyJSPlugin(),
-    /*
-    new webpack.DefinePlugin({
-      'process.env': {
-        SREPO: `"${meta.repo}"`,
-        SVERSION: `"${meta.version}"`,
-      },
-    }),
-    */
   ],
+  resolve: {
+    alias: {
+      querystring: require.resolve('./src/qs_mock'),
+    },
+  },
 };
