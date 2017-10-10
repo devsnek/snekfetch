@@ -21,11 +21,11 @@
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^3.0.0",
+    "docma": "^1.5.1",
     "eslint": "^4.8.0",
     "jest": "^21.2.1",
-    "node-fetch": "github:devsnek/node-fetch#fix/entries-iterator",
-    "docma": "^1.5.1",
     "jsdoc-dynamic": "^1.0.4",
+    "node-fetch": "github:bitinn/node-fetch",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.6.0"
   },
