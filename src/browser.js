@@ -14,8 +14,7 @@ function buildRequest(method, url) {
 }
 
 function finalizeRequest() {
-  this._addFinalHeaders();
-  this._parseQuery();
+  this._finalizeRequest();
   if (this.data) this.request.body = this.data;
   return window.fetch(this.request.path, this.request)
     .then((r) => r.text().then((t) => {
@@ -30,5 +29,6 @@ module.exports = {
   shouldSendRaw: () => false,
   METHODS: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'PATCH'],
   STATUS_CODES: {},
+  Extension: Object,
   FormData: window.FormData,
 };

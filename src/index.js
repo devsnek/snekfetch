@@ -2,14 +2,13 @@ const browser = typeof window !== 'undefined';
 const querystring = require('querystring');
 const Package = require('../package');
 const transport = browser ? require('./browser') : require('./node');
-const Extension = transport.extension || Object;
 
 /**
  * Snekfetch
  * @extends Stream.Readable
  * @extends Promise
  */
-class Snekfetch extends Extension {
+class Snekfetch extends transport.Extension {
   /**
    * Options to pass to the Snekfetch constructor
    * @typedef {object} snekfetchOptions
@@ -241,23 +240,20 @@ class Snekfetch extends Extension {
     return this.data;
   }
 
-  _addFinalHeaders() {
+  _finalizeRequest() {
     if (!this.request) return;
     if (!this._getRequestHeader('user-agent')) {
-      this.set('User-Agent',
-        `snekfetch/${Snekfetch.version} (${Package.repository.url.replace(/\.?git/, '')})`);
+      this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.homepage})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
     if (this.data && this.data.length) this.set('Content-Length', this.data.length);
     if (this.data && this.data.getBoundary) {
       this.set('Content-Type', `multipart/form-data; boundary=${this.data.getBoundary()}`);
     }
-  }
-
-  _parseQuery() {
-    if (!this.request.query) return;
-    const [path, query] = this.request.path.split('?');
-    this.request.path = `${path}?${this.options.qs.stringify(this.request.query)}${query ? `&${query}` : ''}`;
+    if (this.request.query) {
+      const [path, query] = this.request.path.split('?');
+      this.request.path = `${path}?${this.options.qs.stringify(this.request.query)}${query ? `&${query}` : ''}`;
+    }
   }
 
   get response() {

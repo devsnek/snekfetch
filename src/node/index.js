@@ -85,8 +85,7 @@ function finalizeRequest() {
       });
     });
 
-    this._addFinalHeaders();
-    this._parseQuery();
+    this._finalizeRequest()
     let data = this.data;
     if (data && data.end) data = data.end();
     if (Array.isArray(data)) {
@@ -124,5 +123,5 @@ module.exports = {
   METHODS: http.METHODS,
   STATUS_CODES: http.STATUS_CODES,
   FormData,
-  extension: Stream.Readable,
+  Extension: Stream.Readable,
 };

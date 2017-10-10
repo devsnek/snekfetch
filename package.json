@@ -17,7 +17,7 @@
   "bugs": {
     "url": "https://github.com/devsnek/snekfetch/issues"
   },
-  "homepage": "https://github.com/devsnek/snekfetch#readme",
+  "homepage": "https://github.com/devsnek/snekfetch",
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^3.0.0",

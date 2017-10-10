@@ -17,7 +17,7 @@ module.exports = {
         use: {
           loader: 'json-filter-loader',
           options: {
-            used: ['name', 'repository.url'],
+            used: ['name', 'homepage'],
           },
         },
       },
