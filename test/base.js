@@ -4,6 +4,13 @@ const Snekfetch = require('../');
 
 const server = require('./server');
 
+const TestObj = exports.TestObj = { Hello: 'world', Test: 'yes' };
+const TestObjTest = exports.TestObjTest = (obj) => {
+  expect(obj).not.toBeUndefined();
+  expect(obj.Hello).toBe('world');
+  expect(obj.Test).toBe('yes');
+};
+
 test('should return a promise', () => {
   expect(Snekfetch.get('https://httpbin.org/get').end())
     .toBeInstanceOf(Promise);
@@ -45,59 +52,49 @@ test('should reject if response is not between 200 and 300', () =>
 
 test('query should work', () =>
   Snekfetch.get('https://httpbin.org/get?inline=true')
-    .query({ test: 1, hello: 'world' })
+    .query(TestObj)
     .then((res) => {
       const { args } = res.body;
-      expect(args).not.toBeUndefined();
+      TestObjTest(args);
       expect(args.inline).toBe('true');
-      expect(args.test).toBe('1');
-      expect(args.hello).toBe('world');
     })
 );
 
 test('set should work', () =>
   Snekfetch.get('https://httpbin.org/get')
-    .set({ Test: 1, Hello: 'world' })
+    .set(TestObj)
     .then((res) => {
       const { headers } = res.body;
-      expect(headers).not.toBeUndefined();
-      expect(headers.Test).toBe('1');
-      expect(headers.Hello).toBe('world');
+      TestObjTest(headers);
     })
 );
 
 test('attach should work', () =>
   Snekfetch.post('https://httpbin.org/post')
-    .attach('test', '1')
-    .attach('hello', 'world')
+    .attach('Hello', TestObj.Hello)
+    .attach('Test', TestObj.Test)
     .then((res) => {
       const { form } = res.body;
-      expect(form).not.toBeUndefined();
-      expect(form.test).toBe('1');
-      expect(form.hello).toBe('world');
+      TestObjTest(form);
     })
 );
 
 test('send should work with json', () =>
   Snekfetch.post('https://httpbin.org/post')
-    .send({ test: 1, hello: 'world' })
+    .send(TestObj)
     .then((res) => {
       const { json } = res.body;
-      expect(json).not.toBeUndefined();
-      expect(json.test).toBe(1);
-      expect(json.hello).toBe('world');
+      TestObjTest(json);
     })
 );
 
 test('send should work with urlencoded', () =>
   Snekfetch.post('https://httpbin.org/post')
     .set('content-type', 'application/x-www-form-urlencoded')
-    .send({ test: 1, hello: 'world' })
+    .send(TestObj)
     .then((res) => {
       const { form } = res.body;
-      expect(form).not.toBeUndefined();
-      expect(form.test).toBe('1');
-      expect(form.hello).toBe('world');
+      TestObjTest(form);
     })
 );
 
