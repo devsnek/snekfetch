@@ -13,6 +13,7 @@ const transports = {
 };
 
 const agents = {};
+const kagent = (r) => `${r.protocol}${r.host}`;
 
 function buildRequest(method, url) {
   const options = URL.parse(url);
@@ -23,7 +24,8 @@ function buildRequest(method, url) {
   if (this.options.agent) {
     options.agent = this.options.agent;
   } else if (transport.Agent && this.options.followRedirects !== false) {
-    options.agent = agents[options.hostname] = agents[options.hostname] || new transport.Agent({ keepAlive: true });
+    const key = kagent(options);
+    options.agent = agents[key] = agents[key] || new transport.Agent({ keepAlive: true });
   }
   if (options.port) options.port = parseInt(options.port);
   this.options._req = options;
@@ -42,7 +44,7 @@ function finalizeRequest() {
       if (!err) err = new Error('Unknown error occured');
       err.request = request;
       reject(err);
-      delete agents[this.options._req.hostname];
+      delete agents[kagent(this.options._req)];
       if (socket) socket.removeListener('error', handleError);
     };
 
@@ -80,7 +82,8 @@ function finalizeRequest() {
             response.headers.location :
             URL.resolve(makeURLFromRequest(request), response.headers.location);
         }
-        if (!redirect && agents[this.options._req.hostname]) delete agents[this.options._req.hostname];
+        const key = kagent(this.options._req);
+        if (!redirect && agents[key]) delete agents[key];
         resolve({ response, raw, redirect });
       });
     });
