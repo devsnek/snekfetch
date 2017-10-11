@@ -85,7 +85,7 @@ function finalizeRequest() {
       });
     });
 
-    this._finalizeRequest()
+    this._finalizeRequest();
     let data = this.data;
     if (data && data.end) data = data.end();
     if (Array.isArray(data)) {
@@ -94,7 +94,6 @@ function finalizeRequest() {
     } else if (data instanceof Stream) {
       data.pipe(request);
     } else if (data instanceof Buffer) {
-      this.set('Content-Length', Buffer.byteLength(data));
       request.end(data);
     } else if (data) {
       request.end(data);

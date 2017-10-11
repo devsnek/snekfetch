@@ -246,7 +246,6 @@ class Snekfetch extends transport.Extension {
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.homepage})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
-    if (this.data && this.data.length) this.set('Content-Length', this.data.length);
     if (this.data && this.data.getBoundary) {
       this.set('Content-Type', `multipart/form-data; boundary=${this.data.getBoundary()}`);
     }
