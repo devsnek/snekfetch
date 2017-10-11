@@ -86,7 +86,11 @@ class Snekfetch extends transport.Extension {
   attach(...args) {
     if (this.response) throw new Error('Cannot modify data after being sent!');
     const form = this._getFormData();
-    form.append(...args);
+    if (typeof args[0] === 'object') {
+      for (const [k, v] of Object.entries(args[0])) this.attach(k, v);
+    } else {
+      form.append(...args);
+    }
     return this;
   }
 

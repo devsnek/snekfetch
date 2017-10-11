@@ -4,12 +4,22 @@ const Snekfetch = require('../');
 
 const server = require('./server');
 
-const TestObj = exports.TestObj = { Hello: 'world', Test: 'yes' };
-const TestObjTest = exports.TestObjTest = (obj) => {
-  expect(obj).not.toBeUndefined();
-  expect(obj.Hello).toBe('world');
-  expect(obj.Test).toBe('yes');
-};
+function makeTestObj({ unicode = true, numbers = false } = {}) {
+  const test = {
+    Hello: 'world',
+    Test: numbers ? 1337 : '1337',
+  };
+  if (unicode) test.Unicode = '( ͡° ͜ʖ ͡°)';
+  return {
+    test,
+    check: (obj) => {
+      expect(obj).not.toBeUndefined();
+      expect(obj.Hello).toBe(test.Hello);
+      expect(obj.Test).toBe(test.Test);
+      if (test.Unicode) expect(obj.Unicode).toBe(test.Unicode);
+    },
+  };
+}
 
 test('should return a promise', () => {
   expect(Snekfetch.get('https://httpbin.org/get').end())
@@ -50,53 +60,45 @@ test('should reject if response is not between 200 and 300', () =>
   })
 );
 
-test('query should work', () =>
-  Snekfetch.get('https://httpbin.org/get?inline=true')
-    .query(TestObj)
+test('query should work', () => {
+  const { test, check } = makeTestObj();
+  return Snekfetch.get('https://httpbin.org/get?inline=true')
+    .query(test)
     .then((res) => {
       const { args } = res.body;
-      TestObjTest(args);
+      check(args);
       expect(args.inline).toBe('true');
-    })
-);
+    });
+});
 
-test('set should work', () =>
-  Snekfetch.get('https://httpbin.org/get')
-    .set(TestObj)
-    .then((res) => {
-      const { headers } = res.body;
-      TestObjTest(headers);
-    })
-);
+test('set should work', () => {
+  const { test, check } = makeTestObj({ unicode: false });
+  return Snekfetch.get('https://httpbin.org/get')
+    .set(test)
+    .then((res) => check(res.body.headers));
+});
 
-test('attach should work', () =>
-  Snekfetch.post('https://httpbin.org/post')
-    .attach('Hello', TestObj.Hello)
-    .attach('Test', TestObj.Test)
-    .then((res) => {
-      const { form } = res.body;
-      TestObjTest(form);
-    })
-);
+test('attach should work', () => {
+  const { test, check } = makeTestObj();
+  return Snekfetch.post('https://httpbin.org/post')
+    .attach(test)
+    .then((res) => check(res.body.form));
+});
 
-test('send should work with json', () =>
-  Snekfetch.post('https://httpbin.org/post')
-    .send(TestObj)
-    .then((res) => {
-      const { json } = res.body;
-      TestObjTest(json);
-    })
-);
+test('send should work with json', () => {
+  const { test, check } = makeTestObj({ numbers: true });
+  return Snekfetch.post('https://httpbin.org/post')
+    .send(test)
+    .then((res) => check(res.body.json));
+});
 
-test('send should work with urlencoded', () =>
-  Snekfetch.post('https://httpbin.org/post')
+test('send should work with urlencoded', () => {
+  const { test, check } = makeTestObj();
+  return Snekfetch.post('https://httpbin.org/post')
     .set('content-type', 'application/x-www-form-urlencoded')
-    .send(TestObj)
-    .then((res) => {
-      const { form } = res.body;
-      TestObjTest(form);
-    })
-);
+    .send(test)
+    .then((res) => check(res.body.form));
+});
 
 test('invalid json is just text', () =>
   Snekfetch.get(`http://localhost:${server.port}/invalid-json`)
