@@ -23,6 +23,7 @@ function buildRequest(method, url) {
     this.catch((err) => this.emit('error', err));
   };
   const options = URL.parse(url);
+  options.encoding = 'utf8';
   if (!options.protocol) throw new Error('URL must have a valid protocol');
   const transport = this.options.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
   options.method = method.toUpperCase();
