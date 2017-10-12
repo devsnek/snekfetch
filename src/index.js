@@ -135,21 +135,9 @@ class Snekfetch extends transport.Extension {
             method = 'GET';
           }
 
-          const redirectHeaders = {};
-          if (this.request._headerNames) {
-            for (const name of Object.keys(this.request._headerNames)) {
-              if (name.toLowerCase() === 'host') continue;
-              redirectHeaders[this.request._headerNames[name]] = this.request._headers[name];
-            }
-          } else {
-            const hds = this.request._headers || this.request.headers;
-            for (const name of Object.keys(hds)) {
-              if (name.toLowerCase() === 'host') continue;
-              const header = hds[name];
-              redirectHeaders[header.name] = header.value;
-            }
-          }
-
+          const redirectHeaders = this.request.getHeaders();
+          delete redirectHeaders.host;
+          console.log(method, redirect, redirectHeaders);
           return new Snekfetch(method, redirect, {
             data: this.data,
             headers: redirectHeaders,
