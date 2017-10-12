@@ -48,10 +48,10 @@ class Http2Request extends EventEmitter {
 
     const stream = new Stream.PassThrough();
 
-    client.on('error', (e) => this.emit('error', e));
-    client.on('frameError', (e) => this.emit('error', e));
+    client.once('error', (e) => this.emit('error', e));
+    client.once('frameError', (e) => this.emit('error', e));
 
-    req.on('response', (headers) => {
+    req.once('response', (headers) => {
       stream.headers = headers;
       stream.statusCode = headers[HTTP2_HEADER_STATUS];
       stream.status = http.STATUS_CODES[stream.statusCode];
@@ -62,15 +62,15 @@ class Http2Request extends EventEmitter {
         if (!stream.push(chunk)) req.pause();
       });
 
-      stream.on('error', (err) => {
+      req.once('end', () => {
+        stream.push(null);
+        client.destroy();
+      });
+
+      stream.once('error', (err) => {
         stream.statusCode = 400;
         stream.status = err.message;
       });
-    });
-
-    req.on('end', () => {
-      stream.push(null);
-      client.destroy();
     });
 
     req.end();

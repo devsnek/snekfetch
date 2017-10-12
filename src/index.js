@@ -50,7 +50,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   query(name, value) {
-    if (this.response) throw new Error('Cannot modify query after being sent!');
+    if (this._response) throw new Error('Cannot modify query after being sent!');
     if (!this.request.query) this.request.query = {};
     if (name !== null && typeof name === 'object') {
       for (const [k, v] of Object.entries(name)) this.query(k, v);
@@ -67,7 +67,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   set(name, value) {
-    if (this.response) throw new Error('Cannot modify headers after being sent!');
+    if (this._response) throw new Error('Cannot modify headers after being sent!');
     if (name !== null && typeof name === 'object') {
       for (const key of Object.keys(name)) this.set(key, name[key]);
     } else {
@@ -84,7 +84,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   attach(...args) {
-    if (this.response) throw new Error('Cannot modify data after being sent!');
+    if (this._response) throw new Error('Cannot modify data after being sent!');
     const form = this._getFormData();
     if (typeof args[0] === 'object') {
       for (const [k, v] of Object.entries(args[0])) this.attach(k, v);
@@ -100,7 +100,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   send(data) {
-    if (this.response) throw new Error('Cannot modify data after being sent!');
+    if (this._response) throw new Error('Cannot modify data after being sent!');
     if (data instanceof transport.FormData || transport.shouldSendRaw(data)) {
       this.data = data;
     } else if (data !== null && typeof data === 'object') {
@@ -121,7 +121,10 @@ class Snekfetch extends transport.Extension {
   }
 
   then(resolver, rejector) {
-    return transport.finalizeRequest.call(this)
+    if (this.response) return Promise.resolve(this.response);
+    if (this.__response) return this.__response;
+    // eslint-disable-next-line no-return-assign
+    return this.__response = transport.finalizeRequest.call(this)
       .then(({ response, raw, redirect, headers }) => {
         if (redirect) {
           let method = this.request.method;
@@ -167,7 +170,7 @@ class Snekfetch extends transport.Extension {
          * @prop {number} status HTTP status code
          * @prop {string} statusText Human readable HTTP status
          */
-        const res = {
+        const res = this.response = {
           request: this.request,
           get body() {
             delete res.body;
@@ -223,7 +226,7 @@ class Snekfetch extends transport.Extension {
   /* istanbul ignore next */
   _read() {
     this.resume();
-    if (this.response) return;
+    if (this._response) return;
     this.catch((err) => this.emit('error', err));
   }
 
@@ -259,7 +262,7 @@ class Snekfetch extends transport.Extension {
     }
   }
 
-  get response() {
+  get _response() {
     return this.request ? this.request.res || this.request._response || null : null;
   }
 
