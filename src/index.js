@@ -122,7 +122,7 @@ class Snekfetch extends transport.Extension {
 
   then(resolver, rejector) {
     if (this.response) return Promise.resolve(this.response);
-    if (this._response) return this._response;
+    if (this._response) return this._response.then(resolver, rejector);
     // eslint-disable-next-line no-return-assign
     return this._response = transport.finalizeRequest.call(this)
       .then(({ response, raw, redirect, headers }) => {
