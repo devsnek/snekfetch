@@ -104,7 +104,7 @@ class Snekfetch extends transport.Extension {
     if (data instanceof transport.FormData || transport.shouldSendRaw(data)) {
       this.data = data;
     } else if (data !== null && typeof data === 'object') {
-      const header = this._getRequestHeader('content-type');
+      const header = this.request.getHeader('content-type');
       let serialize;
       if (header) {
         if (header.includes('json')) serialize = JSON.stringify;
@@ -122,9 +122,9 @@ class Snekfetch extends transport.Extension {
 
   then(resolver, rejector) {
     if (this.response) return Promise.resolve(this.response);
-    if (this.__response) return this.__response;
+    if (this._response) return this._response;
     // eslint-disable-next-line no-return-assign
-    return this.__response = transport.finalizeRequest.call(this)
+    return this._response = transport.finalizeRequest.call(this)
       .then(({ response, raw, redirect, headers }) => {
         if (redirect) {
           let method = this.request.method;
@@ -249,7 +249,7 @@ class Snekfetch extends transport.Extension {
 
   _finalizeRequest() {
     if (!this.request) return;
-    if (!this._getRequestHeader('user-agent')) {
+    if (!this.request.getHeader('user-agent')) {
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.homepage})`);
     }
     if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
@@ -259,19 +259,6 @@ class Snekfetch extends transport.Extension {
     if (this.request.query) {
       const [path, query] = this.request.path.split('?');
       this.request.path = `${path}?${this.options.qs.stringify(this.request.query)}${query ? `&${query}` : ''}`;
-    }
-  }
-
-  get _response() {
-    return this.request ? this.request.res || this.request._response || null : null;
-  }
-
-  _getRequestHeader(header) {
-    // https://github.com/jhiesey/stream-http/pull/77
-    try {
-      return this.request.getHeader(header);
-    } catch (err) {
-      return null;
     }
   }
 }

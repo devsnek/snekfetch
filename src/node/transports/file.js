@@ -82,6 +82,7 @@ class Req extends EventEmitter {
   }
 
   setHeader() {} // eslint-disable-line no-empty-function
+  getHeader() {} // eslint-disable-line no-empty-function
 }
 
 function request(options) {
