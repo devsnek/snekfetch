@@ -60,6 +60,14 @@ test('should reject if response is not between 200 and 300', () =>
   })
 );
 
+test('unzipping works', () =>
+  Snekfetch.get('https://httpbin.org/gzip')
+    .then((res) => {
+      expect(res.body).not.toBeUndefined();
+      expect(res.body.gzipped).toBe(true);
+    })
+);
+
 test('query should work', () => {
   const { test, check } = makeTestObj();
   return Snekfetch.get('https://httpbin.org/get?inline=true')
