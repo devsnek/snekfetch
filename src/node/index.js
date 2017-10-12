@@ -16,6 +16,12 @@ const agents = {};
 const kagent = (r) => `${r.protocol}${r.host}`;
 
 function buildRequest(method, url) {
+  /* istanbul ignore next */
+  this._read = () => {
+    this.resume();
+    if (this._response) return;
+    this.catch((err) => this.emit('error', err));
+  };
   const options = URL.parse(url);
   if (!options.protocol) throw new Error('URL must have a valid protocol');
   const transport = this.options.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
@@ -77,7 +83,7 @@ function finalizeRequest() {
         const raw = Buffer.concat(body);
 
         let redirect = false;
-        if (this._shouldRedirect(response)) {
+        if (this.options.followRedirects !== false && [301, 302, 303, 307, 308].includes(response.statusCode)) {
           redirect = /^https?:\/\//i.test(response.headers.location) ?
             response.headers.location :
             URL.resolve(makeURLFromRequest(request), response.headers.location);

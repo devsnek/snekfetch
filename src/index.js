@@ -50,7 +50,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   query(name, value) {
-    if (this._response) throw new Error('Cannot modify query after being sent!');
+    this._checkModify();
     if (!this.request.query) this.request.query = {};
     if (name !== null && typeof name === 'object') {
       for (const [k, v] of Object.entries(name)) this.query(k, v);
@@ -67,7 +67,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   set(name, value) {
-    if (this._response) throw new Error('Cannot modify headers after being sent!');
+    this._checkModify();
     if (name !== null && typeof name === 'object') {
       for (const key of Object.keys(name)) this.set(key, name[key]);
     } else {
@@ -84,7 +84,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   attach(...args) {
-    if (this._response) throw new Error('Cannot modify data after being sent!');
+    this._checkModify();
     const form = this._getFormData();
     if (typeof args[0] === 'object') {
       for (const [k, v] of Object.entries(args[0])) this.attach(k, v);
@@ -100,7 +100,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   send(data) {
-    if (this._response) throw new Error('Cannot modify data after being sent!');
+    this._checkModify();
     if (data instanceof transport.FormData || transport.shouldSendRaw(data)) {
       this.data = data;
     } else if (data !== null && typeof data === 'object') {
@@ -121,7 +121,6 @@ class Snekfetch extends transport.Extension {
   }
 
   then(resolver, rejector) {
-    if (this.response) return Promise.resolve(this.response);
     if (this._response) return this._response.then(resolver, rejector);
     // eslint-disable-next-line no-return-assign
     return this._response = transport.finalizeRequest.call(this)
@@ -157,7 +156,7 @@ class Snekfetch extends transport.Extension {
          * @prop {number} status HTTP status code
          * @prop {string} statusText Human readable HTTP status
          */
-        const res = this.response = {
+        const res = {
           request: this.request,
           get body() {
             delete res.body;
@@ -210,17 +209,6 @@ class Snekfetch extends transport.Extension {
     );
   }
 
-  /* istanbul ignore next */
-  _read() {
-    this.resume();
-    if (this._response) return;
-    this.catch((err) => this.emit('error', err));
-  }
-
-  _shouldRedirect(res) {
-    return this.options.followRedirects !== false && [301, 302, 303, 307, 308].includes(res.statusCode);
-  }
-
   _getFormData() {
     if (!(this.data instanceof transport.FormData)) {
       this.data = new transport.FormData();
@@ -241,6 +229,10 @@ class Snekfetch extends transport.Extension {
       const [path, query] = this.request.path.split('?');
       this.request.path = `${path}?${this.options.qs.stringify(this.request.query)}${query ? `&${query}` : ''}`;
     }
+  }
+
+  _checkModify() {
+    if (this.response) throw new Error('Cannot modify request after it has been sent!');
   }
 }
 
