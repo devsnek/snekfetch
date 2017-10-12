@@ -137,7 +137,6 @@ class Snekfetch extends transport.Extension {
 
           const redirectHeaders = this.request.getHeaders();
           delete redirectHeaders.host;
-          console.log(method, redirect, redirectHeaders);
           return new Snekfetch(method, redirect, {
             data: this.data,
             headers: redirectHeaders,
@@ -216,12 +215,6 @@ class Snekfetch extends transport.Extension {
     this.resume();
     if (this._response) return;
     this.catch((err) => this.emit('error', err));
-  }
-
-  _shouldUnzip(res) {
-    if (res.statusCode === 204 || res.statusCode === 304) return false;
-    if (res.headers['content-length'] === '0') return false;
-    return /^\s*(?:deflate|gzip)\s*$/.test(res.headers['content-encoding']);
   }
 
   _shouldRedirect(res) {

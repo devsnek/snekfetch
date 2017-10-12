@@ -58,7 +58,7 @@ function finalizeRequest() {
     request.once('response', (response) => {
       if (socket) socket.removeListener('error', handleError);
       let stream = response;
-      if (this._shouldUnzip(response)) {
+      if (shouldUnzip(response)) {
         stream = response.pipe(zlib.createUnzip({
           flush: zlib.Z_SYNC_FLUSH,
           finishFlush: zlib.Z_SYNC_FLUSH,
@@ -119,6 +119,11 @@ function makeURLFromRequest(request) {
   });
 }
 
+function shouldUnzip(res) {
+  if (res.statusCode === 204 || res.statusCode === 304) return false;
+  if (res.headers['content-length'] === '0') return false;
+  return /^\s*(?:deflate|gzip)\s*$/.test(res.headers['content-encoding']);
+}
 
 module.exports = {
   buildRequest, finalizeRequest, shouldSendRaw,
