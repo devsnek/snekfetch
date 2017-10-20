@@ -1,7 +1,7 @@
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  entry: './index.js',
+  entry: require.resolve('.'),
   output: {
     filename: 'bundle.js',
     library: 'Snekfetch',
