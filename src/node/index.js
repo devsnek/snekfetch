@@ -13,7 +13,7 @@ const transports = {
 };
 
 const agents = {};
-const kagent = (r) => `${r.protocol}${r.host}`;
+const kagent = (r) => r && r.protocol + r.host;
 
 function buildRequest(method, url) {
   /* istanbul ignore next */

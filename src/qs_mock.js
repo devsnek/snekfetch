@@ -5,4 +5,3 @@ exports.parse = (str) => {
 };
 
 exports.stringify = (obj) => new window.URLSearchParams(obj).toString();
-
