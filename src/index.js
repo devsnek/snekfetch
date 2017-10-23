@@ -31,13 +31,9 @@ class Snekfetch extends transport.Extension {
    * @param {string} url URL
    * @param {Snekfetch.snekfetchOptions} opts Options
    */
-  constructor(method, url, opts = {
-    version: 1,
-    qs: querystring,
-    followRedirects: true,
-  }) {
+  constructor(method, url, opts = {}) {
     super();
-    this.options = opts;
+    this.options = Object.assign({ version: 1, qs: querystring, followRedirects: true }, opts);
     this.request = transport.buildRequest.call(this, method, url, opts);
     if (opts.query) this.query(opts.query);
     if (opts.data) this.send(opts.data);
