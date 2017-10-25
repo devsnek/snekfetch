@@ -32,6 +32,7 @@
     "webpack": "^3.8.1"
   },
   "description": "Just do http requests without all that weird nastiness from other libs",
+  "unpkg": "browser.js",
   "browser": {
     "./src/node/index.js": false,
     "./src/meta.js": false
