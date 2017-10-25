@@ -1,6 +1,6 @@
 {
   "name": "snekfetch",
-  "version": "3.5.6",
+  "version": "3.5.7",
   "main": "index.js",
   "scripts": {
     "lint": "npx eslint src",
@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/devsnek/snekfetch/issues"
   },
-  "homepage": "https://github.com/devsnek/snekfetch",
+  "homepage": "https://snekfetch.js.org/",
   "dependencies": {},
   "devDependencies": {
     "coveralls": "^3.0.0",
