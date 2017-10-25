@@ -2,4 +2,3 @@ node_modules
 docs
 .cache
 coverage
-browser.js
