@@ -1,4 +1,4 @@
-import Snekfetch from '.';
+import Snekfetch from 'index.js';
 
 export default Snekfetch;
 
