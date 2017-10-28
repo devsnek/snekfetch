@@ -3,3 +3,5 @@ docs
 .cache
 coverage
 browser.js
+sonar-project.properties
+.scannerwork

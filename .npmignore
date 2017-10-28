@@ -2,3 +2,5 @@ node_modules
 docs
 .cache
 coverage
+sonar-project.properties
+.scannerwork

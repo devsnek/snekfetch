@@ -2,13 +2,15 @@
   "name": "snekfetch",
   "version": "3.5.7",
   "main": "index.js",
+  "module": "esm.js",
+  "unpkg": "browser.js",
   "scripts": {
     "lint": "npx eslint src",
     "test": "node ./node_modules/.bin/jest",
     "test:coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "node docs.js",
     "build:browser": "webpack",
-    "prepublishOnly": "npm run build:browser"
+    "prepublish": "npm run build:browser"
   },
   "repository": {
     "type": "git",
@@ -33,7 +35,6 @@
     "webpack": "^3.8.1"
   },
   "description": "Just do http requests without all that weird nastiness from other libs",
-  "unpkg": "browser.js",
   "browser": {
     "./src/node/index.js": false,
     "./src/meta.js": false
