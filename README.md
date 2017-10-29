@@ -17,21 +17,22 @@ Documentation is available at https://snekfetch.js.org/
 ## Some examples
 
 ```javascript
-const snekfetch = require('snekfetch');
+const request = require('snekfetch');
 
-snekfetch.get('https://s.gus.host/o-SNAKES-80.jpg')
-  .then(r => fs.writeFile('download.jpg', r.body));
+request.post('https://httpbin.org/post')
+  .send({ usingGoodRequestLibrary: true })
+  .then(r => console.log(r.body)); // r.body is object from json response
 
-snekfetch.get('https://s.gus.host/o-SNAKES-80.jpg')
-  .pipe(fs.createWriteStream('download.jpg'));
+request.get('https://s.gc.gy/o-SNAKES.jpg')
+  .then(r => fs.writeFile('download.jpg', r.body)); // r.body is buffer
+
+request.get('https://s.gc.gy/o-SNAKES.jpg')
+  .pipe(fs.createWriteStream('download.jpg')); // pipes
 ```
 
-```javascript
-const snekfetch = require('snekfetch');
-
-snekfetch.post('https://httpbin.org/post')
-  .send({ meme: 'dream' })
-  .then(r => console.log(r.body));
+Available for browser as UMD from [unpkg][unpkg-link]
+```html
+<script src=https://unpkg.com/snekfetch></script>
 ```
 
 [npm]: https://npmjs.org/package/snekfetch
@@ -45,3 +46,4 @@ snekfetch.post('https://httpbin.org/post')
 [dep-link]: https://david-dm.org/guscaplan/snekfetch
 [coverage-badge]: https://coveralls.io/repos/github/devsnek/snekfetch/badge.svg?branch=master
 [coverage-link]: https://coveralls.io/github/devsnek/snekfetch?branch=master
+[unpkg-link]: https://unpkg.com/
