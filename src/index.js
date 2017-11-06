@@ -11,7 +11,7 @@ const transport = browser ? require('./browser') : require('./node');
 class Snekfetch extends transport.Extension {
   /**
    * Options to pass to the Snekfetch constructor
-   * @typedef {object} snekfetchOptions
+   * @typedef {object} SnekfetchOptions
    * @memberof Snekfetch
    * @property {object} [headers] Headers to initialize the request with
    * @property {object|string|Buffer} [data] Data to initialize the request with
@@ -29,7 +29,7 @@ class Snekfetch extends transport.Extension {
    * `new Snekfetch(method, url [, options])`
    * @param {string} method HTTP method
    * @param {string} url URL
-   * @param {Snekfetch.snekfetchOptions} opts Options
+   * @param {SnekfetchOptions} [opts] Options
    */
   constructor(method, url, opts = {}) {
     super();
