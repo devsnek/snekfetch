@@ -8,14 +8,16 @@ class FormData {
   }
 
   append(name, data, filename) {
-    if (typeof data === 'undefined') return;
+    if (typeof data === 'undefined')
+      return;
     let str = `\r\n--${this.boundary}\r\nContent-Disposition: form-data; name="${name}"`;
     let mimetype = null;
     if (filename) {
       str += `; filename="${filename}"`;
       mimetype = 'application/octet-stream';
       const extname = path.extname(filename).slice(1);
-      if (extname) mimetype = mime.lookup(extname);
+      if (extname)
+        mimetype = mime.lookup(extname);
     }
 
     if (data instanceof Buffer) {
@@ -27,7 +29,8 @@ class FormData {
       data = Buffer.from(String(data));
     }
 
-    if (mimetype) str += `\r\nContent-Type: ${mimetype}`;
+    if (mimetype)
+      str += `\r\nContent-Type: ${mimetype}`;
     this.buffers.push(Buffer.from(`${str}\r\n\r\n`));
     this.buffers.push(data);
   }

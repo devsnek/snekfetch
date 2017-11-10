@@ -4,7 +4,8 @@ const EventEmitter = require('events');
 const http2 = (() => {
   try {
     const h2 = require('http2');
-    if (!h2.constants) throw new Error('DAMN_YOU_NPM_HTTP2');
+    if (!h2.constants)
+      throw new Error('DAMN_YOU_NPM_HTTP2');
     return h2;
   } catch (err) {
     return {
@@ -59,7 +60,8 @@ class Http2Request extends EventEmitter {
       this.emit('response', stream);
 
       req.on('data', (chunk) => {
-        if (!stream.push(chunk)) req.pause();
+        if (!stream.push(chunk))
+          req.pause();
       });
 
       req.once('end', () => {

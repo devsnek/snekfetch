@@ -14,7 +14,8 @@ class ResponseStream extends Stream.Readable {
   }
 
   on(event, handler) {
-    if (['end', 'open'].includes(event)) handler();
+    if (['end', 'open'].includes(event))
+      handler();
   }
 
   _read() {} // eslint-disable-line no-empty-function

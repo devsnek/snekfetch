@@ -19,25 +19,30 @@ function buildRequest(method, url) {
   /* istanbul ignore next */
   this._read = () => {
     this.resume();
-    if (this._response) return;
+    if (this._response)
+      return;
     this.catch((err) => this.emit('error', err));
   };
   const options = URL.parse(url);
   options.encoding = 'utf8';
-  if (!options.protocol) throw new Error('URL must have a valid protocol');
+  if (!options.protocol)
+    throw new Error('URL must have a valid protocol');
   const transport = this.options.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
   options.method = method.toUpperCase();
-  if (this.options.headers) options.headers = this.options.headers;
+  if (this.options.headers)
+    options.headers = this.options.headers;
   if (this.options.agent) {
     options.agent = this.options.agent;
   } else if (transport.Agent && this.options.followRedirects !== false) {
     const key = kagent(options);
     options.agent = agents[key] = agents[key] || new transport.Agent({ keepAlive: true });
   }
-  if (options.port) options.port = parseInt(options.port);
+  if (options.port)
+    options.port = parseInt(options.port);
   this.options._req = options;
   const request = transport.request(options);
-  if (request.setNoDelay) request.setNoDelay(true);
+  if (request.setNoDelay)
+    request.setNoDelay(true);
   return request;
 }
 
@@ -48,11 +53,13 @@ function finalizeRequest() {
     let socket;
 
     const handleError = (err) => {
-      if (!err) err = new Error('Unknown error occured');
+      if (!err)
+        err = new Error('Unknown error occured');
       err.request = request;
       reject(err);
       delete agents[kagent(this.options._req)];
-      if (socket) socket.removeListener('error', handleError);
+      if (socket)
+        socket.removeListener('error', handleError);
     };
 
     request.once('abort', handleError);
@@ -63,7 +70,8 @@ function finalizeRequest() {
     });
 
     request.once('response', (response) => {
-      if (socket) socket.removeListener('error', handleError);
+      if (socket)
+        socket.removeListener('error', handleError);
       let stream = response;
       if (shouldUnzip(response)) {
         stream = response.pipe(zlib.createUnzip({
@@ -75,7 +83,8 @@ function finalizeRequest() {
       const body = [];
 
       stream.on('data', (chunk) => {
-        if (!this.push(chunk)) this.pause();
+        if (!this.push(chunk))
+          this.pause();
         body.push(chunk);
       });
 
@@ -90,16 +99,19 @@ function finalizeRequest() {
             URL.resolve(makeURLFromRequest(request), response.headers.location);
         }
         const key = kagent(this.options._req);
-        if (!redirect && agents[key]) delete agents[key];
+        if (!redirect && agents[key])
+          delete agents[key];
         resolve({ response, raw, redirect });
       });
     });
 
     this._finalizeRequest();
     let data = this.data;
-    if (data && data.end) data = data.end();
+    if (data && data.end)
+      data = data.end();
     if (Array.isArray(data)) {
-      for (const chunk of data) request.write(chunk);
+      for (const chunk of data)
+        request.write(chunk);
       request.end();
     } else if (data instanceof Stream) {
       data.pipe(request);
@@ -127,8 +139,10 @@ function makeURLFromRequest(request) {
 }
 
 function shouldUnzip(res) {
-  if (res.statusCode === 204 || res.statusCode === 304) return false;
-  if (res.headers['content-length'] === '0') return false;
+  if (res.statusCode === 204 || res.statusCode === 304)
+    return false;
+  if (res.headers['content-length'] === '0')
+    return false;
   return /^\s*(?:deflate|gzip)\s*$/.test(res.headers['content-encoding']);
 }
 

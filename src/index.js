@@ -35,8 +35,10 @@ class Snekfetch extends transport.Extension {
     super();
     this.options = Object.assign({ version: 1, qs: querystring, followRedirects: true }, opts);
     this.request = transport.buildRequest.call(this, method, url, opts);
-    if (opts.query) this.query(opts.query);
-    if (opts.data) this.send(opts.data);
+    if (opts.query)
+      this.query(opts.query);
+    if (opts.data)
+      this.send(opts.data);
   }
 
   /**
@@ -47,12 +49,15 @@ class Snekfetch extends transport.Extension {
    */
   query(name, value) {
     this._checkModify();
-    if (!this.request.query) this.request.query = {};
+    if (!this.request.query)
+      this.request.query = {};
     if (name !== null && typeof name === 'object') {
-      for (const [k, v] of Object.entries(name)) this.query(k, v);
+      for (const [k, v] of Object.entries(name))
+        this.query(k, v);
     } else {
       this.request.query[name] = value;
     }
+
     return this;
   }
 
@@ -65,10 +70,12 @@ class Snekfetch extends transport.Extension {
   set(name, value) {
     this._checkModify();
     if (name !== null && typeof name === 'object') {
-      for (const key of Object.keys(name)) this.set(key, name[key]);
+      for (const key of Object.keys(name))
+        this.set(key, name[key]);
     } else {
       this.request.setHeader(name, value);
     }
+
     return this;
   }
 
@@ -83,10 +90,12 @@ class Snekfetch extends transport.Extension {
     this._checkModify();
     const form = this._getFormData();
     if (typeof args[0] === 'object') {
-      for (const [k, v] of Object.entries(args[0])) this.attach(k, v);
+      for (const [k, v] of Object.entries(args[0]))
+        this.attach(k, v);
     } else {
       form.append(...args);
     }
+
     return this;
   }
 
@@ -103,8 +112,10 @@ class Snekfetch extends transport.Extension {
       const header = this.request.getHeader('content-type');
       let serialize;
       if (header) {
-        if (header.includes('json')) serialize = JSON.stringify;
-        else if (header.includes('urlencoded')) serialize = this.options.qs.stringify;
+        if (header.includes('json'))
+          serialize = JSON.stringify;
+        else if (header.includes('urlencoded'))
+          serialize = this.options.qs.stringify;
       } else {
         this.set('Content-Type', 'application/json');
         serialize = JSON.stringify;
@@ -117,14 +128,16 @@ class Snekfetch extends transport.Extension {
   }
 
   then(resolver, rejector) {
-    if (this._response) return this._response.then(resolver, rejector);
+    if (this._response)
+      return this._response.then(resolver, rejector);
     // eslint-disable-next-line no-return-assign
     return this._response = transport.finalizeRequest.call(this)
       .then(({ response, raw, redirect, headers }) => {
         if (redirect) {
           let method = this.request.method;
           if ([301, 302].includes(response.statusCode)) {
-            if (method !== 'HEAD') method = 'GET';
+            if (method !== 'HEAD')
+              method = 'GET';
             this.data = null;
           } else if (response.statusCode === 303) {
             method = 'GET';
@@ -206,21 +219,23 @@ class Snekfetch extends transport.Extension {
   }
 
   _getFormData() {
-    if (!(this.data instanceof transport.FormData)) {
+    if (!(this.data instanceof transport.FormData))
       this.data = new transport.FormData();
-    }
+
     return this.data;
   }
 
   _finalizeRequest() {
-    if (!this.request) return;
-    if (!this.request.getHeader('user-agent')) {
+    if (!this.request)
+      return;
+    if (!this.request.getHeader('user-agent'))
       this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.homepage})`);
-    }
-    if (this.request.method !== 'HEAD') this.set('Accept-Encoding', 'gzip, deflate');
-    if (this.data && this.data.getBoundary) {
+
+    if (this.request.method !== 'HEAD')
+      this.set('Accept-Encoding', 'gzip, deflate');
+    if (this.data && this.data.getBoundary)
       this.set('Content-Type', `multipart/form-data; boundary=${this.data.getBoundary()}`);
-    }
+
     if (this.request.query) {
       const [path, query] = this.request.path.split('?');
       this.request.path = `${path}?${this.options.qs.stringify(this.request.query)}${query ? `&${query}` : ''}`;
@@ -228,7 +243,8 @@ class Snekfetch extends transport.Extension {
   }
 
   _checkModify() {
-    if (this.response) throw new Error('Cannot modify request after it has been sent!');
+    if (this.response)
+      throw new Error('Cannot modify request after it has been sent!');
   }
 }
 
@@ -243,9 +259,9 @@ Snekfetch.version = Package.version;
  * @returns {Snekfetch}
  */
 Snekfetch.METHODS = transport.METHODS.concat('BREW').filter((m) => m !== 'M-SEARCH');
-for (const method of Snekfetch.METHODS) {
+for (const method of Snekfetch.METHODS)
   Snekfetch[method.toLowerCase()] = (url, opts) => new Snekfetch(method, url, opts);
-}
+
 
 module.exports = Snekfetch;
 

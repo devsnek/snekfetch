@@ -18,11 +18,13 @@ function buildRequest(method, url) {
 
 function finalizeRequest() {
   this._finalizeRequest();
-  if (this.data) this.request.body = this.data;
+  if (this.data)
+    this.request.body = this.data;
   return window.fetch(this.request.path, this.request)
     .then((r) => r.text().then((t) => {
       const headers = {};
-      for (const [k, v] of r.headers.entries()) headers[k.toLowerCase()] = v;
+      for (const [k, v] of r.headers.entries())
+        headers[k.toLowerCase()] = v;
       return { response: r, raw: t, headers };
     }));
 }

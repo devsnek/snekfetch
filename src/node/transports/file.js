@@ -18,7 +18,8 @@ const methods = {
       stream.on('open', () => {
         req.emit('response', stream);
       });
-      if (stream instanceof ResponseStream) return;
+      if (stream instanceof ResponseStream)
+        return;
       stream.statusCode = 200;
       stream.on('end', () => {
         stream.headers['content-length'] = stream.bytesRead;
@@ -49,12 +50,12 @@ const methods = {
       stream.on('open', () => {
         (function write() {
           const chunk = chunks.shift();
-          if (!chunk) return;
-          if (!stream.write(chunk)) {
+          if (!chunk)
+            return;
+          if (!stream.write(chunk))
             stream.once('drain', write);
-          } else {
+          else
             write();
-          }
         }());
         stream.end();
       });
@@ -87,7 +88,8 @@ class Req extends EventEmitter {
 
 function request(options) {
   const method = methods[options.method];
-  if (!method) throw new Error(`Invalid request method "${method}"`);
+  if (!method)
+    throw new Error(`Invalid request method "${method}"`);
   const filename = options.href.replace('file://', '');
 
   const req = new Req();

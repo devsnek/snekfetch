@@ -6,9 +6,9 @@
 function mimeOfBuffer(input) {
   const buf = new Uint8Array(input);
 
-  if (!(buf && buf.length > 1)) {
+  if (!(buf && buf.length > 1))
     return null;
-  }
+
 
   if (buf[0] === 0xFF && buf[1] === 0xD8 && buf[2] === 0xFF) {
     return {
