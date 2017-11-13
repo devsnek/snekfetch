@@ -1,6 +1,6 @@
 /* global test expect */
 
-const Snekfetch = require('../');
+const { Snekfetch, TestRoot } = require('./interop');
 
 const server = require('./server');
 
@@ -9,25 +9,27 @@ function makeTestObj({ unicode = true, numbers = false } = {}) {
     Hello: 'world',
     Test: numbers ? 1337 : '1337',
   };
-  if (unicode) test.Unicode = '( ͡° ͜ʖ ͡°)';
+  if (unicode)
+    test.Unicode = '( ͡° ͜ʖ ͡°)';
   return {
     test,
     check: (obj) => {
       expect(obj).not.toBeUndefined();
       expect(obj.Hello).toBe(test.Hello);
       expect(obj.Test).toBe(test.Test);
-      if (test.Unicode) expect(obj.Unicode).toBe(test.Unicode);
+      if (test.Unicode)
+        expect(obj.Unicode).toBe(test.Unicode);
     },
   };
 }
 
 test('should return a promise', () => {
-  expect(Snekfetch.get('https://httpbin.org/get').end())
+  expect(Snekfetch.get(`${TestRoot}/get`).end())
     .toBeInstanceOf(Promise);
 });
 
 test('should reject with error on network failure', () => {
-  const invalid = 'http://localhost:6969';
+  const invalid = 'http://localhost:0/';
   /* https://gc.gy/❥ȗ.png
    return expect(Snekfetch.get(invalid).end())
     .rejects.toBeInstanceOf(Error);*/
@@ -37,8 +39,7 @@ test('should reject with error on network failure', () => {
 });
 
 test('should resolve on success', () =>
-  Snekfetch.get('https://httpbin.org/anything').then((res) => {
-    expect(res.body.method).toBe('GET');
+  Snekfetch.get(`${TestRoot}/get`).then((res) => {
     expect(res.status).toBe(200);
     expect(res.ok).toBe(true);
     expect(res).toHaveProperty('text');
@@ -47,21 +48,21 @@ test('should resolve on success', () =>
 );
 
 test('end should work', () =>
-  Snekfetch.get('https://httpbin.org/anything').end((err, res) => {
+  Snekfetch.get(`${TestRoot}/get`).end((err, res) => {
     expect(err).toBe(null);
     expect(res.body).not.toBeUndefined();
   })
 );
 
 test('should reject if response is not between 200 and 300', () =>
-  Snekfetch.get('https://httpbin.org/404').catch((err) => {
+  Snekfetch.get(`${TestRoot}/404`).catch((err) => {
     expect(err.status).toBe(404);
     expect(err.ok).toBe(false);
   })
 );
 
 test('unzipping works', () =>
-  Snekfetch.get('https://httpbin.org/gzip')
+  Snekfetch.get(`${TestRoot}/gzip`)
     .then((res) => {
       expect(res.body).not.toBeUndefined();
       expect(res.body.gzipped).toBe(true);
@@ -70,7 +71,7 @@ test('unzipping works', () =>
 
 test('query should work', () => {
   const { test, check } = makeTestObj();
-  return Snekfetch.get('https://httpbin.org/get?inline=true')
+  return Snekfetch.get(`${TestRoot}/get?inline=true`)
     .query(test)
     .then((res) => {
       const { args } = res.body;
@@ -81,28 +82,28 @@ test('query should work', () => {
 
 test('set should work', () => {
   const { test, check } = makeTestObj({ unicode: false });
-  return Snekfetch.get('https://httpbin.org/get')
+  return Snekfetch.get(`${TestRoot}/get`)
     .set(test)
     .then((res) => check(res.body.headers));
 });
 
 test('attach should work', () => {
   const { test, check } = makeTestObj();
-  return Snekfetch.post('https://httpbin.org/post')
+  return Snekfetch.post(`${TestRoot}/post`)
     .attach(test)
     .then((res) => check(res.body.form));
 });
 
 test('send should work with json', () => {
   const { test, check } = makeTestObj({ numbers: true });
-  return Snekfetch.post('https://httpbin.org/post')
+  return Snekfetch.post(`${TestRoot}/post`)
     .send(test)
     .then((res) => check(res.body.json));
 });
 
 test('send should work with urlencoded', () => {
   const { test, check } = makeTestObj();
-  return Snekfetch.post('https://httpbin.org/post')
+  return Snekfetch.post(`${TestRoot}/post`)
     .set('content-type', 'application/x-www-form-urlencoded')
     .send(test)
     .then((res) => check(res.body.form));
@@ -125,9 +126,9 @@ test('x-www-form-urlencoded response body', () =>
 );
 
 test('redirects', () =>
-  Snekfetch.get('https://httpbin.org/redirect/1')
+  Snekfetch.get(`${TestRoot}/redirect/1`)
     .then((res) => {
       expect(res.body).not.toBeUndefined();
-      expect(res.body.url).toBe('https://httpbin.org/get');
+      expect(res.body.url).toBe(`${TestRoot}/get`);
     })
 );

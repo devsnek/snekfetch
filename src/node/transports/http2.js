@@ -41,12 +41,23 @@ class Http2Request extends EventEmitter {
     return this._headers[name];
   }
 
-  end() {
+  getHeaders() {
+    return this._headers;
+  }
+
+  get path() {
+    return this._headers[HTTP2_HEADER_PATH];
+  }
+
+  set path(path) {
+    // eslint-disable-next-line no-return-assign
+    return this._headers[HTTP2_HEADER_PATH] = path;
+  }
+
+  end(data) {
     const options = this.options;
     const client = http2.connect(`${options.protocol}//${options.hostname}`);
-
     const req = client.request(this._headers);
-
     const stream = new Stream.PassThrough();
 
     client.once('error', (e) => this.emit('error', e));
@@ -58,6 +69,7 @@ class Http2Request extends EventEmitter {
       stream.status = http.STATUS_CODES[stream.statusCode];
 
       this.emit('response', stream);
+      this.response = stream;
 
       req.on('data', (chunk) => {
         if (!stream.push(chunk))
@@ -75,7 +87,7 @@ class Http2Request extends EventEmitter {
       });
     });
 
-    req.end();
+    req.end(data);
 
     return req;
   }

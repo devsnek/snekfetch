@@ -131,7 +131,8 @@ function shouldSendRaw(data) {
 
 function makeURLFromRequest(request) {
   return URL.format({
-    protocol: request.connection.encrypted ? 'https:' : 'http:',
+    protocol: request.connection ?
+      request.connection.encrypted ? 'https:' : 'http:' : 'https:',
     hostname: request.getHeader('host'),
     pathname: request.path.split('?')[0],
     query: request.query,
