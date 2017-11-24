@@ -48,5 +48,8 @@
       "!src/node/transports/http2.js"
     ],
     "verbose": true
+  },
+  "optionalDependencies": {
+    "@snek/deasync": "github:devsnek/deasync"
   }
 }

@@ -13,3 +13,9 @@ exports.Snekfetch = new Proxy(Snekfetch, {
 exports.TestRoot = global.HTTP_VERSION === 2 ?
   'https://nghttp2.org/httpbin' :
   'https://httpbin.org';
+
+Object.defineProperty(exports, 'SnekSync', {
+  get() {
+    return require('../sync');
+  },
+});
