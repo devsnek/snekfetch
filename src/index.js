@@ -148,6 +148,7 @@ class Snekfetch extends transport.Extension {
           return new Snekfetch(method, redirect, {
             data: this.data,
             headers: redirectHeaders,
+            version: this.options.version,
           });
         }
 

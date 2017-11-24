@@ -63,6 +63,8 @@ class Http2Request extends EventEmitter {
     client.once('error', (e) => this.emit('error', e));
     client.once('frameError', (e) => this.emit('error', e));
 
+    req.once('error', (e) => this.emit('error', e));
+
     req.once('response', (headers) => {
       stream.headers = headers;
       stream.statusCode = headers[HTTP2_HEADER_STATUS];
