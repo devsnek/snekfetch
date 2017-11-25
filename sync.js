@@ -1,10 +1,10 @@
-const deasync = require('@snek/deasync');
+const syncify = require('@snek/syncify');
 const Snekfetch = require('.');
 
 const oldEnd = Snekfetch.prototype.end;
 
 Snekfetch.prototype.end = function end() {
-  return deasync(oldEnd.call(this));
+  return syncify(oldEnd.call(this));
 };
 
 module.exports = Snekfetch;
