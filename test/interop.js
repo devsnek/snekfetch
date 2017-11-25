@@ -4,22 +4,15 @@ function makeProxy(fetch) {
       const p = target[prop];
       if (typeof p === 'function') {
         return (url, options = {}) =>
-          p(url, Object.assign(options, { version: global.HTTP_VERSION }));
+          p.call(target, url, Object.assign(options, { version: global.HTTP_VERSION }));
       }
+      return p;
     },
   });
 }
 
 exports.Snekfetch = makeProxy(require('../'));
-
-Object.defineProperty(exports, 'SnekfetchSync', {
-  configurable: true,
-  get() {
-    delete this.SnekfetchSync;
-    this.SnekfetchSync = makeProxy(require('../sync'));
-    return this.SnekfetchSync;
-  },
-});
+exports.SnekfetchSync = makeProxy(require('../sync'));
 
 exports.TestRoot = global.HTTP_VERSION === 2 ?
   'https://nghttp2.org/httpbin' :

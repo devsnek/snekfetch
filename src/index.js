@@ -260,9 +260,11 @@ Snekfetch.version = Package.version;
  * @returns {Snekfetch}
  */
 Snekfetch.METHODS = transport.METHODS.concat('BREW').filter((m) => m !== 'M-SEARCH');
-for (const method of Snekfetch.METHODS)
-  Snekfetch[method.toLowerCase()] = (url, opts) => new Snekfetch(method, url, opts);
-
+for (const method of Snekfetch.METHODS) {
+  Snekfetch[method.toLowerCase()] = function runMethod(url, opts) {
+    return new this(method, url, opts);
+  };
+}
 
 module.exports = Snekfetch;
 

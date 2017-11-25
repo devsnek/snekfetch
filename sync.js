@@ -1,9 +1,10 @@
 const syncify = require('@snek/syncify');
 const Snekfetch = require('.');
 
-const originalEnd = Snekfetch.prototype.end;
-Snekfetch.prototype.end = function end() {
-  return syncify(originalEnd.call(this));
-};
+class SnekfetchSync extends Snekfetch {
+  end() {
+    return syncify(super.end());
+  }
+}
 
-module.exports = Snekfetch;
+module.exports = SnekfetchSync;
