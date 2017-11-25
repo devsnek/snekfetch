@@ -50,7 +50,6 @@
     "verbose": true
   },
   "optionalDependencies": {
-    "@snek/deasync": "github:devsnek/deasync",
-    "@snek/syncify": "github:devsnek/syncify"
+    "@snek/syncify": "0.0.3"
   }
 }
