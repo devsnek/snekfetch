@@ -4,9 +4,9 @@
 
 /* global test expect */
 
-const { SnekSync, TestRoot } = require('../interop');
+const { SnekfetchSync, TestRoot } = require('../interop');
 
 test('sync get', () => {
-  const res = SnekSync.get(`${TestRoot}/get`).end();
+  const res = SnekfetchSync.get(`${TestRoot}/get`).end();
   expect(res.body).not.toBeUndefined();
 });
