@@ -71,12 +71,18 @@ test('unzipping works', () =>
 
 test('query should work', () => {
   const { test, check } = makeTestObj();
-  return Snekfetch.get(`${TestRoot}/get?inline=true`)
-    .query(test)
-    .then((res) => {
-      const { args } = res.body;
-      check(args);
-      expect(args.inline).toBe('true');
+  Promise.all([
+    Snekfetch.get(`${TestRoot}/get?inline=true`)
+      .query(test).end(),
+    Snekfetch.get(`${TestRoot}/get?inline=true`, { query: test })
+      .end(),
+  ])
+    .then((ress) => {
+      for (const res of ress) {
+        const { args } = res.body;
+        check(args);
+        expect(args.inline).toBe('true');
+      }
     });
 });
 
@@ -96,9 +102,16 @@ test('attach should work', () => {
 
 test('send should work with json', () => {
   const { test, check } = makeTestObj({ numbers: true });
-  return Snekfetch.post(`${TestRoot}/post`)
-    .send(test)
-    .then((res) => check(res.body.json));
+  return Promise.all([
+    Snekfetch.post(`${TestRoot}/post`)
+      .send(test).end(),
+    Snekfetch.post(`${TestRoot}/post`, { data: test })
+      .end(),
+  ])
+    .then((ress) => {
+      for (const res of ress)
+        check(res.body.json);
+    });
 });
 
 test('send should work with urlencoded', () => {

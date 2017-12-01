@@ -41,3 +41,9 @@ test('node/file delete', () => {
     });
 });
 
+
+test('node/file invalid method', () => {
+  expect(() => {
+    Snekfetch.options('file:///dev/urandom');
+  }).toThrow(/Invalid request method for file:/);
+});

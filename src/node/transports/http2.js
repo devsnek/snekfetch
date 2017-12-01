@@ -50,8 +50,7 @@ class Http2Request extends EventEmitter {
   }
 
   set path(path) {
-    // eslint-disable-next-line no-return-assign
-    return this._headers[HTTP2_HEADER_PATH] = path;
+    this._headers[HTTP2_HEADER_PATH] = path;
   }
 
   end(data) {

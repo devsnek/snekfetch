@@ -10,9 +10,6 @@ function buildRequest(method, url) {
     getHeader(name) {
       return this.headers[name.toLowerCase()];
     },
-    getHeaders() {
-      return this.headers;
-    },
   };
 }
 

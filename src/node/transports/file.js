@@ -24,6 +24,7 @@ const methods = {
       stream.on('end', () => {
         stream.headers['content-length'] = stream.bytesRead;
       });
+      /* istanbul ignore next */
       stream.on('error', (err) => {
         stream.statusCode = 400;
         stream.status = err.message;
@@ -32,6 +33,7 @@ const methods = {
   },
   POST: (filename, req) => {
     const chunks = [];
+    /* istanbul ignore next */
     req.write = (data) => {
       chunks.push(data);
     };
@@ -52,6 +54,7 @@ const methods = {
           const chunk = chunks.shift();
           if (!chunk)
             return;
+          /* istanbul ignore next */
           if (!stream.write(chunk))
             stream.once('drain', write);
           else
@@ -89,7 +92,7 @@ class Req extends EventEmitter {
 function request(options) {
   const method = methods[options.method];
   if (!method)
-    throw new Error(`Invalid request method "${method}"`);
+    throw new Error(`Invalid request method for file: "${options.method}"`);
   const filename = options.href.replace('file://', '');
 
   const req = new Req();
