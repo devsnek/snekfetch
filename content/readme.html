@@ -7,20 +7,21 @@
 <hr />
 <p>Snekfetch is a fast, efficient, and user-friendly library for making HTTP requests.</p>
 <p>The API was inspired by superagent, however it is much smaller and faster.
-In fact, in browser, it is a mere 4.6kb.</p>
+In fact, in browser, it is a mere 4.8kb.</p>
 <p>Documentation is available at <a href="https://snekfetch.js.org/">https://snekfetch.js.org/</a></p>
 <h2 id="some-examples">Some examples</h2>
-<pre><code class="lang-javascript">const snekfetch = require(&#39;snekfetch&#39;);
+<pre><code class="lang-javascript">const request = require(&#39;snekfetch&#39;);
 
-snekfetch.get(&#39;https://s.gus.host/o-SNAKES-80.jpg&#39;)
-  .then(r =&gt; fs.writeFile(&#39;download.jpg&#39;, r.body));
+request.post(&#39;https://httpbin.org/post&#39;)
+  .send({ usingGoodRequestLibrary: true })
+  .then(r =&gt; console.log(r.body)); // r.body is object from json response
 
-snekfetch.get(&#39;https://s.gus.host/o-SNAKES-80.jpg&#39;)
-  .pipe(fs.createWriteStream(&#39;download.jpg&#39;));
+request.get(&#39;https://s.gc.gy/o-SNAKES.jpg&#39;)
+  .then(r =&gt; fs.writeFile(&#39;download.jpg&#39;, r.body)); // r.body is buffer
+
+request.get(&#39;https://s.gc.gy/o-SNAKES.jpg&#39;)
+  .pipe(fs.createWriteStream(&#39;download.jpg&#39;)); // pipes
 </code></pre>
-<pre><code class="lang-javascript">const snekfetch = require(&#39;snekfetch&#39;);
-
-snekfetch.post(&#39;https://httpbin.org/post&#39;)
-  .send({ meme: &#39;dream&#39; })
-  .then(r =&gt; console.log(r.body));
+<p>Available for browser as UMD from <a href="https://unpkg.com/">unpkg</a></p>
+<pre><code class="lang-html">&lt;script src=https://unpkg.com/snekfetch&gt;&lt;/script&gt;
 </code></pre>
