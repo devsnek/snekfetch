@@ -6,14 +6,10 @@ const Stream = require('stream');
 const FormData = require('./FormData');
 
 const transports = {
-  http,
-  https,
-  file: require('./transports/file'),
-  http2: require('./transports/http2'),
+  'http:': http,
+  'https:': https,
+  'file:': require('./transports/file'),
 };
-
-const agents = {};
-const kagent = (r) => r && r.protocol + r.host;
 
 function buildRequest(method, url) {
   /* istanbul ignore next */
@@ -23,22 +19,29 @@ function buildRequest(method, url) {
       return;
     this.catch((err) => this.emit('error', err));
   };
+
+  this.options.lastBuiltUrl = url;
+
   const options = URL.parse(url);
   options.encoding = 'utf8';
+
   if (!options.protocol)
     throw new Error('URL must have a valid protocol');
-  const transport = this.options.version === 2 ? transports.http2 : transports[options.protocol.replace(':', '')];
+
+  const transport = transports[options.protocol];
   options.method = method.toUpperCase();
+
   if (this.options.headers)
     options.headers = this.options.headers;
-  if (this.options.agent) {
+
+  if (this.options.agent)
     options.agent = this.options.agent;
-  } else if (transport.Agent && this.options.followRedirects !== false) {
-    const key = kagent(options);
-    options.agent = agents[key] = agents[key] || new transport.Agent({ keepAlive: true });
-  }
+  else if (transport.Agent && this.options.followRedirects !== false)
+    options.agent = new transport.Agent({ keepAlive: true });
+
   if (options.port)
     options.port = parseInt(options.port);
+
   this.options._req = options;
   const request = transport.request(options);
   if (request.setNoDelay)
@@ -57,7 +60,6 @@ function finalizeRequest() {
         err = new Error('Unknown error occured');
       err.request = request;
       reject(err);
-      delete agents[kagent(this.options._req)];
       if (socket)
         socket.removeListener('error', handleError);
     };
@@ -80,29 +82,26 @@ function finalizeRequest() {
         }));
       }
 
-      const body = [];
+      if (this.options.followRedirects !== false && [301, 302, 303, 307, 308].includes(response.statusCode)) {
+        resolve({
+          response,
+          redirect: URL.resolve(this.options.lastBuiltUrl, response.headers.location),
+        });
+      } else {
+        const body = [];
 
-      stream.on('data', (chunk) => {
-        if (!this.push(chunk))
-          this.pause();
-        body.push(chunk);
-      });
+        stream.on('data', (chunk) => {
+          if (!this.push(chunk))
+            this.pause();
+          body.push(chunk);
+        });
 
-      stream.once('end', () => {
-        this.push(null);
-        const raw = Buffer.concat(body);
-
-        let redirect = false;
-        if (this.options.followRedirects !== false && [301, 302, 303, 307, 308].includes(response.statusCode)) {
-          redirect = /^https?:\/\//i.test(response.headers.location) ?
-            response.headers.location :
-            URL.resolve(makeURLFromRequest(request), response.headers.location);
-        }
-        const key = kagent(this.options._req);
-        if (!redirect && agents[key])
-          delete agents[key];
-        resolve({ response, raw, redirect });
-      });
+        stream.once('end', () => {
+          this.push(null);
+          const raw = Buffer.concat(body);
+          resolve({ response, raw, redirect: false });
+        });
+      }
     });
 
     this._finalizeRequest();
@@ -127,16 +126,6 @@ function finalizeRequest() {
 
 function shouldSendRaw(data) {
   return data instanceof Buffer || data instanceof Stream;
-}
-
-function makeURLFromRequest(request) {
-  return URL.format({
-    protocol: request.connection ?
-      request.connection.encrypted ? 'https:' : 'http:' : 'https:',
-    hostname: request.getHeader('host'),
-    pathname: request.path.split('?')[0],
-    query: request.query,
-  });
 }
 
 function shouldUnzip(res) {
