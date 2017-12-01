@@ -87,6 +87,7 @@ function finalizeRequest() {
           response,
           redirect: URL.resolve(this.options.lastBuiltUrl, response.headers.location),
         });
+        response.destroy();
       } else {
         const body = [];
 
