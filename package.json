@@ -1,6 +1,6 @@
 {
   "name": "snekfetch",
-  "version": "3.5.8",
+  "version": "3.5.9",
   "main": "index.js",
   "module": "esm.mjs",
   "unpkg": "browser.js",
