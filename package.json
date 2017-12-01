@@ -1,6 +1,6 @@
 {
   "name": "snekfetch",
-  "version": "3.5.9",
+  "version": "3.6.0",
   "main": "index.js",
   "module": "esm.mjs",
   "unpkg": "browser.js",
@@ -48,8 +48,5 @@
       "!src/node/transports/http2.js"
     ],
     "verbose": true
-  },
-  "optionalDependencies": {
-    "@snek/syncify": "0.0.3"
   }
 }
