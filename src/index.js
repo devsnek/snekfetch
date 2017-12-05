@@ -262,7 +262,8 @@ Snekfetch.version = Package.version;
 Snekfetch.METHODS = transport.METHODS.concat('BREW').filter((m) => m !== 'M-SEARCH');
 for (const method of Snekfetch.METHODS) {
   Snekfetch[method.toLowerCase()] = function runMethod(url, opts) {
-    return new this(method, url, opts);
+    const Constructor = this.prototype instanceof Snekfetch ? this : Snekfetch;
+    return new Constructor(method, url, opts);
   };
 }
 
