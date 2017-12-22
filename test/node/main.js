@@ -1,5 +1,3 @@
-/* global test expect */
-
 const fs = require('fs');
 
 const { Snekfetch, TestRoot } = require('../interop');

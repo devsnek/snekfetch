@@ -1,5 +1,3 @@
-/* global test expect */
-
 const FormData = require('../../src/node/FormData');
 const mime = require('../../src/node/mime');
 

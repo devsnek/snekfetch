@@ -2,8 +2,6 @@
  * @jest-environment node
  */
 
-/* global test expect */
-
 const { SnekfetchSync, TestRoot } = require('../interop');
 
 test('sync get', () => {

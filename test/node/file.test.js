@@ -2,8 +2,6 @@
  * @jest-environment node
  */
 
-/* global test expect */
-
 const fs = require('fs');
 const { Snekfetch } = require('../interop');
 

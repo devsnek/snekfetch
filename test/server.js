@@ -38,4 +38,4 @@ server.listen(0);
 exports.port = server.address().port;
 
 if (ref)
-  console.log(exports.port);
+  console.log(exports.port); // eslint-disable-line no-console
