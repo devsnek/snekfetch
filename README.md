@@ -10,7 +10,7 @@
 Snekfetch is a fast, efficient, and user-friendly library for making HTTP requests.
 
 The API was inspired by superagent, however it is much smaller and faster.
-In fact, in browser, it is a mere 4.8kb.
+In fact, in browser, it is a mere 4.4kb.
 
 Documentation is available at https://snekfetch.js.org/
 
@@ -38,7 +38,7 @@ Available for browser as UMD from [unpkg][unpkg-link]
 [npm]: https://npmjs.org/package/snekfetch
 [large-badge]: https://nodei.co/npm/snekfetch.png?downloads=true&downloadRank=true&stars=true
 [stats-link]: https://nodei.co/npm/snekfetch/
-[version-badge]: http://versionbadg.es/devsnek/snekfetch.svg
+[version-badge]: https://versionbadge.now.sh/snekfetch.svg
 [download-badge]: https://img.shields.io/npm/dt/snekfetch.svg?maxAge=3600
 [build-badge]: https://api.travis-ci.org/devsnek/snekfetch.svg?branch=master
 [build-link]: https://travis-ci.org/devsnek/snekfetch

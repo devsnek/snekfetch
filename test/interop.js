@@ -12,7 +12,9 @@ function makeProxy(fetch) {
 }
 
 exports.Snekfetch = makeProxy(require('../'));
-exports.SnekfetchSync = makeProxy(require('../sync'));
+try {
+  exports.SnekfetchSync = makeProxy(require('../sync'));
+} catch (err) {} // eslint-disable-line no-empty
 
 exports.TestRoot = global.HTTP_VERSION === 2 ?
   'https://nghttp2.org/httpbin' :

@@ -10,19 +10,6 @@ module.exports = {
   plugins: [
     new UglifyJSPlugin(),
   ],
-  module: {
-    rules: [
-      {
-        test: require.resolve('./package.json'),
-        use: {
-          loader: 'json-filter-loader',
-          options: {
-            used: ['version', 'homepage'],
-          },
-        },
-      },
-    ],
-  },
   resolve: {
     alias: {
       querystring: require.resolve('./src/qs_mock'),

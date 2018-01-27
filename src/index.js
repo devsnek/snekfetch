@@ -1,6 +1,5 @@
 const browser = typeof window !== 'undefined';
 const querystring = require('querystring');
-const Package = require('../package');
 const transport = browser ? require('./browser') : require('./node');
 
 /**
@@ -48,7 +47,6 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   query(name, value) {
-    this._checkModify();
     if (!this.request.query)
       this.request.query = {};
     if (name !== null && typeof name === 'object') {
@@ -68,7 +66,6 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   set(name, value) {
-    this._checkModify();
     if (name !== null && typeof name === 'object') {
       for (const key of Object.keys(name))
         this.set(key, name[key]);
@@ -87,8 +84,7 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   attach(...args) {
-    this._checkModify();
-    const form = this._getFormData();
+    const form = this.data instanceof transport.FormData ? this.data : this.data = new transport.FormData();
     if (typeof args[0] === 'object') {
       for (const [k, v] of Object.entries(args[0]))
         this.attach(k, v);
@@ -105,7 +101,6 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   send(data) {
-    this._checkModify();
     if (data instanceof transport.FormData || transport.shouldSendRaw(data)) {
       this.data = data;
     } else if (data !== null && typeof data === 'object') {
@@ -219,18 +214,9 @@ class Snekfetch extends transport.Extension {
     );
   }
 
-  _getFormData() {
-    if (!(this.data instanceof transport.FormData))
-      this.data = new transport.FormData();
-
-    return this.data;
-  }
-
   _finalizeRequest() {
     if (!this.request)
       return;
-    if (!this.request.getHeader('user-agent'))
-      this.set('User-Agent', `snekfetch/${Snekfetch.version} (${Package.homepage})`);
 
     if (this.request.method !== 'HEAD')
       this.set('Accept-Encoding', 'gzip, deflate');
@@ -242,14 +228,7 @@ class Snekfetch extends transport.Extension {
       this.request.path = `${path}?${this.options.qs.stringify(this.request.query)}${query ? `&${query}` : ''}`;
     }
   }
-
-  _checkModify() {
-    if (this.response)
-      throw new Error('Cannot modify request after it has been sent!');
-  }
 }
-
-Snekfetch.version = Package.version;
 
 /**
  * Create a ((THIS)) request
