@@ -5,6 +5,8 @@ const URL = require('url');
 const Stream = require('stream');
 const FormData = require('./FormData');
 
+const Package = require('../../package.json');
+
 const transports = {
   'http:': http,
   'https:': https,
@@ -104,6 +106,9 @@ function finalizeRequest() {
         });
       }
     });
+
+    if (!this.request.getHeader('user-agent'))
+      this.set('User-Agent', `snekfetch/${Package.version} (${Package.homepage})`);
 
     this._finalizeRequest();
     let data = this.data;
