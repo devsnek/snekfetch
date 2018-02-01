@@ -11,7 +11,7 @@
     "test:coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "node docs.js",
     "build:browser": "webpack",
-    "prepublish": "npm run build:browser"
+    "prepublishOnly": "npm run build:browser"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   "homepage": "https://snekfetch.js.org/",
   "dependencies": {},
   "devDependencies": {
+    "@snek/syncify": "0.0.6",
     "coveralls": "^3.0.0",
     "docma": "^1.5.1",
     "eslint": "^4.8.0",
