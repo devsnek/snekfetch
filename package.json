@@ -1,6 +1,6 @@
 {
   "name": "snekfetch",
-  "version": "3.6.3",
+  "version": "3.6.4",
   "main": "index.js",
   "module": "esm.mjs",
   "unpkg": "browser.js",
@@ -11,7 +11,7 @@
     "test:coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "node docs.js",
     "build:browser": "webpack",
-    "prepublishOnly": "npm run build:browser"
+    "prepublishOnly": "npm run lint && npm run test && npm run build:browser"
   },
   "repository": {
     "type": "git",
