@@ -15,7 +15,7 @@ function makeTestObj({ unicode = true, numbers = false } = {}) {
       expect(obj).not.toBeUndefined();
       expect(obj.Hello).toBe(test.Hello);
       expect(obj.Test).toBe(test.Test);
-      if (test.Unicode)
+      if (unicode)
         expect(obj.Unicode).toBe(test.Unicode);
     },
   };
@@ -84,11 +84,18 @@ test('query should work', () => {
     });
 });
 
-test('set should work', () => {
+test('headers should work', () => {
   const { test, check } = makeTestObj({ unicode: false });
-  return Snekfetch.get(`${TestRoot}/get`)
-    .set(test)
-    .then((res) => check(res.body.headers));
+  return Promise.all([
+    Snekfetch.get(`${TestRoot}/get`)
+      .set(test).end(),
+    Snekfetch.get(`${TestRoot}/get`, { headers: test })
+      .end(),
+  ])
+    .then((ress) => {
+      for (const res of ress)
+        check(res.body.headers);
+    });
 });
 
 test('attach should work', () => {

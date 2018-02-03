@@ -2,7 +2,6 @@ set -e
 
 npm run lint
 
-npm install --no-save @snek/syncify
 npm run test
 
 if [ "$TRAVIS_BRANCH" != "master" -o -n "$TRAVIS_TAG" -o "$TRAVIS_PULL_REQUEST" != "false" ]; then

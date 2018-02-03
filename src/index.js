@@ -34,6 +34,8 @@ class Snekfetch extends transport.Extension {
     super();
     this.options = Object.assign({ version: 1, qs: querystring, followRedirects: true }, opts);
     this.request = transport.buildRequest.call(this, method, url, opts);
+    if (opts.headers)
+      this.set(opts.headers);
     if (opts.query)
       this.query(opts.query);
     if (opts.data)
