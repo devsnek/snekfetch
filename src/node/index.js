@@ -148,4 +148,5 @@ module.exports = {
   STATUS_CODES: http.STATUS_CODES,
   FormData,
   Extension: Stream.Readable,
+  querystring: require('querystring'),
 };

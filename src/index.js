@@ -1,6 +1,4 @@
-const browser = typeof window !== 'undefined';
-const querystring = require('querystring');
-const transport = browser ? require('./browser') : require('./node');
+const transport = require(typeof window !== 'undefined' ? './browser' : './node');
 
 /**
  * Snekfetch
@@ -32,7 +30,11 @@ class Snekfetch extends transport.Extension {
    */
   constructor(method, url, opts = {}) {
     super();
-    this.options = Object.assign({ version: 1, qs: querystring, followRedirects: true }, opts);
+    this.options = Object.assign({
+      version: 1,
+      qs: transport.querystring,
+      followRedirects: true,
+    }, opts);
     this.request = transport.buildRequest.call(this, method, url, opts);
     if (opts.headers)
       this.set(opts.headers);

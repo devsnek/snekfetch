@@ -10,9 +10,4 @@ module.exports = {
   plugins: [
     new UglifyJSPlugin(),
   ],
-  resolve: {
-    alias: {
-      querystring: require.resolve('./src/qs_mock'),
-    },
-  },
 };

@@ -1,7 +1,7 @@
 {
   "name": "snekfetch",
   "version": "3.6.4",
-  "main": "index.js",
+  "main": "src/index.js",
   "module": "esm.mjs",
   "unpkg": "browser.js",
   "jsdelivr": "browser.js",
@@ -45,7 +45,6 @@
     "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.js",
-      "!src/qs_mock.js",
       "!src/node/mimeOfBuffer.js",
       "!src/node/transports/http2.js"
     ],
