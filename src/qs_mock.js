@@ -1,7 +1,7 @@
-exports = {
+module.exports = {
   parse: (str) => {
     const parsed = {};
-    for (const [k, v] of new Window.URLSearchParams(str).entries())
+    for (const [k, v] of new window.URLSearchParams(str).entries())
       parsed[k] = v;
     return parsed;
   },
