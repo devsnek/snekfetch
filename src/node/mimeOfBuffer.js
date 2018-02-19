@@ -1,7 +1,8 @@
+'use strict';
+
 /* eslint complexity: 0 */
 
 // from file-type by @sindresorhus under the MIT license
-// https://github.com/sindresorhus/file-type
 
 function mimeOfBuffer(input) {
   const buf = new Uint8Array(input);

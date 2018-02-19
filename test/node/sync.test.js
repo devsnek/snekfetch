@@ -2,6 +2,8 @@
  * @jest-environment node
  */
 
+'use strict';
+
 const { SnekfetchSync, TestRoot } = require('../interop');
 
 test('sync get', SnekfetchSync && (() => {

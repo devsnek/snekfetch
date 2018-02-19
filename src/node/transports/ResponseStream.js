@@ -1,3 +1,5 @@
+'use strict';
+
 const Stream = require('stream');
 
 class ResponseStream extends Stream.Readable {

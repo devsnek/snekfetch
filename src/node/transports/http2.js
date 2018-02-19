@@ -1,3 +1,5 @@
+'use strict';
+
 const http = require('http');
 const Stream = require('stream');
 const EventEmitter = require('events');

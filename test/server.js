@@ -1,3 +1,5 @@
+'use strict';
+
 const http = require('http');
 
 const ref = require.main === module;
@@ -15,11 +17,8 @@ const server = http.createServer((req, res) => {
       res.end('test=1&hello=world');
       break;
     case '/echo': {
-      let body = '';
-      req.on('data', (c) => { body += c; });
-      req.on('end', () => {
-        res.end(body);
-      });
+      req.on('data', (c) => { res.write(c); });
+      req.on('end', () => { res.end(); });
       break;
     }
     default:

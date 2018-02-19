@@ -1,3 +1,5 @@
+'use strict';
+
 const transport = require(typeof window !== 'undefined' ? './browser' : './node');
 
 /**
@@ -169,22 +171,22 @@ class Snekfetch extends transport.Extension {
           request: this.request,
           get body() {
             delete res.body;
-            const type = this.headers['content-type'];
+            const type = res.headers['content-type'];
             if (type && type.includes('application/json')) {
               try {
-                res.body = JSON.parse(res.text);
+                res.body = JSON.parse(raw);
               } catch (err) {
-                res.body = res.text;
+                res.body = String(raw);
               }
             } else if (type && type.includes('application/x-www-form-urlencoded')) {
-              res.body = self.options.qs.parse(res.text);
+              res.body = self.options.qs.parse(String(raw));
             } else {
               res.body = raw;
             }
 
             return res.body;
           },
-          text: raw.toString(),
+          raw,
           ok: statusCode >= 200 && statusCode < 400,
           headers: headers || response.headers,
           status: statusCode,

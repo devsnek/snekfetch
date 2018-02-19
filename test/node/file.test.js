@@ -2,6 +2,8 @@
  * @jest-environment node
  */
 
+'use strict';
+
 const fs = require('fs');
 const { Snekfetch } = require('../interop');
 
@@ -11,7 +13,7 @@ test('node/file get', () => {
   const original = fs.readFileSync(resolve('../../package.json')).toString();
   return Snekfetch.get(`file://${resolve('../../package.json')}`)
     .then((res) => {
-      expect(res.text).toBe(original);
+      expect(res.raw.toString()).toBe(original);
     });
 });
 
@@ -22,7 +24,7 @@ test('node/file post', () => {
     .send(content)
     .then(() => Snekfetch.get(`file://${file}`))
     .then((res) => {
-      expect(res.text).toBe(content);
+      expect(res.raw.toString()).toBe(content);
     })
     .then(() => {
       fs.unlinkSync(file);

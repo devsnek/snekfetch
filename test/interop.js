@@ -1,3 +1,5 @@
+'use strict';
+
 function makeProxy(fetch) {
   return new Proxy(fetch, {
     get(target, prop) {

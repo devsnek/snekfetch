@@ -1,3 +1,5 @@
+'use strict';
+
 const { Snekfetch, TestRoot } = require('./interop');
 
 const server = require('./server');
@@ -40,7 +42,7 @@ test('should resolve on success', () =>
   Snekfetch.get(`${TestRoot}/get`).then((res) => {
     expect(res.status).toBe(200);
     expect(res.ok).toBe(true);
-    expect(res).toHaveProperty('text');
+    expect(res).toHaveProperty('raw');
     expect(res).toHaveProperty('body');
   })
 );
@@ -127,7 +129,7 @@ test('send should work with urlencoded', () => {
     .then((res) => check(res.body.form));
 });
 
-test('invalid json is just text', () =>
+test('invalid json is text', () =>
   Snekfetch.get(`http://localhost:${server.port}/invalid-json`)
     .then((res) => {
       expect(res.body).toBe('{ "a": 1');

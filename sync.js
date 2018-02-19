@@ -1,3 +1,5 @@
+'use strict';
+
 try {
   var syncify = require('@snek/syncify');
 } catch (err) {

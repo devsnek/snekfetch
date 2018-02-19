@@ -1,3 +1,5 @@
+'use strict';
+
 const Docma = require('docma');
 const Package = require('./package');
 

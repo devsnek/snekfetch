@@ -1,3 +1,7 @@
+'use strict';
+
+/* eslint-disable no-invalid-this */
+
 const zlib = require('zlib');
 const http = require('http');
 const https = require('https');

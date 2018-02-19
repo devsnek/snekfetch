@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @jest-environment jsdom
  */
