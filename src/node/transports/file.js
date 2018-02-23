@@ -81,15 +81,7 @@ const methods = {
   },
 };
 
-class Req extends EventEmitter {
-  constructor() {
-    super();
-    this._headers = {};
-  }
-
-  setHeader() {} // eslint-disable-line no-empty-function
-  getHeader() {} // eslint-disable-line no-empty-function
-}
+class Req extends EventEmitter {}
 
 function request(options) {
   const method = methods[options.method];

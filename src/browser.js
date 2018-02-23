@@ -1,37 +1,28 @@
-function buildRequest(method, url) {
-  return {
-    method,
-    path: url,
-    redirect: this.options.followRedirects ? 'follow' : 'manual',
-    headers: {},
-    setHeader(name, value) {
-      this.headers[name.toLowerCase()] = value;
-    },
-    getHeader(name) {
-      return this.headers[name.toLowerCase()];
-    },
-  };
-}
+'use strict';
 
-function finalizeRequest() {
-  this._finalizeRequest();
-  if (this.data)
-    this.request.body = this.data;
-  return window.fetch(this.request.path, this.request)
+/* eslint-env browser */
+/* eslint-disable no-invalid-this */
+
+function request(snek) {
+  snek.options.body = snek.options.data;
+  return window.fetch(snek.options.url, snek.options)
     .then((r) => r.text().then((t) => {
       const headers = {};
       for (const [k, v] of r.headers.entries())
         headers[k.toLowerCase()] = v;
-      return { response: r, raw: t, headers };
+      return {
+        raw: t, headers,
+        statusCode: r.status,
+        statusText: r.statusText,
+      };
     }));
 }
 
 module.exports = {
-  buildRequest, finalizeRequest,
+  request,
   shouldSendRaw: () => false,
   METHODS: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'PATCH'],
-  STATUS_CODES: {},
-  Extension: Object,
+  Parent: Object,
   FormData: window.FormData,
   querystring: {
     parse: (str) => {
@@ -43,3 +34,4 @@ module.exports = {
     stringify: (obj) => new window.URLSearchParams(obj).toString(),
   },
 };
+

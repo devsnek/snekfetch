@@ -40,7 +40,7 @@ test('should reject with error on network failure', () => {
 
 test('should resolve on success', () =>
   Snekfetch.get(`${TestRoot}/get`).then((res) => {
-    expect(res.status).toBe(200);
+    expect(res.statusCode).toBe(200);
     expect(res.ok).toBe(true);
     expect(res).toHaveProperty('raw');
     expect(res).toHaveProperty('body');
@@ -56,7 +56,7 @@ test('end should work', () =>
 
 test('should reject if response is not between 200 and 300', () =>
   Snekfetch.get(`${TestRoot}/404`).catch((err) => {
-    expect(err.status).toBe(404);
+    expect(err.statusCode).toBe(404);
     expect(err.ok).toBe(false);
   })
 );

@@ -7,7 +7,7 @@ const transport = require(typeof window !== 'undefined' ? './browser' : './node'
  * @extends Stream.Readable
  * @extends Promise
  */
-class Snekfetch extends transport.Extension {
+class Snekfetch extends transport.Parent {
   /**
    * Options to pass to the Snekfetch constructor
    * @typedef {object} SnekfetchOptions
@@ -33,11 +33,15 @@ class Snekfetch extends transport.Extension {
   constructor(method, url, opts = {}) {
     super();
     this.options = Object.assign({
-      version: 1,
       qs: transport.querystring,
-      followRedirects: true,
-    }, opts);
-    this.request = transport.buildRequest.call(this, method, url, opts);
+      method,
+      url,
+      redirect: 'follow',
+    }, opts, {
+      headers: {},
+      query: undefined,
+      data: undefined,
+    });
     if (opts.headers)
       this.set(opts.headers);
     if (opts.query)
@@ -53,13 +57,13 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   query(name, value) {
-    if (!this.request.query)
-      this.request.query = {};
-    if (name !== null && typeof name === 'object') {
+    if (this.options.query === undefined)
+      this.options.query = {};
+    if (typeof name === 'object') {
       for (const [k, v] of Object.entries(name))
-        this.query(k, v);
+        this.options.query[k] = v;
     } else {
-      this.request.query[name] = value;
+      this.options.query[name] = value;
     }
 
     return this;
@@ -72,11 +76,11 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   set(name, value) {
-    if (name !== null && typeof name === 'object') {
-      for (const key of Object.keys(name))
-        this.set(key, name[key]);
+    if (typeof name === 'object') {
+      for (const [k, v] of Object.entries(name))
+        this.options.headers[k.toLowerCase()] = v;
     } else {
-      this.request.setHeader(name, value);
+      this.options.headers[name.toLowerCase()] = value;
     }
 
     return this;
@@ -90,7 +94,8 @@ class Snekfetch extends transport.Extension {
    * @returns {Snekfetch} This request
    */
   attach(...args) {
-    const form = this.data instanceof transport.FormData ? this.data : this.data = new transport.FormData();
+    const form = this.options.data instanceof transport.FormData ?
+      this.options.data : this.options.data = new transport.FormData();
     if (typeof args[0] === 'object') {
       for (const [k, v] of Object.entries(args[0]))
         this.attach(k, v);
@@ -108,9 +113,9 @@ class Snekfetch extends transport.Extension {
    */
   send(data) {
     if (data instanceof transport.FormData || transport.shouldSendRaw(data)) {
-      this.data = data;
+      this.options.data = data;
     } else if (data !== null && typeof data === 'object') {
-      const header = this.request.getHeader('content-type');
+      const header = this.options.headers['content-type'];
       let serialize;
       if (header) {
         if (header.includes('json'))
@@ -121,39 +126,23 @@ class Snekfetch extends transport.Extension {
         this.set('Content-Type', 'application/json');
         serialize = JSON.stringify;
       }
-      this.data = serialize(data);
+      this.options.data = serialize(data);
     } else {
-      this.data = data;
+      this.options.data = data;
     }
+    try {
+      this.set('Content-Length', Buffer.byteLength(this.options.data));
+    } catch (err) {} // eslint-disable-line no-empty
     return this;
   }
 
   then(resolver, rejector) {
     if (this._response)
       return this._response.then(resolver, rejector);
+    this._finalizeRequest();
     // eslint-disable-next-line no-return-assign
-    return this._response = transport.finalizeRequest.call(this)
-      .then(({ response, raw, redirect, headers }) => {
-        if (redirect) {
-          let method = this.request.method;
-          if ([301, 302].includes(response.statusCode)) {
-            if (method !== 'HEAD')
-              method = 'GET';
-            this.data = null;
-          } else if (response.statusCode === 303) {
-            method = 'GET';
-          }
-
-          const redirectHeaders = this.request.getHeaders();
-          delete redirectHeaders.host;
-          return new Snekfetch(method, redirect, {
-            data: this.data,
-            headers: redirectHeaders,
-            version: this.options.version,
-          });
-        }
-
-        const statusCode = response.statusCode || response.status;
+    return this._response = transport.request(this)
+      .then(({ raw, headers, statusCode, statusText }) => {
         // forgive me :(
         const self = this; // eslint-disable-line consistent-this
         /**
@@ -188,15 +177,15 @@ class Snekfetch extends transport.Extension {
           },
           raw,
           ok: statusCode >= 200 && statusCode < 400,
-          headers: headers || response.headers,
-          status: statusCode,
-          statusText: response.statusText || transport.STATUS_CODES[response.statusCode],
+          headers,
+          statusCode,
+          statusText,
         };
 
         if (res.ok) {
           return res;
         } else {
-          const err = new Error(`${res.status} ${res.statusText}`.trim());
+          const err = new Error(`${statusCode} ${statusText}`.trim());
           Object.assign(err, res);
           return Promise.reject(err);
         }
@@ -221,18 +210,22 @@ class Snekfetch extends transport.Extension {
   }
 
   _finalizeRequest() {
-    if (!this.request)
-      return;
-
-    if (this.request.method !== 'HEAD')
+    if (this.options.method !== 'HEAD')
       this.set('Accept-Encoding', 'gzip, deflate');
-    if (this.data && this.data.getBoundary)
-      this.set('Content-Type', `multipart/form-data; boundary=${this.data.getBoundary()}`);
+    if (this.options.data && this.options.data.getBoundary)
+      this.set('Content-Type', `multipart/form-data; boundary=${this.options.data.getBoundary()}`);
 
-    if (this.request.query) {
-      const [path, query] = this.request.path.split('?');
-      this.request.path = `${path}?${this.options.qs.stringify(this.request.query)}${query ? `&${query}` : ''}`;
+    if (this.options.query) {
+      const [url, query] = this.options.url.split('?');
+      this.options.url = `${url}?${this.options.qs.stringify(this.options.query)}${query ? `&${query}` : ''}`;
     }
+  }
+
+  _read() {
+    this.resume();
+    if (this._response)
+      return;
+    this.catch((err) => this.emit('error', err));
   }
 }
 
@@ -244,7 +237,7 @@ class Snekfetch extends transport.Extension {
  * @param {Snekfetch.snekfetchOptions} [opts] Options
  * @returns {Snekfetch}
  */
-Snekfetch.METHODS = transport.METHODS.concat('BREW').filter((m) => m !== 'M-SEARCH');
+Snekfetch.METHODS = transport.METHODS.filter((m) => m !== 'M-SEARCH');
 for (const method of Snekfetch.METHODS) {
   Snekfetch[method.toLowerCase()] = function runMethod(url, opts) {
     const Constructor = this.prototype instanceof Snekfetch ? this : Snekfetch;
