@@ -130,9 +130,6 @@ class Snekfetch extends transport.Parent {
     } else {
       this.options.data = data;
     }
-    try {
-      this.set('Content-Length', Buffer.byteLength(this.options.data));
-    } catch (err) {} // eslint-disable-line no-empty
     return this;
   }
 
