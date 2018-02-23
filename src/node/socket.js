@@ -44,12 +44,8 @@ function connectHttps(opt) {
             createConnection: () => socket,
           });
 
-          const req = connection.request(Object.assign({
-            ':path': opt.path,
-            ':method': opt.method,
-            ':authority': opt.host,
-          }, opt.headers));
-          resolve({ req, http2: true });
+          const req = http2req(connection, opt);
+          resolve({ req, http2: true, connection });
           break;
         }
         default:
@@ -60,5 +56,15 @@ function connectHttps(opt) {
   });
 }
 
+function http2req(connection, opt) {
+  return connection.request(Object.assign({
+    ':path': opt.path,
+    ':method': opt.method,
+    ':authority': opt.host,
+  }, opt.headers));
+}
+
 module.exports = (options) =>
   (options.protocol === 'https:' ? connectHttps : connectHttp)(options);
+
+module.exports.http2req = http2req;

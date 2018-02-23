@@ -30,8 +30,20 @@ function request(snek, options = snek.options) {
       options.headers['content-length'] = length;
     }
 
+    let req;
+    let http2 = false;
     try {
-      var { req, http2 } = await socket(options);
+      if (options.connection) {
+        req = socket.http2req(options.connection, options);
+        http2 = true;
+      } else {
+        const O = await socket(options);
+        req = O.req;
+        if (O.http2)
+          http2 = true;
+        if (O.connection)
+          options.connection = O.connection;
+      }
     } catch (err) {
       reject(err);
       return;
@@ -40,11 +52,13 @@ function request(snek, options = snek.options) {
     req.on('error', reject);
 
     const body = [];
-    let headers = {};
-    let statusCode = -1;
+    let headers;
+    let statusCode;
     let statusText;
 
     const handleResponse = (stream) => {
+      if (statusCode === undefined)
+        throw new Error('response timing error');
       if (options.redirect === 'follow' && [301, 302, 303, 307, 308].includes(statusCode)) {
         resolve(request(snek, {
           ...options,
@@ -73,6 +87,10 @@ function request(snek, options = snek.options) {
       stream.once('end', () => {
         snek.push(null);
         const raw = Buffer.concat(body);
+        if (headers === undefined)
+          throw new Error('response timing error');
+        if (options.connection)
+          options.connection.close();
         resolve({ raw, headers, statusCode, statusText });
       });
     };
