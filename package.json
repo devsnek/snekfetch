@@ -1,13 +1,13 @@
 {
   "name": "snekfetch",
-  "version": "4.0.0",
+  "version": "4.0.0-rc.0",
   "main": "src/index",
   "module": "src/index.mjs",
   "unpkg": "browser.js",
   "jsdelivr": "browser.js",
   "scripts": {
     "lint": "eslint . --cache --ext=mjs,js",
-    "test": "node ./node_modules/.bin/jest",
+    "test": "npm run lint && node ./node_modules/.bin/jest",
     "test:coveralls": "cat ./coverage/lcov.info | coveralls",
     "docs": "node docs.js",
     "build:browser": "webpack",
