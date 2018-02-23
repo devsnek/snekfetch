@@ -30,7 +30,12 @@ function request(snek, options = snek.options) {
       options.headers['content-length'] = length;
     }
 
-    const { req, http2 } = await socket(options);
+    try {
+      var { req, http2 } = await socket(options);
+    } catch (err) {
+      reject(err);
+      return;
+    }
 
     req.on('error', reject);
 
@@ -86,16 +91,12 @@ function request(snek, options = snek.options) {
       }
     });
 
-    if (Array.isArray(data)) {
-      for (const chunk of data)
-        req.write(chunk);
-    } else if (data instanceof Stream) {
+    if (data instanceof Stream)
       data.pipe(req);
-    } else if (data instanceof Buffer) {
+    else if (data instanceof Buffer)
       req.write(data);
-    } else if (data) {
+    else if (data)
       req.write(data);
-    }
     req.end();
   });
 }

@@ -15,11 +15,10 @@ class Snekfetch extends transport.Parent {
    * @property {object} [headers] Headers to initialize the request with
    * @property {object|string|Buffer} [data] Data to initialize the request with
    * @property {string|Object} [query] Query to intialize the request with
-   * @property {boolean} [followRedirects=true] If the request should follow redirects
+   * @property {boolean} [redirect='follow'] If the request should follow redirects
    * @property {object} [qs=querystring] Querystring module to use, any object providing
    * `stringify` and `parse` for querystrings
-   * @property {number} [version = 1] The http version to use [1 or 2]
-   * @property {external:Agent} [agent] Whether to use an http agent
+   * @property {external:Agent|boolean} [agent] Whether to use an http agent
    */
 
   /**
@@ -148,9 +147,9 @@ class Snekfetch extends transport.Parent {
          * @memberof Snekfetch
          * @prop {HTTP.Request} request
          * @prop {?string|object|Buffer} body Processed response body
-         * @prop {string} text Raw response body
+         * @prop {Buffer} raw Raw response body
          * @prop {boolean} ok If the response code is >= 200 and < 300
-         * @prop {number} status HTTP status code
+         * @prop {number} statusCode HTTP status code
          * @prop {string} statusText Human readable HTTP status
          */
         const res = {

@@ -23,6 +23,7 @@ function connectHttps(opt) {
       servername: opt.host,
       ALPNProtocols,
     });
+    socket.once('error', reject);
     socket.once('secureConnect', () => {
       switch (socket.alpnProtocol) {
         case 'http/1.1': {
