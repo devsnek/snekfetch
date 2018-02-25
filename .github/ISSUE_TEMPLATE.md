@@ -1,14 +1,13 @@
-Snekfetch version or commit hash:
+## Version or commit hash:
 
 
-Explaination of issue:
+## Explanation of issue:
 
 
-Example code to reproduce:
+## Example code to reproduce:
 ```js
 // code here
 ```
-
 
 - [ ] Issue occurs in browser
 - [ ] Issue occurs in node
