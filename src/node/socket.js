@@ -26,6 +26,7 @@ function connectHttps(opt) {
     socket.once('error', reject);
     socket.once('secureConnect', () => {
       switch (socket.alpnProtocol) {
+        case false:
         case 'http/1.1': {
           const req = https.request(Object.assign({
             createConnection: () => socket,
@@ -44,12 +45,15 @@ function connectHttps(opt) {
             createConnection: () => socket,
           });
 
+          connection.port = opt.port;
+          connection.host = opt.host;
+
           const req = http2req(connection, opt);
           resolve({ req, http2: true, connection });
           break;
         }
         default:
-          reject(new Error('No supported ALPN protocol was negotiated'));
+          reject(new Error(`No supported ALPN protocol was negotiated, got ${socket.alpnProtocol}`));
           break;
       }
     });

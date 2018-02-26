@@ -33,7 +33,8 @@ function request(snek, options = snek.options) {
     let req;
     let http2 = false;
     try {
-      if (options.connection) {
+      if (options.connection && options.connection.port === options.port &&
+        options.connection.host === options.host) {
         req = socket.http2req(options.connection, options);
         http2 = true;
       } else {
