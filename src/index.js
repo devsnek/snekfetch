@@ -117,7 +117,7 @@ class Snekfetch extends transport.Parent {
       const header = this.options.headers['content-type'];
       let serialize;
       if (header) {
-        if (header.includes('json'))
+        if (header.includes('application/json'))
           serialize = JSON.stringify;
         else if (header.includes('urlencoded'))
           serialize = this.options.qs.stringify;

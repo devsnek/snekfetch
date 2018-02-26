@@ -57,8 +57,6 @@ function request(snek, options = snek.options) {
     let statusText;
 
     const handleResponse = (stream) => {
-      if (statusCode === undefined)
-        throw new Error('response timing error');
       if (options.redirect === 'follow' && [301, 302, 303, 307, 308].includes(statusCode)) {
         resolve(request(snek, {
           ...options,
@@ -79,6 +77,7 @@ function request(snek, options = snek.options) {
       }
 
       stream.on('data', (chunk) => {
+        /* istanbul ignore next */
         if (!snek.push(chunk))
           snek.pause();
         body.push(chunk);
@@ -87,8 +86,6 @@ function request(snek, options = snek.options) {
       stream.once('end', () => {
         snek.push(null);
         const raw = Buffer.concat(body);
-        if (headers === undefined)
-          throw new Error('response timing error');
         if (options.connection)
           options.connection.close();
         resolve({ raw, headers, statusCode, statusText });
@@ -109,6 +106,7 @@ function request(snek, options = snek.options) {
       }
     });
 
+    /* istanbul ignore next */
     if (data instanceof Stream)
       data.pipe(req);
     else if (data instanceof Buffer)
@@ -124,6 +122,7 @@ function shouldSendRaw(data) {
 }
 
 function shouldUnzip(statusCode, headers) {
+  /* istanbul ignore next */
   if (statusCode === 204 || statusCode === 304)
     return false;
   if (+headers['content-length'] === 0)
