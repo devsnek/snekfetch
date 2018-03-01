@@ -24,8 +24,14 @@ function makeTestObj({ unicode = true, numbers = false } = {}) {
 }
 
 test('should return a promise', () => {
-  expect(Snekfetch.get(`${TestRoot}/get`).end())
-    .toBeInstanceOf(Promise);
+  for (const C of [
+    Snekfetch.get(`${TestRoot}/get`).end(),
+    Snekfetch.get.call(null, `${TestRoot}/get`).end(),
+    Snekfetch.get.call({}, `${TestRoot}/get`).end(),
+  ]) {
+    expect(C)
+      .toBeInstanceOf(Promise);
+  }
 });
 
 test('should reject with error on network failure', () => {

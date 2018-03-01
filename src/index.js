@@ -236,7 +236,7 @@ class Snekfetch extends transport.Parent {
 Snekfetch.METHODS = transport.METHODS.filter((m) => m !== 'M-SEARCH');
 for (const method of Snekfetch.METHODS) {
   Snekfetch[method.toLowerCase()] = function runMethod(url, opts) {
-    const Constructor = this.prototype instanceof Snekfetch ? this : Snekfetch;
+    const Constructor = this && this.prototype instanceof Snekfetch ? this : Snekfetch;
     return new Constructor(method, url, opts);
   };
 }
