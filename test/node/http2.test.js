@@ -6,4 +6,7 @@
 
 global.HTTP_VERSION = 2;
 
-require('./main');
+if (process.version.split('.')[0].slice(1) >= 10)
+  require('./main');
+else
+  test.skip('no http2 support', () => 1);

@@ -58,12 +58,10 @@ class Snekfetch extends transport.Parent {
   query(name, value) {
     if (this.options.query === undefined)
       this.options.query = {};
-    if (typeof name === 'object') {
-      for (const [k, v] of Object.entries(name))
-        this.options.query[k] = v;
-    } else {
+    if (typeof name === 'object')
+      Object.assign(this.options.query, name);
+    else
       this.options.query[name] = value;
-    }
 
     return this;
   }

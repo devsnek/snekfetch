@@ -89,10 +89,6 @@ function request(snek, options = snek.options) {
         const raw = Buffer.concat(body);
         if (options.connection && options.connection.close)
           options.connection.close();
-        else if (options.connection && options.connection.destroy)
-          options.connection.destroy();
-        else if (options.connection)
-          throw new Error('connection was not able to be closed');
         resolve({ raw, headers, statusCode, statusText });
       });
     };

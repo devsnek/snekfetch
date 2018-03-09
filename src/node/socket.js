@@ -6,7 +6,7 @@ const https = require('https');
 // lazy require http2 because it emits a warning
 let http2;
 
-const hasHttp2 = require('repl')._builtinLibs.includes('http2');
+const hasHttp2 = process.version.split('.')[0].slice(1) >= 10;
 const ALPNProtocols = hasHttp2 ? ['h2', 'http/1.1'] : ['http/1.1'];
 
 function connectHttp(opt) {

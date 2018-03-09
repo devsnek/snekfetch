@@ -11,14 +11,18 @@ function makeTestObj({ unicode = true, numbers = false } = {}) {
   };
   if (unicode)
     test.Unicode = '( ͡° ͜ʖ ͡°)';
+  const single = { key: 'singleKey', value: 'awoooo' };
   return {
     test,
-    check: (obj) => {
+    single,
+    check(obj) {
       expect(obj).not.toBeUndefined();
       expect(obj.Hello).toBe(test.Hello);
       expect(obj.Test).toBe(test.Test);
       if (unicode)
         expect(obj.Unicode).toBe(test.Unicode);
+      if (obj[single.key])
+        expect(obj[single.key]).toBe(single.value);
     },
   };
 }
@@ -76,10 +80,12 @@ test('unzipping works', () =>
 );
 
 test('query should work', () => {
-  const { test, check } = makeTestObj();
+  const { test, check, single } = makeTestObj();
   Promise.all([
     Snekfetch.get(`${TestRoot}/get?inline=true`)
-      .query(test).end(),
+      .query(test)
+      .query(single.key, single.value)
+      .end(),
     Snekfetch.get(`${TestRoot}/get?inline=true`, { query: test })
       .end(),
   ])
