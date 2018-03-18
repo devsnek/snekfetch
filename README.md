@@ -34,7 +34,7 @@ request.get('https://s.gc.gy/o-SNAKES.jpg')
 
 Available for browser as UMD from [unpkg][unpkg-link]
 ```html
-<script src=https://unpkg.com/snekfetch></script>
+<script src="https://unpkg.com/snekfetch"></script>
 ```
 
 [npm]: https://npmjs.org/package/snekfetch
