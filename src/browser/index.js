@@ -1,17 +1,16 @@
 'use strict';
 
 /* eslint-env browser */
-/* eslint-disable no-invalid-this */
 
 function request(snek) {
   snek.options.body = snek.options.data;
   return window.fetch(snek.options.url, snek.options)
-    .then((r) => r.text().then((t) => {
+    .then((r) => r.arrayBuffer().then((raw) => {
       const headers = {};
       for (const [k, v] of r.headers.entries())
         headers[k.toLowerCase()] = v;
       return {
-        raw: t, headers,
+        raw, headers,
         statusCode: r.status,
         statusText: r.statusText,
       };

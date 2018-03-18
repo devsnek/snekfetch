@@ -155,18 +155,19 @@ class Snekfetch extends transport.Parent {
           get body() {
             delete res.body;
             const type = res.headers['content-type'];
-            if (type && type.includes('application/json')) {
+            if (raw instanceof ArrayBuffer)
+              raw = new window.TextDecoder('utf8').decode(raw); // eslint-disable-line no-undef
+            if (/application\/json/.test(type)) {
               try {
                 res.body = JSON.parse(raw);
               } catch (err) {
                 res.body = String(raw);
               }
-            } else if (type && type.includes('application/x-www-form-urlencoded')) {
+            } else if (/application\/x-www-form-urlencoded/.test(type)) {
               res.body = self.options.qs.parse(String(raw));
             } else {
               res.body = raw;
             }
-
             return res.body;
           },
           raw,
