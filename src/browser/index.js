@@ -4,8 +4,9 @@
 
 function request(snek) {
   snek.options.body = snek.options.data;
+  const type = snek.options.responseType === 'arraybuffer' ? 'arrayBuffer' : 'text';
   return window.fetch(snek.options.url, snek.options)
-    .then((r) => r.arrayBuffer().then((raw) => {
+    .then((r) => r[type]().then((raw) => {
       const headers = {};
       for (const [k, v] of r.headers.entries())
         headers[k.toLowerCase()] = v;

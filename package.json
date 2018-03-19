@@ -7,11 +7,11 @@
   "jsdelivr": "browser.js",
   "scripts": {
     "lint": "eslint . --cache --ext=mjs,js",
-    "test": "npm run lint && node ./node_modules/.bin/jest",
-    "test:coveralls": "cat ./coverage/lcov.info | coveralls",
+    "test": "node ./node_modules/.bin/jest",
+    "coverage": "cat ./coverage/lcov.info | coveralls",
     "docs": "node docs.js",
     "build:browser": "webpack",
-    "prepublishOnly": "npm run test && npm run build:browser"
+    "prepublishOnly": "npm run lint && npm run test && npm run build:browser"
   },
   "repository": {
     "type": "git",
