@@ -59,10 +59,9 @@ function request(snek, options = snek.options) {
 
     const handleResponse = (stream) => {
       if (options.redirect === 'follow' && [301, 302, 303, 307, 308].includes(statusCode)) {
-        resolve(request(snek, {
-          ...options,
+        resolve(request(snek, Object.assign({}, options, {
           url: UrlResolve(options.url, headers.location),
-        }));
+        })));
         if (req.abort)
           req.abort();
         else if (req.close)
