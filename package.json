@@ -15,7 +15,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/devsnek/snekfetch.git"
+    "url": "git+https://github.com/devsnek/snekfetch.git",
+    "homepage": "https://github.com/devsnek/snekfetch"
   },
   "author": "Gus Caplan <me@gus.host>",
   "license": "MIT",
