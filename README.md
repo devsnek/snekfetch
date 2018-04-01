@@ -40,7 +40,7 @@ Available for browser as UMD from [unpkg][unpkg-link]
 [npm]: https://npmjs.org/package/snekfetch
 [large-badge]: https://nodei.co/npm/snekfetch.png?downloads=true&downloadRank=true&stars=true
 [stats-link]: https://nodei.co/npm/snekfetch/
-[version-badge]: https://versionbadge.now.sh/snekfetch.svg
+[version-badge]: https://versionbadge.now.sh/npm/snekfetch.svg
 [download-badge]: https://img.shields.io/npm/dt/snekfetch.svg?maxAge=3600
 [build-badge]: https://api.travis-ci.org/devsnek/snekfetch.svg?branch=master
 [build-link]: https://travis-ci.org/devsnek/snekfetch
