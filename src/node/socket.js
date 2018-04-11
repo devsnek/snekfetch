@@ -17,6 +17,14 @@ function connectHttp(opt) {
   return Promise.resolve({ req });
 }
 
+function http2req(connection, opt) {
+  return connection.request(Object.assign({
+    ':path': opt.path,
+    ':method': opt.method,
+    ':authority': opt.host,
+  }, opt.headers));
+}
+
 function connectHttps(opt) {
   return new Promise((resolve, reject) => {
     const port = opt.port = +opt.port || 443;
@@ -61,14 +69,6 @@ function connectHttps(opt) {
       }
     });
   });
-}
-
-function http2req(connection, opt) {
-  return connection.request(Object.assign({
-    ':path': opt.path,
-    ':method': opt.method,
-    ':authority': opt.host,
-  }, opt.headers));
 }
 
 module.exports = (options) =>

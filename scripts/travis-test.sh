@@ -1,5 +1,6 @@
 set -e
 
+npm run setup
 npm run lint
 npm run test
 

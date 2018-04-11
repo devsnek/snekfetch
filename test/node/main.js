@@ -19,10 +19,8 @@ test('node/FormData json works', () =>
     .then((res) => {
       const { form } = res.body;
       expect(form.object).toBe('{"a":1}');
-    })
-);
+    }));
 
 test('node/rawsend post', () =>
   Snekfetch.post(`${TestRoot}/post`)
-    .send(Buffer.from('memes')).end()
-);
+    .send(Buffer.from('memes')).end());

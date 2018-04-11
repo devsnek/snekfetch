@@ -11,7 +11,8 @@ function request(snek) {
       for (const [k, v] of r.headers.entries())
         headers[k.toLowerCase()] = v;
       return {
-        raw, headers,
+        raw,
+        headers,
         statusCode: r.status,
         statusText: r.statusText,
       };

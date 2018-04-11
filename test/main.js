@@ -40,9 +40,11 @@ test('should return a promise', () => {
 
 test('should reject with error on network failure', () => {
   const invalid = 'http://localhost:0/';
-  /* https://gc.gy/❥ȗ.png
-   return expect(Snekfetch.get(invalid).end())
-    .rejects.toBeInstanceOf(Error);*/
+  /*
+  https://gc.gy/❥ȗ.png
+  return expect(Snekfetch.get(invalid).end())
+    .rejects.toBeInstanceOf(Error);
+  */
   return Snekfetch.get(invalid).catch((err) => {
     expect(err.name).toMatch(/(Fetch)?Error/);
   });
@@ -54,30 +56,26 @@ test('should resolve on success', () =>
     expect(res.ok).toBe(true);
     expect(res).toHaveProperty('raw');
     expect(res).toHaveProperty('body');
-  })
-);
+  }));
 
 test('end should work', () =>
   Snekfetch.get(`${TestRoot}/get`).end((err, res) => {
     expect(err).toBe(null);
     expect(res.body).not.toBeUndefined();
-  })
-);
+  }));
 
 test('should reject if response is not between 200 and 300', () =>
   Snekfetch.get(`${TestRoot}/404`).catch((err) => {
     expect(err.statusCode).toBe(404);
     expect(err.ok).toBe(false);
-  })
-);
+  }));
 
 test('unzipping works', () =>
   Snekfetch.get(`${TestRoot}/gzip`)
     .then((res) => {
       expect(res.body).not.toBeUndefined();
       expect(res.body.gzipped).toBe(true);
-    })
-);
+    }));
 
 test('query should work', () => {
   const { test, check, single } = makeTestObj();
@@ -145,8 +143,7 @@ test('invalid json is text', () =>
   Snekfetch.get(`http://localhost:${server.port}/invalid-json`)
     .then((res) => {
       expect(res.body).toBe('{ "a": 1');
-    })
-);
+    }));
 
 test('x-www-form-urlencoded response body', () =>
   Snekfetch.get(`http://localhost:${server.port}/form-urlencoded`)
@@ -154,13 +151,11 @@ test('x-www-form-urlencoded response body', () =>
       const { body } = res;
       expect(body.test).toBe('1');
       expect(body.hello).toBe('world');
-    })
-);
+    }));
 
 test('redirects', () =>
   Snekfetch.get(`${TestRoot}/redirect/1`)
     .then((res) => {
       expect(res.body).not.toBeUndefined();
       expect(res.body.url).toBe(`${TestRoot}/get`);
-    })
-);
+    }));

@@ -1,6 +1,7 @@
 'use strict';
 
 exports.Snekfetch = require('../');
+
 try {
   exports.SnekfetchSync = require('../sync');
 } catch (err) {} // eslint-disable-line no-empty

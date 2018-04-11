@@ -1,6 +1,6 @@
 'use strict';
 
-/* eslint complexity: 0 */
+/* eslint-disable */
 
 // from file-type by @sindresorhus under the MIT license
 

@@ -15,5 +15,4 @@ test('arraybuffer evil works', () =>
   Snekfetch.get(`${TestRoot}/get`, { responseType: 'arraybuffer' })
     .then((res) => {
       expect(res.body.url).toContain('/get');
-    })
-);
+    }));

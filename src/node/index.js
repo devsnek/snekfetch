@@ -9,6 +9,15 @@ const { METHODS, STATUS_CODES } = require('http');
 const Package = require('../../package');
 const FormData = require('./FormData');
 
+function shouldUnzip(statusCode, headers) {
+  /* istanbul ignore next */
+  if (statusCode === 204 || statusCode === 304)
+    return false;
+  if (+headers['content-length'] === 0)
+    return false;
+  return /^\s*(?:deflate|gzip)\s*$/.test(headers['content-encoding']);
+}
+
 function request(snek, options = snek.options) {
   return new Promise(async (resolve, reject) => {
     Object.assign(options, UrlParse(options.url));
@@ -16,7 +25,7 @@ function request(snek, options = snek.options) {
     if (!options.headers['user-agent'])
       options.headers['user-agent'] = `snekfetch/${Package.version} (${Package.homepage})`;
 
-    let data = options.data;
+    let { data } = options;
     if (data && data.end)
       data = data.end();
 
@@ -39,7 +48,7 @@ function request(snek, options = snek.options) {
         http2 = true;
       } else {
         const O = await socket(options);
-        req = O.req;
+        ({ req } = O);
         if (O.http2)
           http2 = true;
         if (O.connection)
@@ -88,15 +97,16 @@ function request(snek, options = snek.options) {
         const raw = Buffer.concat(body);
         if (options.connection && options.connection.close)
           options.connection.close();
-        resolve({ raw, headers, statusCode, statusText });
+        resolve({
+          raw, headers, statusCode, statusText,
+        });
       });
     };
 
     req.on('response', (res) => {
       if (!http2) {
-        statusCode = res.statusCode;
         statusText = res.statusMessage || STATUS_CODES[statusCode];
-        headers = res.headers;
+        ({ headers, statusCode } = res);
         handleResponse(res);
       } else {
         statusCode = res[':status'];
@@ -117,22 +127,9 @@ function request(snek, options = snek.options) {
   });
 }
 
-function shouldSendRaw(data) {
-  return data instanceof Buffer || data instanceof Stream;
-}
-
-function shouldUnzip(statusCode, headers) {
-  /* istanbul ignore next */
-  if (statusCode === 204 || statusCode === 304)
-    return false;
-  if (+headers['content-length'] === 0)
-    return false;
-  return /^\s*(?:deflate|gzip)\s*$/.test(headers['content-encoding']);
-}
-
 module.exports = {
   request,
-  shouldSendRaw,
+  shouldSendRaw: (data) => data instanceof Buffer || data instanceof Stream,
   querystring,
   METHODS,
   FormData,
