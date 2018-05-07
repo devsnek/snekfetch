@@ -92,6 +92,8 @@ function request(snek, options = snek.options) {
         body.push(chunk);
       });
 
+      stream.once('error', reject);
+
       stream.once('end', () => {
         snek.push(null);
         const raw = Buffer.concat(body);
