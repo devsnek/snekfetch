@@ -1,5 +1,7 @@
 'use strict';
 
+jest.setTimeout(10e3);
+
 const { Snekfetch, TestRoot } = require('./interop');
 
 const server = require('./server');
@@ -9,8 +11,9 @@ function makeTestObj({ unicode = true, numbers = false } = {}) {
     Hello: 'world',
     Test: numbers ? 1337 : '1337',
   };
-  if (unicode)
+  if (unicode) {
     test.Unicode = '( ͡° ͜ʖ ͡°)';
+  }
   const single = { key: 'singleKey', value: 'awoooo' };
   return {
     test,
@@ -19,10 +22,12 @@ function makeTestObj({ unicode = true, numbers = false } = {}) {
       expect(obj).not.toBeUndefined();
       expect(obj.Hello).toBe(test.Hello);
       expect(obj.Test).toBe(test.Test);
-      if (unicode)
+      if (unicode) {
         expect(obj.Unicode).toBe(test.Unicode);
-      if (obj[single.key])
+      }
+      if (obj[single.key]) {
         expect(obj[single.key]).toBe(single.value);
+      }
     },
   };
 }
@@ -105,8 +110,9 @@ test('headers should work', () => {
       .end(),
   ])
     .then((ress) => {
-      for (const res of ress)
+      for (const res of ress) {
         check(res.body.headers);
+      }
     });
 });
 
@@ -126,8 +132,9 @@ test('send should work with json', () => {
       .end(),
   ])
     .then((ress) => {
-      for (const res of ress)
+      for (const res of ress) {
         check(res.body.json);
+      }
     });
 });
 

@@ -5,8 +5,9 @@ const http = require('http');
 const ref = require.main === module;
 
 const server = http.createServer((req, res) => {
-  if (!ref)
+  if (!ref) {
     req.connection.unref();
+  }
   switch (req.url) {
     case '/invalid-json':
       res.setHeader('Content-Type', 'application/json');
@@ -17,8 +18,12 @@ const server = http.createServer((req, res) => {
       res.end('test=1&hello=world');
       break;
     case '/echo': {
-      req.on('data', (c) => { res.write(c); });
-      req.on('end', () => { res.end(); });
+      req.on('data', (c) => {
+        res.write(c);
+      });
+      req.on('end', () => {
+        res.end();
+      });
       break;
     }
     default:
@@ -28,13 +33,15 @@ const server = http.createServer((req, res) => {
 });
 
 server.on('connection', (socket) => {
-  if (!ref)
+  if (!ref) {
     socket.unref();
+  }
 });
 
 server.listen(0);
 
 exports.port = server.address().port;
 
-if (ref)
+if (ref) {
   console.log(exports.port); // eslint-disable-line no-console
+}

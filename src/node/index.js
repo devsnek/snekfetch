@@ -11,10 +11,12 @@ const FormData = require('./FormData');
 
 function shouldUnzip(statusCode, headers) {
   /* istanbul ignore next */
-  if (statusCode === 204 || statusCode === 304)
+  if (statusCode === 204 || statusCode === 304) {
     return false;
-  if (+headers['content-length'] === 0)
+  }
+  if (+headers['content-length'] === 0) {
     return false;
+  }
   return /^\s*(?:deflate|gzip)\s*$/.test(headers['content-encoding']);
 }
 
@@ -22,12 +24,14 @@ function request(snek, options = snek.options) {
   return new Promise(async (resolve, reject) => {
     Object.assign(options, UrlParse(options.url));
 
-    if (!options.headers['user-agent'])
+    if (!options.headers['user-agent']) {
       options.headers['user-agent'] = `snekfetch/${Package.version} (${Package.homepage})`;
+    }
 
     let { data } = options;
-    if (data && data.end)
+    if (data && data.end) {
       data = data.end();
+    }
 
     if (!options.headers['content-length']) {
       let length = 0;
@@ -49,10 +53,12 @@ function request(snek, options = snek.options) {
       } else {
         const O = await socket(options);
         ({ req } = O);
-        if (O.http2)
+        if (O.http2) {
           http2 = true;
-        if (O.connection)
+        }
+        if (O.connection) {
           options.connection = O.connection;
+        }
       }
     } catch (err) {
       reject(err);
@@ -71,10 +77,11 @@ function request(snek, options = snek.options) {
         resolve(request(snek, Object.assign({}, options, {
           url: UrlResolve(options.url, headers.location),
         })));
-        if (req.abort)
+        if (req.abort) {
           req.abort();
-        else if (req.close)
+        } else if (req.close) {
           req.close();
+        }
         return;
       }
 
@@ -87,8 +94,9 @@ function request(snek, options = snek.options) {
 
       stream.on('data', (chunk) => {
         /* istanbul ignore next */
-        if (!snek.push(chunk))
+        if (!snek.push(chunk)) {
           snek.pause();
+        }
         body.push(chunk);
       });
 
@@ -97,8 +105,9 @@ function request(snek, options = snek.options) {
       stream.once('end', () => {
         snek.push(null);
         const raw = Buffer.concat(body);
-        if (options.connection && options.connection.close)
+        if (options.connection && options.connection.close) {
           options.connection.close();
+        }
         resolve({
           raw, headers, statusCode, statusText,
         });
@@ -119,12 +128,13 @@ function request(snek, options = snek.options) {
     });
 
     /* istanbul ignore next */
-    if (data instanceof Stream)
+    if (data instanceof Stream) {
       data.pipe(req);
-    else if (data instanceof Buffer)
+    } else if (data instanceof Buffer) {
       req.write(data);
-    else if (data)
+    } else if (data) {
       req.write(data);
+    }
     req.end();
   });
 }

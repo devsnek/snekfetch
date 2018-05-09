@@ -8,8 +8,9 @@ function request(snek) {
   return window.fetch(snek.options.url, snek.options)
     .then((r) => r[type]().then((raw) => {
       const headers = {};
-      for (const [k, v] of r.headers.entries())
+      for (const [k, v] of r.headers.entries()) {
         headers[k.toLowerCase()] = v;
+      }
       return {
         raw,
         headers,
@@ -28,8 +29,9 @@ module.exports = {
   querystring: {
     parse: (str) => {
       const parsed = {};
-      for (const [k, v] of new window.URLSearchParams(str).entries())
+      for (const [k, v] of new window.URLSearchParams(str).entries()) {
         parsed[k] = v;
+      }
       return parsed;
     },
     stringify: (obj) => new window.URLSearchParams(obj).toString(),

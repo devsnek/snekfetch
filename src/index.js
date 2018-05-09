@@ -41,12 +41,15 @@ class Snekfetch extends transport.Parent {
       query: undefined,
       data: undefined,
     });
-    if (opts.headers)
+    if (opts.headers) {
       this.set(opts.headers);
-    if (opts.query)
+    }
+    if (opts.query) {
       this.query(opts.query);
-    if (opts.data)
+    }
+    if (opts.data) {
       this.send(opts.data);
+    }
   }
 
   /**
@@ -56,12 +59,14 @@ class Snekfetch extends transport.Parent {
    * @returns {Snekfetch} This request
    */
   query(name, value) {
-    if (this.options.query === undefined)
+    if (this.options.query === undefined) {
       this.options.query = {};
-    if (typeof name === 'object')
+    }
+    if (typeof name === 'object') {
       Object.assign(this.options.query, name);
-    else
+    } else {
       this.options.query[name] = value;
+    }
 
     return this;
   }
@@ -74,8 +79,9 @@ class Snekfetch extends transport.Parent {
    */
   set(name, value) {
     if (typeof name === 'object') {
-      for (const [k, v] of Object.entries(name))
+      for (const [k, v] of Object.entries(name)) {
         this.options.headers[k.toLowerCase()] = v;
+      }
     } else {
       this.options.headers[name.toLowerCase()] = value;
     }
@@ -94,8 +100,9 @@ class Snekfetch extends transport.Parent {
     const form = this.options.data instanceof transport.FormData ?
       this.options.data : this.options.data = new transport.FormData();
     if (typeof args[0] === 'object') {
-      for (const [k, v] of Object.entries(args[0]))
+      for (const [k, v] of Object.entries(args[0])) {
         this.attach(k, v);
+      }
     } else {
       form.append(...args);
     }
@@ -115,10 +122,11 @@ class Snekfetch extends transport.Parent {
       const header = this.options.headers['content-type'];
       let serialize;
       if (header) {
-        if (header.includes('application/json'))
+        if (header.includes('application/json')) {
           serialize = JSON.stringify;
-        else if (header.includes('urlencoded'))
+        } else if (header.includes('urlencoded')) {
           serialize = this.options.qs.stringify;
+        }
       } else {
         this.set('Content-Type', 'application/json');
         serialize = JSON.stringify;
@@ -131,8 +139,9 @@ class Snekfetch extends transport.Parent {
   }
 
   then(resolver, rejector) {
-    if (this._response)
+    if (this._response) {
       return this._response.then(resolver, rejector);
+    }
     this._finalizeRequest();
     // eslint-disable-next-line no-return-assign
     return this._response = transport.request(this)
@@ -155,8 +164,9 @@ class Snekfetch extends transport.Parent {
           get body() {
             delete res.body;
             const type = res.headers['content-type'];
-            if (raw instanceof ArrayBuffer)
+            if (raw instanceof ArrayBuffer) {
               raw = new window.TextDecoder('utf8').decode(raw); // eslint-disable-line no-undef
+            }
             if (/application\/json/.test(type)) {
               try {
                 res.body = JSON.parse(raw);
@@ -177,8 +187,9 @@ class Snekfetch extends transport.Parent {
           statusText,
         };
 
-        if (res.ok)
+        if (res.ok) {
           return res;
+        }
         const err = new Error(`${statusCode} ${statusText}`.trim());
         Object.assign(err, res);
         return Promise.reject(err);
@@ -203,10 +214,12 @@ class Snekfetch extends transport.Parent {
   }
 
   _finalizeRequest() {
-    if (this.options.method !== 'HEAD')
+    if (this.options.method !== 'HEAD') {
       this.set('Accept-Encoding', 'gzip, deflate');
-    if (this.options.data && this.options.data.getBoundary)
+    }
+    if (this.options.data && this.options.data.getBoundary) {
       this.set('Content-Type', `multipart/form-data; boundary=${this.options.data.getBoundary()}`);
+    }
 
     if (this.options.query) {
       const [url, query] = this.options.url.split('?');
@@ -216,8 +229,9 @@ class Snekfetch extends transport.Parent {
 
   _read() {
     this.resume();
-    if (this._response)
+    if (this._response) {
       return;
+    }
     this.catch((err) => this.emit('error', err));
   }
 }

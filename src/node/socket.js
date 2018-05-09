@@ -46,8 +46,9 @@ function connectHttps(opt) {
           break;
         }
         case 'h2': {
-          if (http2 === undefined)
+          if (http2 === undefined) {
             http2 = require('http2');
+          }
 
           const connection = http2.connect({
             host: opt.host,

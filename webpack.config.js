@@ -1,15 +1,11 @@
 'use strict';
 
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-
 module.exports = {
+  mode: 'production',
   entry: require.resolve('.'),
   output: {
     filename: 'browser.js',
     library: 'Snekfetch',
     libraryTarget: 'umd',
   },
-  plugins: [
-    new UglifyJSPlugin(),
-  ],
 };
