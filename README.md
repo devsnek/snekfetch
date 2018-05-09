@@ -42,8 +42,8 @@ Available for browser as UMD from [unpkg][unpkg-link]
 [stats-link]: https://nodei.co/npm/snekfetch/
 [version-badge]: https://versionbadge.now.sh/npm/snekfetch.svg
 [download-badge]: https://img.shields.io/npm/dt/snekfetch.svg?maxAge=3600
-[build-badge]: https://api.travis-ci.org/devsnek/snekfetch.svg?branch=master
-[build-link]: https://travis-ci.org/devsnek/snekfetch
+[build-badge]: https://api.travis-ci.com/devsnek/snekfetch.svg?branch=master
+[build-link]: https://travis-ci.com/devsnek/snekfetch
 [dep-badge]: https://david-dm.org/devsnek/snekfetch.svg
 [dep-link]: https://david-dm.org/devsnek/snekfetch
 [coverage-badge]: https://coveralls.io/repos/github/devsnek/snekfetch/badge.svg?branch=master
