@@ -4,3 +4,11 @@ docs
 coverage
 sonar-project.properties
 .scannerwork
+test
+.github
+scripts
+webpack.config.js
+docs.js
+.eslintrc.js
+.coveralls.yml
+.travis.yml
