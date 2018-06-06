@@ -209,7 +209,7 @@ class Snekfetch extends transport.Parent {
   end(cb) {
     return this.then(
       (res) => (cb ? cb(null, res) : res),
-      (err) => (cb ? cb(err, err.status ? err : null) : Promise.reject(err)),
+      (err) => (cb ? cb(err, err.statusCode ? err : null) : Promise.reject(err)),
     );
   }
 
