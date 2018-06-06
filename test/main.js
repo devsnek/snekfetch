@@ -166,3 +166,10 @@ test('redirects', () =>
       expect(res.body).not.toBeUndefined();
       expect(res.body.url).toBe(`${TestRoot}/get`);
     }));
+
+test('res should be defined when rejecting', () =>
+  Snekfetch.get(`${TestRoot}/404`)
+    .end((err, res) => {
+      expect(err.statusCode).not.toBeUndefined();
+      expect(res).not.toBe(null);
+    }));
