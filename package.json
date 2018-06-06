@@ -1,6 +1,6 @@
 {
   "name": "snekfetch",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "main": "src/index",
   "module": "src/index.mjs",
   "unpkg": "browser.js",
