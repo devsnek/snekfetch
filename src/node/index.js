@@ -67,7 +67,7 @@ function request(snek, options = snek.options) {
 
     req.on('error', reject);
 
-    let body = '';
+    let body = [];
     let headers;
     let statusCode;
     let statusText;
@@ -97,14 +97,14 @@ function request(snek, options = snek.options) {
         if (!snek.push(chunk)) {
           snek.pause();
         }
-        body += chunk;
+        body.push(chunk);
       });
 
       stream.once('error', reject);
 
       stream.once('end', () => {
         snek.push(null);
-        const raw = Buffer.from(body);
+        const raw = Buffer.concat(body);
         if (options.connection && options.connection.close) {
           options.connection.close();
         }
