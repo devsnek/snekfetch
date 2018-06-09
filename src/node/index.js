@@ -67,7 +67,7 @@ function request(snek, options = snek.options) {
 
     req.on('error', reject);
 
-    let body = [];
+    const body = [];
     let headers;
     let statusCode;
     let statusText;
