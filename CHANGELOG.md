@@ -1,4 +1,4 @@
-* [[`8104ad7`](https://github.com/devsnek/snekfetch/commit/8104ad7b6b6d5de971f2a0c9698f2ae61df74bb6)] - change changelog format
+* [[`75cd455`](https://github.com/devsnek/snekfetch/commit/75cd455353d50b9bfa643f1e0aed249b68d2e83f)] - change changelog format
 * [[`0cb076b`](https://github.com/devsnek/snekfetch/commit/0cb076b81e8c3c948602d5b681636e9e23be70e9)] - things i said i would do
 * [[`9222cbe`](https://github.com/devsnek/snekfetch/commit/9222cbe2f055335c5f173c050e43e07dd5f906f8)] - 4.0.2
 * [[`b9d53f5`](https://github.com/devsnek/snekfetch/commit/b9d53f555599e471eb29a5e033fb22d946600d6b)] - status is now statusCode (#41)
@@ -231,78 +231,3 @@
 * [[`50ae37a`](https://github.com/devsnek/snekfetch/commit/50ae37a558c1dd1b8a345e299a5f23a8987bc9e4)] - add sync requests for memes not real usage
 * [[`dd0c84b`](https://github.com/devsnek/snekfetch/commit/dd0c84becf244f4b5157c3874a1f8812ef714c78)] - v3
 * [[`3907b7e`](https://github.com/devsnek/snekfetch/commit/3907b7ea21de2e3001b5640a7f1771f6fbd7f6f8)] - bump version
-* [[`2c82db9`](https://github.com/devsnek/snekfetch/commit/2c82db90707788a5e234ec4ec15cf7fbffd38ff2)] - pass through end
-* [[`4a9cb28`](https://github.com/devsnek/snekfetch/commit/4a9cb288f156407e94d4b4b34afc86b7f22151c1)] - ugh
-* [[`7469142`](https://github.com/devsnek/snekfetch/commit/74691422b4db8346ed12ee96c59e1f03d7666693)] - bump to 2.3.1
-* [[`5712ced`](https://github.com/devsnek/snekfetch/commit/5712cede8dca549b4750b7d407c96a445c99009c)] - fix request rejection issues
-* [[`34a3525`](https://github.com/devsnek/snekfetch/commit/34a35250e8189b023c929d9ffe4abfd1b08b9684)] - bump version to 2.3.0
-* [[`defb36d`](https://github.com/devsnek/snekfetch/commit/defb36d47de4aac6a034f95b4834344e38bf413d)] - reject on anything not 2xx
-* [[`8e62fd7`](https://github.com/devsnek/snekfetch/commit/8e62fd74c2f96ad4db250deef9a7bc3331c6a71b)] - bump versoin
-* [[`65bde0b`](https://github.com/devsnek/snekfetch/commit/65bde0b24ae70c0ebea0fa7df919ec6c5f618b02)] - aaaaaaa
-* [[`a5cadc0`](https://github.com/devsnek/snekfetch/commit/a5cadc007a11ec872aab3aa7d3b924c405a618f6)] - bump version
-* [[`6d89014`](https://github.com/devsnek/snekfetch/commit/6d89014938254acaef773ff1339f706abcf6c1f9)] - fix extremely stupid mistake
-* [[`826efce`](https://github.com/devsnek/snekfetch/commit/826efcefe1896eb4fabdcfae5012d5d94e03c637)] - fix redirect behavior
-* [[`8d40cd8`](https://github.com/devsnek/snekfetch/commit/8d40cd849ceeb26e51acd49ed5036a9ccc5fd4e5)] - clean up
-* [[`b5cc884`](https://github.com/devsnek/snekfetch/commit/b5cc88409e3ffddaf12522177355ff57b7d3a418)] - Merge branch 'master' of https://github.com/guscaplan/snekfetch
-* [[`51a16e5`](https://github.com/devsnek/snekfetch/commit/51a16e5e3d7ede0b4d0661229191d7a9debc0876)] - fix streaming
-* [[`4549654`](https://github.com/devsnek/snekfetch/commit/4549654d946d0b8dfe213f788905c14d22886c4f)] - Update mime.js
-* [[`b1bf960`](https://github.com/devsnek/snekfetch/commit/b1bf9609dbea6caf9d020dcbf8d2b0f6d8bbb7ff)] - make the error callback use an error
-* [[`f2f5ad7`](https://github.com/devsnek/snekfetch/commit/f2f5ad729c5d1bc655e845d4804677236b524ba4)] - bump version
-* [[`0e5d4fa`](https://github.com/devsnek/snekfetch/commit/0e5d4fadc0a90df4f24f59a09d315930372f6f05)] - change things for good
-* [[`bb14880`](https://github.com/devsnek/snekfetch/commit/bb1488060c1d330353f779daecdeff4b4dc19460)] - bump version
-* [[`e38dbf5`](https://github.com/devsnek/snekfetch/commit/e38dbf52f5295d1b6fc802756c4890e0b395bee2)] - eek
-* [[`cc4443c`](https://github.com/devsnek/snekfetch/commit/cc4443cd6ef88be40299f757c7e7382545cd71d3)] - Merge branch 'master' of https://github.com/guscaplan/snekfetch
-* [[`4608443`](https://github.com/devsnek/snekfetch/commit/4608443f54949854ad036135b545ebfcb9f674ca)] - change behavior with res.ok
-* [[`9410004`](https://github.com/devsnek/snekfetch/commit/9410004e30645f8a073c37649a03625a6a351439)] - Update README.md
-* [[`6d6e248`](https://github.com/devsnek/snekfetch/commit/6d6e248d73c3c1070ed428bcaf596b84e80ab3b9)] - Update package.json
-* [[`ea745d2`](https://github.com/devsnek/snekfetch/commit/ea745d21004627ba1869b48bcd780c1f08909c3a)] - Delete ded.js
-* [[`fa0eba4`](https://github.com/devsnek/snekfetch/commit/fa0eba45d741aee1dc3d0ef80f6ca2ef2dba1c3b)] - readme updates
-* [[`619fa65`](https://github.com/devsnek/snekfetch/commit/619fa65a3f89013c1d5e2cc3df0af23d58e19fc6)] - fix webpack bug
-* [[`bb0c61a`](https://github.com/devsnek/snekfetch/commit/bb0c61ab31d26a1c5ff5277f2f54acb5e286a175)] - debugging
-* [[`d07dafe`](https://github.com/devsnek/snekfetch/commit/d07dafe1057011a53e4b135d490981b8d4c2c754)] - wrap in function for safety
-* [[`5a40668`](https://github.com/devsnek/snekfetch/commit/5a4066867cf172dfb563fb1ff0be45f9aa8d00a4)] - hehe
-* [[`d7b6d71`](https://github.com/devsnek/snekfetch/commit/d7b6d71ddc4ffb12aa8cde8b5c05971781fa55b4)] - wee
-* [[`ff24e92`](https://github.com/devsnek/snekfetch/commit/ff24e9214efcc78f3240c606c5c5d89cc31e2a5e)] - mfw part 2
-* [[`bf3c2fe`](https://github.com/devsnek/snekfetch/commit/bf3c2fe6468bc165f534ee6678d5482ea3057e55)] - mfw
-* [[`8b08acf`](https://github.com/devsnek/snekfetch/commit/8b08acf0bf5d8492e9d0a119c239367673fc42e5)] - debugging
-* [[`c66b212`](https://github.com/devsnek/snekfetch/commit/c66b21249e1d22cfca74d68533c6af135b3aa6fc)] - debugging
-* [[`2c5d697`](https://github.com/devsnek/snekfetch/commit/2c5d697a4ae4fd87e8c755bb8fc304535deb3d80)] - add response.request
-* [[`4369946`](https://github.com/devsnek/snekfetch/commit/436994641f469133bfdbbba21ce618003a0b447c)] - fix redirecting
-* [[`e1e5b9d`](https://github.com/devsnek/snekfetch/commit/e1e5b9d766b17f935cf1818c57f0b2b8d841f5a0)] - start rewrite
-* [[`bad3b1f`](https://github.com/devsnek/snekfetch/commit/bad3b1f429a4237866ee14946e663a3ef98df484)] - make it actually work in browser
-* [[`cf744b6`](https://github.com/devsnek/snekfetch/commit/cf744b6356003720a254d9cf5483856996e7dee6)] - use res.ok
-* [[`4b89c64`](https://github.com/devsnek/snekfetch/commit/4b89c64c39df26fd3c0beb0136935af36e313608)] - update readme
-* [[`8a9812d`](https://github.com/devsnek/snekfetch/commit/8a9812dd8382514960960b9425c9cd8ba7e92a9d)] - bump version
-* [[`1dfc9fd`](https://github.com/devsnek/snekfetch/commit/1dfc9fd4b4b46e53b5dbcb30eea272889b0ad2d5)] - fix readme
-* [[`8baf5d4`](https://github.com/devsnek/snekfetch/commit/8baf5d48129097f3f0e44ec02ec75c263759bd6e)] - simplify
-* [[`8a6af11`](https://github.com/devsnek/snekfetch/commit/8a6af118fe75219566af962aab99f1d957931dbd)] - Update index.js
-* [[`4b9dc30`](https://github.com/devsnek/snekfetch/commit/4b9dc302ca1fda21bc9bf1da932e13cf794723f5)] - Update index.js
-* [[`462f2f9`](https://github.com/devsnek/snekfetch/commit/462f2f956d4b08f6362a6ce4f5076bb010c03f19)] - Update index.js
-* [[`e3c74b6`](https://github.com/devsnek/snekfetch/commit/e3c74b635c7b552a36e0ea75d589540bf0b8c6bf)] - add form data
-* [[`d8bacaa`](https://github.com/devsnek/snekfetch/commit/d8bacaab8f5b4947621a30fea79617cb1b9bebe9)] - default useragent
-* [[`979e81b`](https://github.com/devsnek/snekfetch/commit/979e81b2eed6ca3277d15b3e39fd0c3c3be369d1)] - bump version, update readme
-* [[`1feeb6e`](https://github.com/devsnek/snekfetch/commit/1feeb6ed8b1efd3285fcc16b94944392bc7a3069)] - sync
-* [[`d688cfa`](https://github.com/devsnek/snekfetch/commit/d688cfa99deb9812f40f05b6c1d9e38f7726a7dc)] - speeeeed
-* [[`38c5493`](https://github.com/devsnek/snekfetch/commit/38c5493da1bffb937bccc27077d56bf34049c0e9)] - fix node-fetch requirement
-* [[`4980c98`](https://github.com/devsnek/snekfetch/commit/4980c987811d9c490ee0f9837e195dad98c48825)] - node-fetch
-* [[`59e9cbb`](https://github.com/devsnek/snekfetch/commit/59e9cbb63d0e9001e3c40dc4b708032241fa889f)] - Update index.js
-* [[`d411b7b`](https://github.com/devsnek/snekfetch/commit/d411b7b6c15da19d7546cc7e2c5af78ca37b5713)] - Update index.js
-* [[`b7d3e56`](https://github.com/devsnek/snekfetch/commit/b7d3e56e864b430c0add2e51ec87c2e989ee2596)] - Update index.js
-* [[`2009da5`](https://github.com/devsnek/snekfetch/commit/2009da52ba241293147e932bb6db2ec4b5c69ba4)] - Update README.md
-* [[`15bf0f4`](https://github.com/devsnek/snekfetch/commit/15bf0f4618d09efe68fb1c4eb1e3a0efe8e153a5)] - make important changes
-* [[`e147658`](https://github.com/devsnek/snekfetch/commit/e1476587f07dcd0a9c8803be1c5d09ca2be8044d)] - move repo
-* [[`117adb9`](https://github.com/devsnek/snekfetch/commit/117adb9228ea7e911eede135b099607280ac577b)] - published
-* [[`91dadb4`](https://github.com/devsnek/snekfetch/commit/91dadb4567fa4556d3222eac2cd7e6abd1dc4819)] - add version export if i ever decide to follow semver
-* [[`0a34c52`](https://github.com/devsnek/snekfetch/commit/0a34c5206d77f342c3eff6833fb13cba5d87c16a)] - stupid mistakes are stupid
-* [[`f2c4a31`](https://github.com/devsnek/snekfetch/commit/f2c4a31031bb44cd422b8384f70d5a53dd488710)] - clean up
-* [[`3899fa4`](https://github.com/devsnek/snekfetch/commit/3899fa41f38215c5c99c3234e2fca1eb92288cb7)] - add proper www url encoded form parsing
-* [[`efa3a82`](https://github.com/devsnek/snekfetch/commit/efa3a8204b63745d86640ee601ffbd6698b66bc8)] - Update package.json
-* [[`e67bfc7`](https://github.com/devsnek/snekfetch/commit/e67bfc76dd294e919e1209ccb642463d21173b2f)] - Update package.json
-* [[`a7a933e`](https://github.com/devsnek/snekfetch/commit/a7a933e3edf6be6eaac95d88b6b25c5825985131)] - aaaa
-* [[`87095d5`](https://github.com/devsnek/snekfetch/commit/87095d5b57c5496cf7cc0bebad4c040593ea2fba)] - whoops
-* [[`e87e935`](https://github.com/devsnek/snekfetch/commit/e87e935ff65f10184817bc6590bae81bf85f1e22)] - 4xx or 5xx means error
-* [[`9822949`](https://github.com/devsnek/snekfetch/commit/982294946cf2765721df46f52120898f66852230)] - wee
-* [[`a0bf85f`](https://github.com/devsnek/snekfetch/commit/a0bf85f7167247a11a57353868cae0bcdab14624)] - (╯°□°）╯︵ ┻━┻
-* [[`eb64678`](https://github.com/devsnek/snekfetch/commit/eb64678a86e4fd27a96536040c8b2408699c914f)] - <.<
-* [[`dbad59d`](https://github.com/devsnek/snekfetch/commit/dbad59daffb4d25b2c900ac7094451692cbf8bb2)] - whoops
-* [[`499ea07`](https://github.com/devsnek/snekfetch/commit/499ea073b6b0626727f1dccdd710df2f458d83e2)] - first commit
