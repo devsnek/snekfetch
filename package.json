@@ -12,7 +12,8 @@
     "coverage": "cat ./coverage/lcov.info | coveralls",
     "docs": "node docs.js",
     "build:browser": "webpack-cli",
-    "prepublishOnly": "npm run lint && npm run test && npm run build:browser"
+    "prepublishOnly": "npm run lint && npm run test && npm run build:browser",
+    "changelog": "git log dd0c84b^..HEAD --pretty=format:'* [[`%h`](https://github.com/devsnek/snekfetch/commit/%H)] - %s' > CHANGELOG.md"
   },
   "repository": {
     "type": "git",

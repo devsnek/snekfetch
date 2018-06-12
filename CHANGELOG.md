@@ -1,3 +1,4 @@
+* [[`08ad9f6`](https://github.com/devsnek/snekfetch/commit/08ad9f6936203c5b86cc84659d91c91b9d1d3206)] - cut older commits from changelog
 * [[`75cd455`](https://github.com/devsnek/snekfetch/commit/75cd455353d50b9bfa643f1e0aed249b68d2e83f)] - change changelog format
 * [[`0cb076b`](https://github.com/devsnek/snekfetch/commit/0cb076b81e8c3c948602d5b681636e9e23be70e9)] - things i said i would do
 * [[`9222cbe`](https://github.com/devsnek/snekfetch/commit/9222cbe2f055335c5f173c050e43e07dd5f906f8)] - 4.0.2
@@ -230,4 +231,3 @@
 * [[`390f8f4`](https://github.com/devsnek/snekfetch/commit/390f8f49f0300924fb12ada247c6ff8b1133df5d)] - add sync requests for memes not real usage
 * [[`50ae37a`](https://github.com/devsnek/snekfetch/commit/50ae37a558c1dd1b8a345e299a5f23a8987bc9e4)] - add sync requests for memes not real usage
 * [[`dd0c84b`](https://github.com/devsnek/snekfetch/commit/dd0c84becf244f4b5157c3874a1f8812ef714c78)] - v3
-* [[`3907b7e`](https://github.com/devsnek/snekfetch/commit/3907b7ea21de2e3001b5640a7f1771f6fbd7f6f8)] - bump version
