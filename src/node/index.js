@@ -65,9 +65,9 @@ function request(snek, options = snek.options) {
       return;
     }
 
-    req.on('error', reject);
+    req.once('error', reject);
 
-    let body = '';
+    const body = [];
     let headers;
     let statusCode;
     let statusText;
@@ -85,11 +85,15 @@ function request(snek, options = snek.options) {
         return;
       }
 
+      stream.once('error', reject);
+
       if (shouldUnzip(statusCode, headers)) {
         stream = stream.pipe(zlib.createUnzip({
           flush: zlib.Z_SYNC_FLUSH,
           finishFlush: zlib.Z_SYNC_FLUSH,
         }));
+
+        stream.once('error', reject);
       }
 
       stream.on('data', (chunk) => {
@@ -97,14 +101,12 @@ function request(snek, options = snek.options) {
         if (!snek.push(chunk)) {
           snek.pause();
         }
-        body += chunk;
+        body.push(chunk);
       });
-
-      stream.once('error', reject);
 
       stream.once('end', () => {
         snek.push(null);
-        const raw = Buffer.from(body);
+        const raw = Buffer.concat(body);
         if (options.connection && options.connection.close) {
           options.connection.close();
         }
