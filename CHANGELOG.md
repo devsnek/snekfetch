@@ -1,3 +1,5 @@
+* [[`26182ff`](https://github.com/devsnek/snekfetch/commit/26182ff9ab32ba787335df55557441aa266c7bf7)] - [version] 4.0.3
+* [[`9fef333`](https://github.com/devsnek/snekfetch/commit/9fef33367056c5e7b9f999ee407817a5a1d8765a)] - add script to package to generate changelog
 * [[`08ad9f6`](https://github.com/devsnek/snekfetch/commit/08ad9f6936203c5b86cc84659d91c91b9d1d3206)] - cut older commits from changelog
 * [[`75cd455`](https://github.com/devsnek/snekfetch/commit/75cd455353d50b9bfa643f1e0aed249b68d2e83f)] - change changelog format
 * [[`0cb076b`](https://github.com/devsnek/snekfetch/commit/0cb076b81e8c3c948602d5b681636e9e23be70e9)] - things i said i would do
