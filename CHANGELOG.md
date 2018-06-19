@@ -1,3 +1,5 @@
+* [[`025d579`](https://github.com/devsnek/snekfetch/commit/025d57918b0615ac403d613abe558ed53330580f)] - [core] remove undefined `request` property from response
+* [[`b0014a3`](https://github.com/devsnek/snekfetch/commit/b0014a3109a64fde9dcd5b65a1a5d8b493d38fac)] - [changelog] update
 * [[`e073a72`](https://github.com/devsnek/snekfetch/commit/e073a720678fa6eb9269ea4310bf4189e992c3d8)] - [version] 4.0.4
 * [[`0e603fa`](https://github.com/devsnek/snekfetch/commit/0e603fa740e9482cafdef4f34072306f61f1c1ba)] - [browser] fix webpack output
 * [[`2d8cd56`](https://github.com/devsnek/snekfetch/commit/2d8cd56d65befdb693a03e0e9746cdb5e2aa2dcd)] - [changelog] update
