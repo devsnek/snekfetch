@@ -152,7 +152,6 @@ class Snekfetch extends transport.Parent {
          * Response from Snekfetch
          * @typedef {Object} SnekfetchResponse
          * @memberof Snekfetch
-         * @prop {HTTP.Request} request
          * @prop {?string|object|Buffer} body Processed response body
          * @prop {Buffer} raw Raw response body
          * @prop {boolean} ok If the response code is >= 200 and < 300
@@ -160,7 +159,6 @@ class Snekfetch extends transport.Parent {
          * @prop {string} statusText Human readable HTTP status
          */
         const res = {
-          request: this.request,
           get body() {
             delete res.body;
             const type = res.headers['content-type'];
