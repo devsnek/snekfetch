@@ -1,6 +1,6 @@
 'use strict';
 
-const transport = require(typeof window !== 'undefined' ? './browser' : './node');
+const transport = require(typeof process === 'undefined' ? './browser' : './node');
 
 /**
  * Snekfetch
